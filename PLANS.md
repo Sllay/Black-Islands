@@ -12,14 +12,17 @@ Three Seasons, four Phases each. Every phase ends in a playable increment.
 - debug/test scene without polluting the production HUD.
 
 ### S1-P2 — World foundation
-- smooth island surface.
-- logical world-cell/stud layer.
+- volumetric voxel island data with smooth rendered terrain surface.
+- first validated chunk/mesh/collision streaming profile on target mobile constraints.
+- material/state painting foundation with smooth neighbor blending.
+- separate integer-aligned `BuildGrid`/world occupancy foundation.
 - constrained procedural island generation.
-- basic world streaming/persistence.
-- player controller and shoulder camera; first-person switch as scoped.
+- seed + terrain-delta persistence foundation.
+- player controller and gameplay camera baseline; first-person switch only if it does not endanger the phase.
 
 ### S1-P3 — Character/gameplay foundation
-- LPC composition/cache pipeline.
+- initial compiled LPC catalog/import path and appearance composition/cache pipeline.
+- LPC Sprite3D presentation tied to semantic player actions.
 - inventory + 8-slot hotbar + inventory button.
 - interaction targeting.
 - combat baseline.
@@ -29,6 +32,7 @@ Three Seasons, four Phases each. Every phase ends in a playable increment.
 - intro cutscene/attack.
 - initial village survivors.
 - gather/craft/build/farm minimums.
+- first structural support/snap rules demonstrable in real gameplay.
 - sleeping/day transition shell.
 - Season 1 test scene demonstrates all foundation systems in gameplay form.
 
@@ -47,14 +51,15 @@ Three Seasons, four Phases each. Every phase ends in a playable increment.
 - Social Director local-first events.
 - optional LLM provider/orchestrator layer.
 
-### S2-P3 — Mines/exploration
-- separate mine-floor worlds.
+### S2-P3 — Caves/exploration
+- separate cave-floor worlds.
 - transition/preload/cache pipeline.
 - destructible/procedural floor data.
+- underground biome foundation.
 - floor progression, encounters, rescue events and representative boss.
 
 ### S2-P4 — Production tools/content completion
-- modular construction completion.
+- modular construction completion with support graph/collapse rules.
 - robust transactional crafting queue.
 - Black Island Tools editor surfaces for items/recipes/NPCs/cutscenes and validation.
 - enough Chapter 1 content to run end-to-end.
@@ -63,17 +68,21 @@ Three Seasons, four Phases each. Every phase ends in a playable increment.
 
 ### S3-P1 — Performance
 - mobile profiling.
-- pooling, streaming budgets, LOD/instancing.
-- memory and load-transition tuning.
+- voxel/chunk/mesh/collision budget tuning.
+- pooling, prop/foliage streaming, LOD/instancing.
+- LPC cache/memory tuning.
+- load-transition tuning.
 
 ### S3-P2 — UX/feel
 - HUD polish, feedback, safe areas and responsive scaling.
 - combat feel, camera, input, drag/drop and touch feedback.
+- build-mode grid/socket/support feedback.
 
 ### S3-P3 — Reliability
 - save migration/versioning.
 - exploit/duplication regression tests.
-- edge cases and recovery paths.
+- structure support/collapse regression tests.
+- terrain-delta recovery/edge cases.
 
 ### S3-P4 — Chapter 1 RC
 - bug burn-down.
