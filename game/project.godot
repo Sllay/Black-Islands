@@ -1,0 +1,9 @@
+; Engine configuration file.
+; Black Island targets Godot 4.7.2.
+; Runtime configuration is intentionally minimal until S1-P1 establishes boot/display settings.
+
+config_version=5
+
+[application]
+
+config/name="Black Island"

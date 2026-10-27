@@ -1,0 +1,26 @@
+# Godot
+.game/
+game/.godot/
+game/.import/
+
+# Export/build output
+game/builds/
+game/export/
+game/.mono/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets and local provider configuration
+.env
+.env.*
+!.env.example
+**/secrets.*
+**/*api_key*
+
+# Temporary harness output
+harness/tmp/
+harness/artifacts/
