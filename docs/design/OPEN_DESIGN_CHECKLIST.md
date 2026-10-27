@@ -1,6 +1,6 @@
 # Open Design Checklist
 
-This is the current list of systems/decisions that still need a dedicated design/technical pass before Black Island's Chapter 1 architecture can be considered broadly locked.
+This is the current list of systems/decisions that still need a dedicated design/technical pass or implementation validation before Black Island's Chapter 1 architecture can be considered broadly locked.
 
 Items are grouped by priority/dependency rather than implementation order.
 
@@ -177,24 +177,24 @@ Data model exists conceptually; still needs exact Chapter 1 implementation of:
 
 ### 16. Tool/action semantic animation map
 
-Compile exact mappings/fallbacks between Black Island actions and the LPC catalog after the LPC importer/catalog spec is committed.
+Compile exact mappings/fallbacks between Black Island actions and the verified LPC catalog.
 
 ## P1 — LPC/content pipeline
 
-### 17. LPC integration docs/repo update
+### 17. LPC pipeline implementation + profiling
 
-Research is complete enough to document, but repository still needs the dedicated accepted LPC architecture covering:
+The architecture is now documented in `docs/architecture/LPC_PIPELINE.md`. Remaining work is implementation/validation:
 
-- upstream snapshot/compiler;
-- `sheet_definitions` + `palette_definitions` sources of truth;
-- stable Black Island asset IDs + aliases;
-- verified compatibility matrix;
-- custom/oversized animations;
-- multi-channel recolor;
-- credits/license registry;
-- live catalog updater/delta packs;
-- community appearance schema/cache;
-- quarantine of technically/legal unsupported assets.
+- upstream snapshot/compiler proof of concept;
+- compiled catalog schema;
+- stable asset ID/alias migration tests;
+- verified compatibility matrix generation;
+- custom/oversized animation import tests;
+- multi-channel recolor composition benchmarks;
+- credit/license registry generation;
+- live catalog/delta update prototype;
+- mobile cache/memory profiling;
+- community appearance schema/cache prototype later.
 
 ### 18. Character creator UX
 
@@ -272,6 +272,7 @@ The following should not be reopened casually without an ADR:
 - structural support is graph/provenance/capacity based;
 - unsupported structures can collapse;
 - mines/caves are separate floor worlds;
+- LPC catalog architecture and local composition/cache boundaries are defined;
 - LPC characters are composed/cached and presented in 3D rather than persistent per-layer Sprite3D stacks;
 - crafting is per-unit queued and transactional;
 - no inventory weight system;
