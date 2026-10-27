@@ -1,19 +1,20 @@
 # ADR-0002 — Surface Terrain Strategy
 
-Status: Accepted for validation in Foundation
+Status: Superseded by ADR-0004
 
-## Decision
+## Original decision
 
-Do not build a bespoke voxel engine for the Chapter 1 surface.
+The original Foundation direction avoided a volumetric voxel surface and preferred a smooth heightmap terrain system, with Terrain3D as the leading candidate, plus a Black Island-owned logical cell/stud layer for gameplay semantics.
 
-Use a smooth terrain system (preferred candidate: Terrain3D) for presentation and terrain height/material data, combined with a Black Island-owned logical cell/stud layer for gameplay semantics.
+## Why this is superseded
 
-Mines remain separate floor worlds.
+Further design work established that Black Island needs precise runtime terrain removal, digging, channels, local deformation, material-aware farming/path painting and predictable control over the exact volume opened by an edit. A heightmap-first surface makes those requirements substantially harder and constrains future terrain gameplay.
 
-## Why
+The accepted replacement is documented in `ADR-0004-smooth-voxel-world-and-build-grid.md`:
 
-This preserves smooth Roblox-like terrain goals while avoiding the cost/risk of implementing volumetric terrain where it is not required.
+- volumetric voxel data is authoritative for terrain;
+- the visible surface is smooth rather than blocky;
+- construction uses a separate, integer-aligned build grid and structural socket graph;
+- mines/caves remain separate generated floor worlds rather than one continuous underground surface volume.
 
-## Revisit if
-
-Mobile validation shows the chosen terrain dependency cannot meet memory/rendering/runtime-edit requirements.
+This file remains as historical context so future agents do not accidentally reintroduce the abandoned heightmap-first assumption.
