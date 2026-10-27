@@ -17,13 +17,19 @@ Black-Islands/
 │   │   ├── TECH_STACK.md
 │   │   ├── GAME_ARCHITECTURE.md
 │   │   ├── WORLD_STREAMING.md
+│   │   ├── LPC_PIPELINE.md
 │   │   ├── NPC_AI.md
 │   │   └── CONTENT_TOOLS.md
 │   ├── decisions/
 │   │   ├── ADR-0001-repository-layout.md
-│   │   ├── ADR-0002-surface-terrain.md
-│   │   └── ADR-0003-local-first-npc-ai.md
-│   └── design/                 # focused system/design specs as they mature
+│   │   ├── ADR-0002-surface-terrain.md          # superseded historical decision
+│   │   ├── ADR-0003-local-first-npc-ai.md
+│   │   └── ADR-0004-smooth-voxel-world-and-build-grid.md
+│   └── design/
+│       ├── PLAYER_LPC_AND_3D_PRESENTATION.md
+│       ├── BUILDING_AND_STRUCTURAL_SUPPORT.md
+│       ├── INVENTORY_AND_CRAFTING.md
+│       └── OPEN_DESIGN_CHECKLIST.md
 │
 ├── agents/
 │   ├── README.md
@@ -98,3 +104,9 @@ Black-Islands/
 ## Boundary rule
 
 If Godot needs to import, execute or load it, it belongs somewhere under `game/`. If it exists only for humans, Codex orchestration, planning, research or build history, it stays outside `game/`.
+
+## Documentation authority rule
+
+Focused specs override older high-level summaries when both exist. Architectural changes that reverse an accepted decision should supersede the old ADR rather than silently rewriting history.
+
+Current terrain authority is ADR-0004; ADR-0002 is historical/superseded.
