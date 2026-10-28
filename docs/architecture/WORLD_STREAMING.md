@@ -4,108 +4,203 @@
 
 Accepted model:
 
-- authoritative volumetric voxel terrain data;
-- smooth generated terrain mesh rather than visible block cubes;
-- material/state stored per voxel or compact voxel record;
-- separate Black Island `BuildGrid` aligned by an integer ratio to voxel size;
-- separate navigation/simulation data derived from world state rather than using render geometry as authority.
+- authoritative volumetric voxel terrain;
+- smooth SDF/Transvoxel-style presentation;
+- 0.5 m terrain voxel spacing target;
+- 1 m `BuildGrid` cell;
+- 64 x 64 x 64 m project `WorldChunk` addressing/streaming regions;
+- vertical chunking in Y as well as X/Z;
+- separate building, navigation, water and prop systems derived from authoritative world state.
 
-The previous Terrain3D/heightmap-first direction is superseded by `ADR-0004-smooth-voxel-world-and-build-grid.md`.
+Detailed voxel implementation profile: `VOXEL_WORLD_IMPLEMENTATION.md`.
 
-## Terrain chunks
+## Voxel dependency
 
-A voxel is data, never a Node. Chunks own compact voxel storage and produce batched mesh/collision presentation.
+Preferred candidate is Zylann Voxel Tools wrapped behind Black Island interfaces. It must pass Android/iOS performance/export validation before shipping dependency is locked.
 
-Candidate chunk dimensions and voxel scale remain benchmark decisions. Never lock a chunk size merely because it is conventional.
+`WorldChunk` is not the same thing as the voxel plugin's smaller data/mesh blocks.
 
-Runtime edit flow:
+At 0.5 m resolution a 64 m WorldChunk spans 128^3 sample positions, so Black Island never treats it as one monolithic dense remesh/collider allocation.
 
-`action/tool -> terrain probe -> edit density/material -> dirty affected chunk(s) -> background-safe mesh-data preparation where supported -> main-thread scene/physics apply -> persistent terrain delta`
+## Chunk residency
 
-Edits at chunk boundaries must dirty all neighboring chunks needed to rebuild a seamless surface.
+Initial near region:
 
-## Smooth material presentation
+- player WorldChunk + 8 horizontal neighbors (3x3 horizontal ring);
+- vertical residency is sparse and based on actual terrain/cavity/edited data rather than loading a full 3x3x3 dense cube;
+- pure air is implicit;
+- untouched deep solid terrain stays generator-defined until required.
 
-Logical material ownership is discrete, but material boundaries should not normally render as square seams.
+If mobile profiling remains stable around 60 FPS under representative load, add outer chunk rings using lower LOD/reduced prop simulation.
 
-The visual layer may combine:
+Render distance is expressed as chunk rings/distance, not one fixed total count.
 
-- neighboring voxel material weights;
-- topology/auto-tile-like neighborhood classification;
-- smooth transition masks;
-- controlled edge noise/distortion;
-- material-specific blend rules.
+## Internal mesh/collision blocks
 
-Equal materials visually merge. Different compatible materials transition softly across their shared boundary while gameplay remains cell-precise.
+Use smaller blocks inside WorldChunks.
 
-Examples include grass-to-path, grass-to-tilled-soil, dry-to-wet soil and biome material transitions.
+Initial trial:
 
-## Farming and local painting
+- surface mesh blocks: 32 voxels (~16 m at 0.5 m scale) to reduce draw calls;
+- compare 16-voxel (~8 m) blocks in highly destructible cave scenarios;
+- collision only in gameplay-near regions/nearest required LOD;
+- local edits rebuild affected blocks/borders, never the entire 64 m WorldChunk.
 
-Hoe/path/farming actions target the authoritative terrain cell/voxel surface. A gameplay action may change a material/state without changing terrain density.
+## Terrain edits
 
-Examples:
-
-- `GRASS -> TILLED_DRY`
-- `TILLED_DRY -> TILLED_WET`
-- `GRASS -> PATH_DIRT`
-
-The renderer updates only the local terrain region required by the material change.
-
-## Save model
-
-World generation is deterministic from a seed. Prefer saving:
-
-`generated base(seed) + terrain/material deltas + persistent object/world state`
-
-rather than serializing every unchanged voxel.
-
-The delta format must support compaction/migration because long-running saves may accumulate many edits.
-
-## Island generation pipeline
-
-`Seed -> IslandProfile -> base island volume/mask -> macro elevation -> coast shaping -> hills/mountains -> hydrology -> biome allocation -> village candidates -> POIs/resources -> prop/vegetation pass -> validation -> accepted world`.
-
-`IslandProfile` constrains valid river/lake arrangements before generation so noise does not dictate design.
-
-## Village placement
-
-Candidate scoring considers at least buildable area, flatness/slope, water proximity, dangerous terrain, cave/POI spacing and required expansion room.
-
-## Biomes and props
-
-The surface island will support biome-driven terrain materials, vegetation and prop generation. Exact prop generation, foliage suppression/regrowth, biome transition rules and object persistence are not yet locked and are tracked as an open design task.
-
-The architecture must support larger future islands with multiple major/minor biomes without requiring a world-format rewrite.
-
-## Runtime streaming
-
-Separate:
-
-- **data layer** — voxel chunks, persistent entities, biome/prop data;
-- **presentation layer** — terrain meshes, foliage instances, props, VFX;
-- **simulation layer** — NPC/world simulation state independent of whether presentation is loaded.
-
-Worker threads may generate/decode/prepare pure data. SceneTree mutations and unsafe engine interactions are applied on the main thread.
-
-Avoid churn from creating/freeing thousands of Nodes. Use pooling and batched/instanced presentation for repeated objects where appropriate.
-
-## Construction relationship
-
-`BuildGrid` is integer-aligned to terrain but independent from terrain voxels. Foundations/cells, shared wall edges, ceilings/platforms and support sockets live in the building domain. Terrain supplies solidity/height/contact information.
-
-Detailed structural rules live in `docs/design/BUILDING_AND_STRUCTURAL_SUPPORT.md`.
-
-## Mines / cave floors
-
-The mine/cave is not physically carved under the island as one continuous underground world. Each floor is a separate generated world state/scene and may contain its own underground biomes, voxel terrain, props and lighting rules.
+Project-owned `TerrainEditService` validates and applies density/material operations.
 
 Flow:
 
-`surface cave portal -> dark transition -> preloaded spawn envelope -> CaveFloor N -> stream remaining sectors`.
+`action -> 3D probe -> validate editable region -> mutate SDF/material -> dirty local blocks -> persist delta -> notify water/foliage/navigation/build/farming -> budgeted presentation/collision update`
 
-Near a descent/return portal, begin preloading the destination spawn envelope. If not ready when crossing, hold the masking/loading transition until the destination is safe to reveal.
+Godot SceneTree and unsafe render/physics mutations remain main-thread work. Pure generation/meshing uses worker/plugin jobs where safe.
 
-Maintain a small hot cache of adjacent/recent floors when memory budget permits.
+## Terrain materials
 
-`MineFloorData` remains authoritative even when the floor Scene is unloaded, including destroyed terrain/cells, containers, special NPCs, important enemies, exits, POIs and events.
+Terrain material ownership is discrete, but compatible boundaries blend visually.
+
+Presentation may combine:
+
+- material weights;
+- neighbor topology;
+- smooth masks;
+- controlled edge noise;
+- biome transition weights.
+
+Equal materials merge cleanly; different materials should not normally form straight `| |` cell boundaries.
+
+Paths are terrain painting.
+
+Farming is **not** stored as a generic `TILLED_*` terrain material state anymore. A `FarmPlotState` is a dedicated gameplay object anchored to the 1 m grid/surface while underlying terrain remains voxel-authoritative. See `FARMING_AND_FOLIAGE.md`.
+
+## Save model
+
+Base terrain is deterministic from:
+
+`world seed + IslandProfile + generation version`
+
+Persist primarily:
+
+- modified voxel/data blocks;
+- material edits;
+- structures;
+- suppression/prop mutations;
+- FarmPlots;
+- persistent entities;
+- relevant water deviations;
+- world progression.
+
+Do not serialize untouched generated terrain.
+
+## Island generation pipeline
+
+`Seed -> IslandProfile -> base island volume/mask -> macro elevation -> coastline -> broad hills -> hydrology -> biome weights -> village candidates -> POIs -> resources/props -> validation -> accepted world`
+
+Noise provides fields; design profiles/validators determine acceptable geography.
+
+## Surface biome direction
+
+Chapter 1 surface direction:
+
+- beach/tropical coast around shoreline;
+- open plains/tropical interior transition;
+- central/appropriate forest regions;
+- broad gentle elevation/hills mixed with flatter buildable areas.
+
+Detailed biome/prop rules: `docs/design/BIOMES_AND_PROP_GENERATION.md`.
+
+## World physical size
+
+Design target is a medium-large island whose direct point-to-point traversal feels approximately 20-30 minutes at ordinary player travel speed.
+
+Do not hard-code island diameter before the player motor's sustained travel speed is tuned.
+
+Use:
+
+`target direct distance = measured sustained travel speed x target traversal seconds`
+
+Then validate that generated paths/terrain obstacles produce the intended real gameplay time.
+
+World-generation profile stores physical size so Chapter 1 can use a smaller iteration profile without changing save architecture.
+
+## Ocean and world boundary
+
+The rendered ocean continues well beyond the playable island boundary to preserve horizon/depth.
+
+Far ocean is cheap presentation, not fully simulated dynamic water.
+
+A distant decorative island/land silhouette may be used as noninteractive horizon dressing through an impostor/very-low-detail mesh.
+
+### Soft boundary / treadmill zone
+
+Before the absolute world limit, an outer ocean zone gradually suppresses outward logical movement while continuing water animation, swim motion and camera feedback so the player experiences "travel" without actually advancing into unbounded world coordinates.
+
+Implementation should use smooth radial movement attenuation/re-centering/presentation tricks rather than visible teleport snaps.
+
+After approximately 5 continuous real minutes attempting to travel outward in this zone, the character may show a small thought/speech line such as a localized equivalent of "Am I actually getting anywhere?".
+
+### Hard fail-safe
+
+Beyond the soft zone, keep an invisible absolute collision/bounds safety layer so physics bugs cannot send the player into numerical/streaming limbo.
+
+No build/loot/important gameplay content is placed in the soft/hard boundary region.
+
+## Water
+
+Dynamic water is a separate sparse simulation aligned with terrain/build coordinates.
+
+- ocean: mostly analytic/static sea field;
+- rivers/lakes: generated sleeping water regions;
+- local edits: activate sparse flow cells;
+- currents can affect actors;
+- waterfalls are flow classifications/presentation;
+- simulation runs at a lower fixed rate than rendering and sleeps stable cells.
+
+Detailed rules: `WATER_AND_HYDROLOGY.md`.
+
+## Props and foliage
+
+Props are generated deterministically per biome/chunk using stable spawn IDs for persistent harvestables and batched instancing for disposable clutter.
+
+Structure/path/FarmPlot/terrain edits update local suppression masks rather than regenerating all world props.
+
+Grass can regrow after suppression is removed if the underlying biome/material is eligible.
+
+## Runtime streaming layers
+
+Keep distinct:
+
+- **data** — voxel/edit blocks, persistent entities, biome candidates, water state;
+- **presentation** — meshes, foliage MultiMeshes, props, VFX;
+- **simulation** — gameplay state that may continue or advance independently of loaded presentation.
+
+Worker jobs prepare pure data; main thread applies SceneTree/render/physics changes within time budgets.
+
+## Navigation
+
+Navigation data is derived from terrain/build state rather than treating the render mesh as the only truth.
+
+Local terrain/build changes dirty navigation cells/regions. Do not globally rebake the whole island after every foundation or terrain edit.
+
+## Caves
+
+Cave floors are separate generated worlds, not a continuous volume under the island.
+
+Default floors are **ephemeral per CaveRun**. They can preserve temporary state while the player remains in the run/backtracks, but ordinary unanchored floors may reroll after returning to the surface.
+
+A rare `CaveAnchorTotem` placeholder system can convert a floor into persistent anchored state. Anchors progress consecutively and expose elevator stops.
+
+See `docs/design/CAVES_AND_ANCHOR_PROGRESSION.md`.
+
+## Cave transitions
+
+`surface portal -> preload floor spawn envelope -> dark/loading transition -> reveal safe destination -> stream remaining sectors`
+
+Do not require full-floor generation before entry.
+
+Hot-cache adjacent floors during a run when memory allows.
+
+## Build height
+
+Initial construction cap is approximately +100 m relative to world reference/sea level. Placement beyond it fails deterministically.
