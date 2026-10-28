@@ -20,6 +20,7 @@ Black-Islands/
 │   │   ├── WORLD_STREAMING.md
 │   │   ├── WATER_AND_HYDROLOGY.md
 │   │   ├── LPC_PIPELINE.md
+│   │   ├── SAVE_AND_MIGRATION.md
 │   │   ├── NPC_AI.md
 │   │   └── CONTENT_TOOLS.md
 │   ├── decisions/
@@ -32,13 +33,24 @@ Black-Islands/
 │   └── design/
 │       ├── PLAYER_LPC_AND_3D_PRESENTATION.md
 │       ├── PLAYER_COMBAT.md
+│       ├── COMBAT_STATS_AND_LEVEL_SCALING.md
+│       ├── WEAPON_FAMILIES_AND_COMBOS.md
 │       ├── CHARACTER_CREATOR.md
 │       ├── BUILDING_AND_STRUCTURAL_SUPPORT.md
+│       ├── STRUCTURE_TIERS_AND_LARGE_BUILDS.md
 │       ├── FARMING_AND_FOLIAGE.md
+│       ├── HARVESTING_AND_RESOURCES.md
 │       ├── BIOMES_AND_PROP_GENERATION.md
+│       ├── SURFACE_BIOME_CONTENT_TABLES.md
+│       ├── WEATHER_DAY_NIGHT_AND_FIRE.md
+│       ├── WORLD_ECOLOGY_AND_OFFSCREEN_SIMULATION.md
 │       ├── INVENTORY_AND_CRAFTING.md
 │       ├── MOBS_CORPSES_AND_LOOT.md
+│       ├── INITIAL_MOBS_AND_RESOURCES.md
 │       ├── CAVES_AND_ANCHOR_PROGRESSION.md
+│       ├── CAVE_BIOMES_AND_GENERATION.md
+│       ├── NPC_NAMES_AND_JOBS.md
+│       ├── VISUAL_RENDERING_DIRECTION.md
 │       └── OPEN_DESIGN_CHECKLIST.md
 │
 ├── agents/
@@ -52,7 +64,9 @@ Black-Islands/
 │   └── review/
 │
 ├── research/
-│   └── README.md
+│   ├── README.md
+│   ├── WATER_SYSTEM_REFERENCES.md
+│   └── ARK_HARVESTING_REFERENCES.md
 │
 ├── scripts/
 │
