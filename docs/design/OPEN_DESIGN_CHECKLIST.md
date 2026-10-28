@@ -1,280 +1,448 @@
 # Open Design Checklist
 
-This is the current list of systems/decisions that still need a dedicated design/technical pass or implementation validation before Black Island's Chapter 1 architecture can be considered broadly locked.
+This list contains the remaining design/technical decisions or implementation validations after the current world/player systems lock.
 
-Items are grouped by priority/dependency rather than implementation order.
+## P0 — world foundation validation
 
-## P0 — blocks core world/player implementation
+### 1. Voxel Tools mobile proof
 
-### 1. Voxel terrain implementation profile
+Architecture/profile is now defined in `VOXEL_WORLD_IMPLEMENTATION.md`:
 
-Architecture is locked as volumetric voxel data + smooth visual surface, but benchmarks must choose:
+- 0.5 m terrain voxel target;
+- 1 m BuildCell;
+- 64 m cubical project WorldChunks;
+- vertical chunking;
+- 3x3 horizontal near ring;
+- smaller internal mesh/data blocks;
+- smooth SDF/Transvoxel direction.
 
-- voxel world scale/resolution;
-- chunk dimensions;
-- smooth meshing implementation/library strategy;
-- collision regeneration policy;
-- LOD strategy;
-- memory budgets for target phones;
-- exact delta persistence/compaction format;
-- terrain edit radius/shape limits by tool.
+Still required:
 
-### 2. Biome + prop generation
+- choose Module/custom Godot build vs GDExtension shipping path;
+- Android + iOS export validation;
+- benchmark 32-vs-16 voxel mesh blocks;
+- final LOD distances;
+- collision update delay/budget;
+- edit latency target;
+- hard terrain-memory budget;
+- terrain delta compaction benchmark.
 
-Need a dedicated spec for both surface and cave floors:
+### 2. Water implementation proof
 
-- biome definition/data model;
-- biome masks and transition zones;
-- prop spawn rules per biome;
-- trees, rocks, bushes, grass, flowers, debris and resource nodes;
-- deterministic seed/spawn IDs;
-- density/scatter/cluster algorithms;
-- slope/height/water/material constraints;
-- persistent vs disposable props;
-- streaming/pooling/MultiMesh strategy;
-- harvesting/destruction persistence;
-- regeneration/regrowth rules;
-- rare/special biome props and POIs.
+Behavior/architecture is defined in `WATER_AND_HYDROLOGY.md`.
 
-### 3. Grass/foliage response to world edits
+Still required:
 
-Need explicit rules for:
+- prototype sparse active water grid;
+- choose exact amount precision/cell layout;
+- benchmark 10/15/20 Hz simulation;
+- sleeping/stability thresholds;
+- river macro-flow integration;
+- waterfall mesh/VFX implementation;
+- current-force tuning;
+- save/unload behavior under unsettled water;
+- mobile quality tiers.
 
-- foundation placed on grass;
-- path/farm material painted over grass;
-- terrain dug/raised below foliage;
-- foliage suppression volume around structures;
-- whether removed grass regrows after demolition;
-- grass blending at build/path boundaries;
-- local update rather than regenerating whole biome.
+### 3. Island physical profile
 
-### 4. Player movement/camera feel
+Once PlayerMotor sustained movement speed is playable:
 
-LPC/3D presentation is defined, but actual controller still needs:
+- derive island diameter for 20-30 minute direct traversal target;
+- determine coast width;
+- plains/forest/elevation proportions;
+- village candidate constraints;
+- travel corridor density;
+- world soft-boundary radius/hard-boundary radius;
+- validate distant ocean/decorative-island horizon.
 
-- movement acceleration/deceleration;
-- run/stamina behavior;
-- slope handling;
-- step height and terrain traversal;
-- camera angle/distance/FOV or orthographic strategy;
-- shoulder vs more Cult-of-the-Lamb-like camera decision;
-- camera rotation rules;
-- obstruction handling;
-- build-mode top-down camera transition;
-- touch gesture mapping.
+### 4. Island generation algorithms/content
 
-### 5. Interaction/targeting model
+Architecture exists, but still needs concrete generator parameters for:
 
-Define priority between terrain, structures, NPCs, crops, drops and combat targets under the center probe/crosshair, including mobile aim assistance and contextual actions.
+- coast shape;
+- broad hills/ridges;
+- river/lake count/placement;
+- beaches;
+- forest clearings;
+- biome masks;
+- POIs;
+- village/initial spawn;
+- cave entrance;
+- generator validation/retry budget.
 
-## P1 — Chapter 1 core gameplay
+## P0 — player foundation
 
-### 6. Inventory final UX
+### 5. PlayerMotor tuning
 
-Core slot/stack model is defined. Still needs:
+Camera direction is locked: angled gameplay + third-person Build Mode, no baseline first-person.
 
-- exact slot counts;
-- equipment slots;
-- backpack progression;
-- drag/drop/touch gestures;
-- split stack UX;
+Still tune:
+
+- acceleration/deceleration;
+- base walk/run speeds;
+- max slope;
+- step/snap values;
+- falling;
+- swim movement;
+- current resistance;
+- stamina regeneration/tool costs;
+- camera pitch/yaw/distance/FOV vs orthographic trial;
+- obstruction fade thresholds;
+- mobile joystick response/dead zones.
+
+### 6. InteractionTargeter
+
+Define exact priority/selection policy among:
+
+- combat target;
+- NPC;
+- corpse;
+- death/drop bag;
+- door/workbench/chest;
+- crop/FarmPlot;
+- harvestable prop;
+- structure socket;
+- terrain voxel;
+- water.
+
+Need contextual target cycling/aim assist rules for touch.
+
+## P1 — world ecology/content
+
+### 7. Resource gathering
+
+Technical system still needs concrete rules for:
+
+- tree HP/progress;
+- rock/ore-vein HP/progress;
+- tool tag/tiers;
+- stamina costs;
+- hit feedback;
+- stump/remnant policy;
+- regrowth timing;
+- surface resource rarity;
+- cave ore tables;
+- interaction between prop resources and destructible voxel ore/terrain.
+
+### 8. Prop content tables
+
+Biome generator architecture is locked. Need actual Chapter 1 content definitions/densities for:
+
+- coastal props;
+- plains props;
+- forest props;
+- trees;
+- bushes/flowers;
+- rocks;
+- resource nodes;
+- cave crystals/mushrooms/trees;
+- rare props/POIs.
+
+### 9. Farming content/balance
+
+FarmPlot lifecycle is locked. Need:
+
+- Chapter 1 crop/seed list;
+- exact growth days;
+- yield tables;
+- seed prices/economy;
+- fertilizer items/tier values;
+- rain intensity thresholds;
+- whether specific crops tolerate dryness differently;
+- seasons if Chapter 1 uses them.
+
+### 10. Weather/day-night
+
+Need dedicated pass for:
+
+- day length;
+- rain/storm scheduling;
+- cloud/lighting transitions;
+- heavy-rain farming effects;
+- night mob state changes/spawns;
+- save/time progression;
+- weather impact on water where practical.
+
+## P1 — building/content
+
+### 11. Structure catalog
+
+Support rule is locked at baseline two-cell reach from real grounded support provenance.
+
+Need actual Chapter 1 pieces:
+
+- foundations;
+- ceilings/platforms;
+- walls;
+- door frames/doors;
+- window walls;
+- pillars;
+- stairs/ramps;
+- roofs if in Chapter 1;
+- workbench/chests;
+- costs, HP and repair values;
+- collapse debris/refund rules.
+
+Wood vs stone changes durability/cost/visual, not support reach.
+
+### 12. Build Mode feedback
+
+Need final:
+
+- grid rendering;
+- socket highlights;
+- valid/invalid ghost language;
+- invalid reason cue;
+- support-root visualization/debug mode;
+- rotation controls;
+- demolish preview;
+- mobile placement gestures.
+
+## P1 — inventory/economy
+
+### 13. Remaining inventory UX
+
+Core values are locked: 20-slot 5x4 player inventory, 8 hotbar, five equipment slots and stack defaults.
+
+Still decide:
+
+- backpack upgrade curve;
+- chest slot counts/tier progression;
 - sort/filter/search;
-- quick transfer;
-- chest/container interactions;
-- drop confirmation rules for valuable items.
+- valuable-item drop confirmation;
+- exact responsive dual-pane layout;
+- quick transfer direction rules when >2 valid containers exist;
+- container naming/ownership UI.
 
-### 7. Craft queue remaining edge cases
+### 14. Crafting content
 
-Need to lock:
+Transaction/queue behavior is locked, including permanent downward clamp and timer reset on load/reorder.
 
-- whether a queue quantity that shrank due to missing resources can automatically regrow if resources return;
-- active timer behavior after queue reorder;
-- station-based crafting vs player crafting;
-- offline/save-load handling of partially elapsed unit timer;
-- queue behavior if a recipe/definition migrates between game versions.
+Still define:
 
-### 8. Structure catalog and exact support constants
+- player-vs-workbench recipe sets;
+- workstation logistics radius;
+- output destination priority details per station;
+- recipe unlock progression;
+- recipe migration tests;
+- transaction stress/fuzz tests for anti-duplication.
 
-Structural algorithm is defined. Need content/balance values for:
+### 15. Currency/economy
 
-- foundation size;
-- max initial free horizontal span;
-- piece loads;
-- root/pillar/wall capacities;
-- wood/stone/reinforced tier differences;
-- vertical stack limits;
-- collapse timing/debris/refunds;
-- build/demolish cost rules;
-- ramps/stairs/doors/windows/roof pieces for Chapter 1.
+Need wallet/currency sources/sinks, Farmer shop behavior, prices and village economy integration.
 
-### 9. Farming
+## P1 — combat
 
-Need full lifecycle spec:
+### 16. Weapon/moveset content
 
-- tilling targeting;
-- seed placement;
-- watering;
-- wetness duration;
-- crop stages;
-- seasons/biome influence if any;
-- harvest yield;
-- fertilizer;
-- trampling/damage;
-- interaction with terrain material blending.
+Combat architecture is locked. Need concrete Chapter 1 definitions for:
 
-### 10. Resource gathering
+- sword;
+- axe/combat axe if applicable;
+- hammer/mace;
+- daggers;
+- bow;
+- staff/wand;
+- guarded weapon/shield packages;
+- normal/heavy combo graphs;
+- weapon skills;
+- cooldowns/resource costs.
 
-Define trees/rocks/ore/resources:
+### 17. Ultimate system content
 
-- hit points vs per-hit progress;
-- tool requirements/tiers;
-- visual hit feedback;
-- drops;
-- stump/remnant behavior;
-- regrowth/respawn;
-- relationship to voxel terrain vs prop entities.
+Need:
 
-## P1 — World generation/content
+- boss Ultimate drop/unlock probability/rules;
+- equip UX;
+- charge/cooldown model;
+- first Chapter 1 Ultimates;
+- boss stagger exceptions.
 
-### 11. Surface biome set
+### 18. Combat feel validation
 
-Choose Chapter 1 biome families, palettes and gameplay differences. Long-term island architecture must allow several major biomes plus smaller transition/special biomes.
+Tune:
 
-### 12. Cave/mine biome set
-
-The mine is treated as multi-floor cave exploration. Need biome families such as possible bioluminescent, dark/hostile, gothic or other unusual underground zones, with generation/material/lighting/prop/enemy rules.
-
-### 13. POI generation
-
-Need generation/validation for ruined village, cave entrance, shrines/ruins, special resource pockets and future landmarks.
-
-### 14. Hydrology with voxel terrain
-
-Revisit rivers/lakes under volumetric terrain:
-
-- generation;
-- shore blending;
-- water volumes;
-- channels made by players;
-- whether water dynamically propagates or is initially mostly authored/generated volumes;
-- performance constraints.
-
-## P1 — Player/combat
-
-### 15. Combat controller
-
-Data model exists conceptually; still needs exact Chapter 1 implementation of:
-
-- lock/no-lock targeting;
-- dodge;
-- combo input buffer;
-- weapon swap timing;
+- dodge distance/i-frames;
+- parry window;
+- guard arc/damage reduction/break recovery;
 - hitstop;
-- knockback;
-- invulnerability windows;
-- enemy telegraphs;
-- mobile controls.
+- knockback/stagger;
+- aim assist;
+- heavy-aim hold threshold;
+- mobile button layout/input buffering.
 
-### 16. Tool/action semantic animation map
+## P1 — mobs/loot
 
-Compile exact mappings/fallbacks between Black Island actions and the verified LPC catalog.
+### 19. Mob content definitions
 
-## P1 — LPC/content pipeline
+Disposition framework is locked. Need concrete mob list and rules:
 
-### 17. LPC pipeline implementation + profiling
+- passive fauna;
+- defensive passive fauna;
+- territorial neutrals;
+- night aggressors;
+- pack-threshold aggressors;
+- cave biome pools;
+- boss profiles.
 
-The architecture is now documented in `docs/architecture/LPC_PIPELINE.md`. Remaining work is implementation/validation:
+### 20. Corpse/loot balance
 
-- upstream snapshot/compiler proof of concept;
-- compiled catalog schema;
-- stable asset ID/alias migration tests;
-- verified compatibility matrix generation;
-- custom/oversized animation import tests;
-- multi-channel recolor composition benchmarks;
-- credit/license registry generation;
-- live catalog/delta update prototype;
-- mobile cache/memory profiling;
-- community appearance schema/cache prototype later.
+Need exact:
 
-### 18. Character creator UX
+- decomposition durations;
+- knife/axe/sword harvest ratios;
+- meat/hide/etc. yields;
+- delicate loot tables;
+- death-bag lifetime/persistence;
+- player death inventory rules;
+- drop-bag merge/cleanup rules.
 
-Need final categories, randomization strength, body options, recolor UI, locks, wardrobe behavior and community-skin eligibility score.
+## P1 — caves
 
-## P2 — Village/NPC/content expansion
+### 21. Cave generation
 
-### 19. Procedural NPC appearance
+Lifecycle/biomes/anchor progression are defined. Need:
 
-Only anti-break compatibility should be strict. Need exact light contextual/random weighting without over-curating away randomness.
+- floor topology generator;
+- descent placement rules;
+- difficulty/depth curve;
+- ore tables;
+- standard/darkness/luminous biome frequency;
+- boss/special floor scheduling;
+- run reset trigger details;
+- hot-cache memory budget.
 
-### 20. Names
+### 22. Cave anchor totem
 
-Create/generate large first-name and surname pools and define:
+Need:
 
-- masculine/feminine/neutral pools where appropriate;
-- first-only/surname-only/full-name probabilities;
-- uniqueness/repetition policy within one save;
-- localization/future culture support.
+- final player-facing name;
+- recipe/drop/source;
+- rarity;
+- placement requirements;
+- whether activated anchors can be destroyed;
+- elevator construction/UX/cost.
 
-### 21. NPC jobs and village economy
+## P1 — LPC/player presentation
 
-Skills/aptitudes exist conceptually, but production/resource/job loops need a dedicated simulation pass.
+### 23. LPC pipeline implementation + profiling
 
-## P2 — Presentation
+Architecture is locked in `LPC_PIPELINE.md`; still implement/test:
 
-### 22. Final world art direction
+- upstream compiler;
+- stable catalog schema;
+- aliases/migration;
+- compatibility matrix;
+- custom/oversized clips;
+- recolor composer;
+- credit/license registry;
+- live catalog/deltas;
+- cache memory limits.
 
-Need lock for:
+### 24. Character creator visual UX
 
-- cartoon/pixel-art hybrid proportions;
-- terrain material style;
-- outlines;
-- lighting/shadows;
-- sprite filtering;
-- prop density;
-- VFX language;
-- day/night palette treatment.
+Layout/category behavior is defined. Still need:
 
-### 23. Build-mode feedback
+- final tab icons/order;
+- thumbnail style/cache limit;
+- name length/validation;
+- clothing unlock presentation;
+- community-upload eligibility threshold;
+- final wardrobe restrictions.
 
-Need exact ghost colors/outline, grid visibility, invalid reason presentation, socket highlights, support visualization and demolition preview.
+### 25. Name generation
 
-## P2 — Technical/platform
+Create large initial first-name/surname pools behind `NameGenerator` interface.
 
-### 24. Save migration/versioning
+Later add syllabic generator without changing NPC identity callers.
 
-Stable IDs and world deltas need formal schema/version migration rules before content volume grows.
+## P1 — village/NPC systems
 
-### 25. Mobile performance budgets
+### 26. Initial survivor implementation
 
-Lock target budgets for:
+Lock detailed content for:
 
-- terrain chunks;
-- draw calls;
-- active NPCs;
-- cached LPC textures;
-- foliage instances;
-- memory;
-- frame time;
-- background generation work.
+- Farmer (seed supply/shop/tutorial);
+- Explorer/Adventurer;
+- Miner (opening can fail/die);
+- opening rescue timing/failure state;
+- impact of Miner death on early economy/tutorial.
 
-### 26. Networking/community appearance provider
+### 27. Jobs/economy/relationships
 
-Not Chapter 1 core. Keep abstraction-friendly architecture; later decide HTTP vs WebSocket transport, moderation/privacy, batching/cache and authoritative multiplayer boundaries.
+Existing NPC architecture still needs concrete Chapter 1 job loops, schedules, skill progression and social content.
 
-## Already substantially locked
+## P2 — presentation/technical
 
-The following should not be reopened casually without an ADR:
+### 28. Final art/render profile
 
-- `game/` is the Godot project root;
-- Godot 4.7.2 target;
-- surface terrain is voxel-authoritative with smooth presentation;
-- construction uses separate square build grid/shared edges/sockets;
-- structural support is graph/provenance/capacity based;
-- unsupported structures can collapse;
-- mines/caves are separate floor worlds;
-- LPC catalog architecture and local composition/cache boundaries are defined;
-- LPC characters are composed/cached and presented in 3D rather than persistent per-layer Sprite3D stacks;
-- crafting is per-unit queued and transactional;
-- no inventory weight system;
-- game remains functional offline;
-- optional external LLM is enrichment, never authoritative world brain.
+Direction is cartoon/pixel-art hybrid. Still lock:
+
+- terrain shader palette/materials;
+- lighting/environment settings;
+- shadow distance/resolution;
+- LPC texture filtering;
+- outline/highlight shader;
+- VFX density;
+- day/night color treatment;
+- mobile renderer/quality presets.
+
+Foliage should use mipmaps with alpha-test coverage preservation and primarily alpha-scissor/cutout where art permits.
+
+### 29. Mobile performance budgets
+
+Set hard budgets after first integrated benchmark:
+
+- total memory;
+- voxel data;
+- terrain mesh/collision;
+- foliage instances/draw calls;
+- LPC texture cache;
+- active mobs/NPCs;
+- water active cells;
+- frame time/worker/main-thread integration;
+- thermal sustained test.
+
+### 30. Save schema/migration
+
+Need formal schema versions/migrations for:
+
+- world voxel deltas;
+- inventory stacks;
+- structures/support graph reconstruction;
+- FarmPlots;
+- cave anchors;
+- LPC appearance IDs;
+- NPC identities.
+
+### 31. Future networking/tribes/community
+
+Not Chapter 1 core.
+
+Keep ownership and inventory transactions compatible with future authoritative server/host, tribe containers/structures, PvP/raids and community appearance service.
+
+## Substantially locked
+
+Do not reopen casually without an ADR/design revision:
+
+- Godot 4.7.2;
+- `game/` project root;
+- smooth volumetric voxel terrain;
+- 0.5 m terrain voxel / 1 m build-cell initial scale;
+- 64 m cubical WorldChunk addressing including vertical chunks;
+- separate build grid/shared edges/sockets;
+- two-cell baseline horizontal support from real roots with provenance inheritance;
+- wood/stone durability differs but structural reach does not;
+- unsupported structure collapse with alternate-root recomputation;
+- angled gameplay camera + third-person Build Mode; no baseline first person;
+- dynamic sparse local water architecture;
+- FarmPlot as dedicated state rather than crop state inside terrain voxel;
+- biome-driven deterministic prop generation/suppression;
+- 20-slot inventory / 8 hotbar / 5 equipment slots;
+- atomic multi-inventory transaction coordinator;
+- per-unit five-slot craft queue;
+- cave floors ephemeral by default, persistent only through progression anchors;
+- mob disposition + corpse harvesting/death-bag model;
+- normal/heavy/skill/Ultimate/dodge/guard-parry combat architecture;
+- LPC catalog/composition architecture;
+- game remains fully functional offline.
