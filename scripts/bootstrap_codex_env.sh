@@ -116,9 +116,11 @@ if [[ "$node_ok" == false ]]; then
 fi
 
 # Always expose a deterministic repo-local entry point for wrappers.
-ln -sf "$(command -v node)" "$BIN/node"
-ln -sf "$(command -v npm)" "$BIN/npm"
-ln -sf "$(command -v npx)" "$BIN/npx"
+# Resolve existing repo-local links before replacing them on repeated runs.
+# Otherwise a PATH already containing .tools/bin produces self-referencing links.
+ln -sf "$(readlink -f "$(command -v node)")" "$BIN/node"
+ln -sf "$(readlink -f "$(command -v npm)")" "$BIN/npm"
+ln -sf "$(readlink -f "$(command -v npx)")" "$BIN/npx"
 export PATH="$BIN:${TOOLS}/node/bin:${HOME}/.local/bin:$PATH"
 
 node_major="$(node -p 'process.versions.node.split(".")[0]')"
@@ -248,7 +250,9 @@ if [[ ! -f "$ROOT/game/project.godot" ]]; then
   exit 1
 fi
 
-"$GODOT_BIN" --headless --editor --path "$ROOT/game" --quit-after 2 >"$LOGS/godot-bootstrap.log" 2>&1 || {
+# --import waits for the initial import to finish; a fixed frame count can quit
+# while the first scan/import is still running.
+"$GODOT_BIN" --headless --path "$ROOT/game" --import -- --godot-mcp-no-bridge >"$LOGS/godot-bootstrap.log" 2>&1 || {
   echo "Godot headless editor validation failed. See $LOGS/godot-bootstrap.log" >&2
   cat "$LOGS/godot-bootstrap.log" >&2
   exit 1

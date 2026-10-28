@@ -42,6 +42,41 @@ The bootstrap is intentionally Linux-first because Codex cloud environments are 
 
 Downloaded tools and generated caches are local environment artifacts and must not be treated as game source.
 
+### Reusable P00 validation
+
+From the repository root, after the bootstrap:
+
+```bash
+node scripts/validate_mcp.mjs --install-addon
+bash scripts/validate_bootstrap.sh
+```
+
+The Node command speaks MCP JSON-RPC over stdio to the two configured wrappers. Its first engine
+operation is `godot_status`; `--install-addon` explicitly calls the pinned server's `addon.install`
+operation, which installs/enables the development plugin in `game/project.godot`. The downloaded
+`game/addons/godot_mcp/` directory stays ignored. A fresh checkout needs this step before the final
+editor/import gate, because the development addon is not vendored in Git. Restart an already-open
+editor after installing/enabling its plugin.
+
+The validator proves a live bridge, a Serena query against the permanent voxel capability fixture,
+and zero fixture diagnostics/editor errors. It exits nonzero on failure. It does not enable eval.
+Use it as the single MCP operator while checking the environment; close other clients first.
+Without `--install-addon`, it validates an already-prepared workspace.
+
+`validate_bootstrap.sh` checks the repository boundary, actual versions, pinned archive hashes,
+completed import, a short headless editor open and the in-memory SDF/Transvoxel capability probe.
+Logs/JSON evidence stay in `.tools/logs/`. Import commands disable only the development bridge
+using its supported `--godot-mcp-no-bridge` flag, so a one-shot process cannot replace a live
+editor's session file. No scene/player/island or mobile performance is implied by these checks.
+
+Serena 2.1.0 requires local trust for `game/` before applying project-specific LSP settings.
+Set only this project's path in `trusted_project_path_patterns` in the local Serena configuration
+(`serena config edit`); do not commit a machine's trust file. Its default GDScript backend also uses
+6008, but successful defaults alone are not proof that trusted project settings were applied.
+
+See `harness/build/S01-P00.md` and `research/VOXEL_TOOLS_INTEGRATION.md` for executed evidence,
+the optional failing transition-helper reproduction, export limitations and the P01/P02 gates.
+
 ## Codex MCP configuration
 
 Project-local configuration is committed at `.codex/config.toml`.
@@ -73,7 +108,11 @@ Launcher: `scripts/mcp/serena_mcp.sh`
 
 Serena is configured for `game/` through `game/.serena/project.yml` and uses Godot's built-in GDScript LSP on `127.0.0.1:6008`.
 
-If no Godot editor is already serving LSP, the wrapper starts a headless Godot editor for the project and waits for the port before launching Serena.
+If no Godot editor is already serving LSP, the wrapper starts a headless Godot editor for the project
+with explicit `--lsp-port 6008` and waits for the port before launching Serena. It also supplies the
+pinned MCP addon's matching `--godot-mcp-lsp-port=6008` metadata, so the bridge reports the same port
+even when the user's editor settings default to 6005. An existing listener must belong to `game/`;
+do not share the port with another project's editor.
 
 Primary responsibilities:
 

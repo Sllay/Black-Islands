@@ -1,19 +1,37 @@
-project_name: "black-island-godot"
-language_servers: ["gdscript"]
-encoding: "utf-8"
-language_backend: "LSP"
-agent_interface: "tools"
+# Serena 2.1.0 defaults are explicit so startup does not rewrite tracked config.
+project_name: black-island-godot
+language_servers:
+- gdscript
+encoding: utf-8
+language_backend: LSP
+agent_interface: tools
 ignore_all_files_in_gitignore: true
-ls_workspace_folders: ["."]
+ls_workspace_folders:
+- .
 ls_additional_workspace_folders: []
 ls_specific_settings:
   gdscript:
-    host: "127.0.0.1"
+    host: 127.0.0.1
     port: 6008
     request_timeout: 20.0
 ignored_paths:
-  - ".godot/**"
-  - "builds/**"
-  - "export/**"
+- .godot/**
+- builds/**
+- export/**
 read_only: false
-initial_prompt: "Black Island is a Godot 4.7.2 project. Prefer Serena symbol-aware retrieval/refactoring for existing GDScript. Do not rewrite an entire script for a small localized change when a semantic edit is available. Follow the repository AGENTS.md contract and phase context packets."
+initial_prompt: Black Island is a Godot 4.7.2 project. Prefer Serena symbol-aware retrieval/refactoring for existing
+  GDScript. Do not rewrite an entire script for a small localized change when a semantic edit is available. Follow
+  the repository AGENTS.md contract and phase context packets.
+default_modes: null
+added_modes: null
+included_apis: []
+excluded_apis: []
+excluded_tools: []
+included_optional_tools: []
+fixed_tools: []
+symbol_info_budget: null
+line_ending: null
+read_only_memory_patterns: []
+ignored_memory_patterns: []
+activation_command: null
+activation_command_timeout: 180.0

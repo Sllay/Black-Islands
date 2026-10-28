@@ -7,7 +7,7 @@ You are implementing Season 1 Part 4 of Black Island. Follow `AGENTS.md` exactly
 2. `harness/context/S01-P04.md`
 3. `docs/design/BIOMES_AND_PROP_GENERATION.md`
 4. `docs/design/FARMING_AND_FOLIAGE.md`
-5. `docs/design/RESOURCE_HARVESTING.md`
+5. `docs/design/HARVESTING_AND_RESOURCES.md`
 6. `docs/design/BUILDING_AND_STRUCTURAL_SUPPORT.md`
 7. `docs/design/MOBS_CORPSES_AND_LOOT.md`
 8. `docs/design/INVENTORY_AND_CRAFTING.md`
@@ -57,7 +57,7 @@ Implement local foliage generation and suppression:
 Use the current rendering direction: mipmaps, alpha-test coverage preservation and primarily cutout/alpha-scissor foliage where art permits.
 
 ## 3. Generic resource harvesting
-Implement the ARK-inspired Black Island harvest architecture from `RESOURCE_HARVESTING.md`.
+Implement the ARK-inspired Black Island harvest architecture from `HARVESTING_AND_RESOURCES.md`.
 
 Required concepts:
 - `HarvestableState`/harvest health separate from ordinary combat HP where appropriate;

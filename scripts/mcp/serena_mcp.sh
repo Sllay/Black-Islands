@@ -16,7 +16,8 @@ port_open() {
 # If no editor is already serving it, start a lightweight headless editor for this workspace.
 if ! port_open; then
   mkdir -p "$ROOT/.tools/logs"
-  "$GODOT_PATH" --headless --editor --path "$ROOT/game" \
+  "$GODOT_PATH" --headless --editor --path "$ROOT/game" --lsp-port 6008 \
+    -- --godot-mcp-lsp-port=6008 \
     >"$ROOT/.tools/logs/serena-godot-lsp.log" 2>&1 &
   echo $! > "$ROOT/.tools/serena-godot-lsp.pid"
 
