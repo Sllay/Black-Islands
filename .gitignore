@@ -8,6 +8,16 @@ game/builds/
 game/export/
 game/.mono/
 
+# Reproducible local development toolchain/cache
+.tools/
+
+# Serena keeps machine/session state beside its tracked project configuration.
+game/.serena/*
+!game/.serena/project.yml
+
+# Voxel Tools GDExtension binaries are fetched from the pinned release by bootstrap.
+game/addons/zylann.voxel/
+
 # OS/editor
 .DS_Store
 Thumbs.db
