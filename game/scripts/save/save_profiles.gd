@@ -42,6 +42,19 @@ func use_test_profiles() -> void:
 	store = SlotStore.new("user://qa_profiles")
 	selected_slot_id = ""
 
+func reset_test_profiles() -> Error:
+	if store.directory != "user://qa_profiles":
+		return ERR_UNAUTHORIZED
+	for slot_id: String in SlotStore.SLOT_IDS:
+		for suffix: String in [".json", ".json.bak", ".json.tmp"]:
+			var path := store.directory.path_join(slot_id + suffix)
+			if FileAccess.file_exists(path):
+				var error := DirAccess.remove_absolute(path)
+				if error != OK:
+					return error
+	selected_slot_id = ""
+	return OK
+
 func use_production_profiles() -> void:
 	store = SlotStore.new()
 	selected_slot_id = ""

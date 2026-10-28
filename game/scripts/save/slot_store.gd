@@ -71,7 +71,10 @@ func _read(path: String, slot_id: String) -> Dictionary:
 	return {"valid": _valid(data, slot_id), "metadata": data}
 
 func _valid(data: Dictionary, slot_id: String) -> bool:
-	if slot_id not in SLOT_IDS or data.get("slot_id") != slot_id or data.get("schema_version") != SCHEMA_VERSION:
+	var schema: Variant = data.get("schema_version")
+	if not (schema is int or schema is float):
+		return false
+	if slot_id not in SLOT_IDS or data.get("slot_id") != slot_id or schema != SCHEMA_VERSION:
 		return false
 	for key: String in ["save_id", "created_at", "last_played_at", "display_name"]:
 		if not data.get(key) is String or data[key].is_empty() or data[key].length() > 128:

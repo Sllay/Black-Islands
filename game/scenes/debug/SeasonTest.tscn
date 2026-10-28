@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://jtog31xt82fv"]
+
+[ext_resource type="Script" path="res://scripts/ui/season_test.gd" id="1_um01h"]
+
+[node name="SeasonTest" type="Control" unique_id=1238837393]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_um01h")
