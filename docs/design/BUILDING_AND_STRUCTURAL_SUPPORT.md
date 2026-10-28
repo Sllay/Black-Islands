@@ -1,32 +1,46 @@
 # Building & Structural Support — Design/Technical Spec
 
-Status: Accepted direction; constants require gameplay/mobile validation.
+Status: Accepted core direction; exact piece dimensions/content remain tunable.
 
 ## Goals
 
-Black Island uses precise square-grid modular construction inspired by survival builders such as ARK, while avoiding double walls, floating megastructures and chain-collapse bugs.
+Black Island uses precise square-grid modular construction inspired by survival builders such as ARK while preventing:
 
-The system must support naturally emergent houses, second floors, platforms and bridges without creating special-case `BridgeSystem` or `HouseSystem` logic.
+- double walls;
+- unsupported floating platforms;
+- infinite `wall -> ceiling -> wall -> ceiling` staircases;
+- one grounded point incorrectly validating an arbitrarily distant connected castle;
+- chain-collapse bugs where destroying one pillar deletes a bridge that still has another valid support path.
+
+The system should naturally support houses, towers, second floors, platforms and bridges through one rule set.
 
 ## Spatial model
 
-Construction is aligned to a square `BuildGrid`. The build unit is an integer multiple of terrain voxel size.
+Construction is aligned to a square `BuildGrid`.
+
+Initial scale:
+
+- one build cell = 1 m x 1 m horizontal footprint;
+- terrain voxel = 0.5 m;
+- structures snap on integer build coordinates/elevations.
 
 The build model contains three occupancy domains:
 
-- **Cell slots** — foundations, ceilings/platforms, large floor-bound pieces.
-- **Shared edge slots** — walls, window walls, door frames, fences and similar boundaries.
-- **Point/center sockets** — pillars, posts and other vertical supports.
+- **Cell slots** — foundations, ceilings/platforms/flat roofs and large floor-bound pieces;
+- **Shared edge slots** — walls, window walls, door frames, fences and similar boundaries;
+- **Point/center sockets** — pillars/posts and vertical supports.
 
-### Shared edges
+## Shared edges
 
-Adjacent cells reference the same edge object. If Foundation A's east edge touches Foundation B's west edge, both references resolve to one `BuildEdge`.
+Adjacent cells reference one shared boundary object.
 
-Therefore one wall on that boundary occupies the edge once. A second wall cannot be placed from the neighboring foundation side. This prevents accidental double-thickness walls by construction, not by visual collision hacks.
+If Foundation A east touches Foundation B west, both resolve to the same `BuildEdge`.
 
-## Piece definitions
+One wall occupying this edge blocks placement from either side. Double-thickness accidental walls are impossible by data ownership rather than collision tricks.
 
-Structure behavior is data-driven. A `StructureDefinition` should eventually describe at least:
+## Structure definitions
+
+`StructureDefinition` should contain at least:
 
 - stable ID;
 - footprint/occupancy domain;
@@ -34,51 +48,256 @@ Structure behavior is data-driven. A `StructureDefinition` should eventually des
 - accepted socket types;
 - allowed rotations;
 - structural role;
-- mass/load contribution;
-- support transmission capacity;
-- horizontal support cost;
-- vertical support cost/limits where applicable;
-- material/tier;
+- support propagation rules;
 - durability/HP;
+- material/tier;
 - placement collision rules;
 - terrain contact requirements;
-- visual scene/preview data.
+- visual scene/preview data;
+- build cost.
 
-Avoid hard-coded chains such as `if other is Foundation` in placement code.
+### Material/tier rule
+
+Wood, stone and later structural materials do **not** receive different support reach simply because they are stronger materials.
+
+The main differences are:
+
+- HP/durability;
+- resistance/damage interactions;
+- cost;
+- appearance;
+- future repair/raid properties.
+
+A stone pillar does not magically support farther than a wood pillar under the baseline construction model.
+
+## Real support roots
+
+A support root is a structure/anchor that genuinely reaches accepted ground/world support.
+
+Typical roots:
+
+- foundation correctly seated on valid terrain;
+- pillar/post whose vertical chain reaches terrain/grounded structure according to rule;
+- explicit future world anchor.
+
+Not roots:
+
+- foundation merely placed on an elevated ceiling;
+- pillar standing on top of a cantilevered ceiling without reaching ground;
+- wall standing on an already cantilevered platform;
+- arbitrary connected geometry.
+
+A fake/floating support never resets structural reach.
+
+## Baseline horizontal reach
+
+Initial rule:
+
+**A real support origin provides up to two ceiling/platform cells of unsupported horizontal reach in every horizontal direction, including diagonals where sockets permit.**
+
+Conceptually:
+
+```text
+. . . . .
+. C C C .
+. C F C .
+. C C C .
+. . . . .
+```
+
+with another outward ring available up to the configured reach of 2 around the grounded support origin.
+
+Exact footprint/socket geometry decides what actually connects; the support metric does not create geometry by itself.
+
+## Support provenance
+
+Connectivity is not the same as structural support.
+
+Every supported structural node may hold one or more `SupportCandidate` records.
+
+Conceptual candidate:
+
+```text
+SupportCandidate
+- root_id
+- root_grid_xz
+- source/path provenance
+- horizontal_dx
+- horizontal_dz
+- horizontal_distance
+- vertical_chain_state
+- propagation_direction/context
+```
+
+For the default square build system, horizontal reach can use Chebyshev/grid distance where diagonal support is explicitly allowed:
+
+`distance = max(abs(dx), abs(dz))`
+
+A candidate is valid only while distance from its **real root/support column** remains <= configured reach.
+
+Most importantly: walls, elevated foundations and floating pillars **inherit** the candidate. They do not replace `root_grid_xz` with their own position.
+
+## Anti-infinite-staircase rule
+
+Example:
+
+```text
+Ground Foundation root at X=0
+Ceiling at X=1 -> valid distance 1
+Ceiling at X=2 -> valid distance 2
+Wall on X=2   -> inherits root X=0, distance 2
+```
+
+Trying to place a new ceiling outward at X=3 through that wall:
+
+`distance from real root = 3 -> INVALID`
+
+The wall did not create new reach.
+
+A ceiling placed from the same wall **back toward** the real root may be valid if its resulting position lies inside the already supported envelope.
+
+This produces the intended physical intuition: vertical geometry can carry support upward, but cannot invent horizontal foundation support farther away from ground.
+
+## Grounded pillar reset
+
+If a pillar beneath the distant platform truly reaches valid ground:
+
+```text
+Terrain
+  |
+Pillar at X=2  -> new real root/support column
+  |
+Ceiling X=2
+```
+
+Then the new root provides its own two-cell horizontal envelope:
+
+- X=3 -> distance 1 from pillar root;
+- X=4 -> distance 2;
+- X=5 -> invalid unless another genuine support root exists.
+
+A pillar placed upward from the top of X=2 without reaching terrain does not do this.
+
+## Vertical propagation
+
+Walls/pillars may propagate valid root provenance upward through compatible sockets.
+
+Example:
+
+```text
+Ground Foundation (root X=0)
+  |
+Wall
+  |
+Wall
+  |
+Upper floor
+```
+
+The upper floor still knows its support root/projection comes from X=0.
+
+This permits multi-story buildings while preventing each new floor from resetting horizontal reach.
+
+## Foundation on ceiling
+
+A foundation piece may be allowed on top of ceiling/platform geometry for design/snap purposes.
+
+Unless it independently contacts valid ground through an accepted support chain, it is not a new root.
+
+It inherits all support candidates from below and cannot extend farther than those candidates permit.
+
+## Multiple support paths
+
+A node must not cache one permanent parent as "the thing supporting me".
+
+It may have support from many roots.
+
+Bridge example:
+
+```text
+Ground P1 ---- A ---- B ---- P2 Ground
+```
+
+B may be valid from both P1 and P2.
+
+If P1 is destroyed:
+
+1. remove P1 and affected graph edges;
+2. recompute support candidates in the affected region/component;
+3. B keeps the P2 candidate if a valid connected path remains;
+4. only pieces with zero valid real-root candidates collapse.
+
+This prevents the classic bug where one removed pillar destroys an otherwise-supported entire bridge.
+
+## Structural solver
+
+After placement/removal/damage changes topology:
+
+1. discover/revalidate real roots in affected region;
+2. propagate support candidates through compatible sockets/edges;
+3. preserve each candidate's original root coordinates/provenance;
+4. reject candidates outside horizontal reach/direction rules;
+5. reject broken/incompatible paths;
+6. retain multiple valid candidates where they exist;
+7. node is supported if at least one valid candidate survives;
+8. unsupported nodes enter collapse handling.
+
+No recursive `connected_piece.destroy()` authority.
+
+## Why no global load-capacity model
+
+Chapter 1 intentionally does not simulate structural engineering mass/load capacity.
+
+A pillar does not fail because too many total kilograms are connected somewhere above it. The gameplay rule is spatial support reach + valid path + world height.
+
+This keeps building understandable and ARK-like while still preventing unsupported megastructures.
+
+Future special content may introduce unique structural limits through explicit definitions, but do not silently add wood-vs-stone load mathematics.
+
+## Height limit
+
+Initial world/build ceiling is approximately 100 m above the world reference/sea-level plane.
+
+Above the allowed construction volume:
+
+- placement preview becomes invalid;
+- reason = `WORLD_HEIGHT_LIMIT`;
+- no structure can bypass the rule through snapping.
+
+This is a world rule, not structural-material capacity.
 
 ## Core structural roles
 
 ### Foundation
 
-- Normally occupies one build cell.
-- Can become a **support root** only when it has valid support to terrain/ground according to the placement rule.
-- A foundation placed on top of an elevated ceiling/platform is **not automatically a new root**. It inherits the existing structural provenance unless another path reaches real support.
-- Provides shared edge sockets for walls and side connections.
+- occupies a build cell;
+- root only when grounded/valid;
+- provides edges for walls and side structural snaps;
+- can connect laterally to foundations/platforms where definitions permit.
 
 ### Ceiling / platform / flat roof
 
-- Occupies a structural cell at an elevation.
-- Same nominal footprint as a foundation so it can snap laterally and form floors, roofs and bridges.
-- Can carry horizontal support only within the support budget inherited from valid roots.
-- Does not magically reset cantilever distance.
+- occupies a structural cell at an elevation;
+- can act as floor, roof or bridge deck;
+- receives/transmits existing support candidates;
+- does not reset horizontal support distance.
 
 ### Wall / door frame / window wall
 
-- Occupies one shared edge.
-- Can transmit vertical support upward.
-- A wall standing on a cantilevered platform inherits that platform's support provenance; it cannot be used to create a fresh outward cantilever budget.
-- Provides upper sockets for ceilings/roof/future wall stacking according to definition.
+- occupies one shared edge;
+- transmits support vertically through compatible top/bottom sockets;
+- retains original root provenance;
+- may support upper floors only where their final positions remain valid under a real root candidate.
 
 ### Pillar / post
 
-- Occupies a center/point socket.
-- Can transmit vertical support.
-- It becomes a new support root only if its support chain truly reaches terrain or another accepted grounded support source.
-- A floating pillar attached only to an already-cantilevered platform is not a root and cannot reset support distance.
+- occupies center/point socket;
+- transmits support vertically;
+- becomes a root only when its downward chain genuinely reaches ground/accepted root condition.
 
-## Socket model
+## Sockets
 
-Sockets have semantic types. Candidate examples:
+Candidate semantic types:
 
 - `FOUNDATION_SIDE`
 - `FOUNDATION_EDGE`
@@ -89,179 +308,63 @@ Sockets have semantic types. Candidate examples:
 - `PILLAR_TOP`
 - `CELL_CENTER`
 - `ROOF_EDGE`
-- future stair/ramp sockets
+- future stair/ramp sockets.
 
-A compatibility table/definition decides what may connect. Snap validity is semantic first, geometric second.
-
-## Structural graph
-
-Every placed structural piece is a node in a `SupportGraph`. Compatible physical/snap relationships create edges.
-
-**Connectivity is not support.** A connected component can contain unsupported nodes.
-
-A node survives only if the structural solver can assign it at least one valid support path to a real support root while satisfying:
-
-1. path/socket compatibility;
-2. directional propagation rules;
-3. horizontal span limits;
-4. vertical/stack limits where configured;
-5. path capacity/load limits;
-6. root capacity limits;
-7. material/tier constraints when applicable.
-
-## Support provenance: anti-infinite-staircase rule
-
-Support propagation carries provenance from its root. At minimum a propagated support candidate needs information equivalent to:
-
-```text
-SupportPath
-- root_id
-- horizontal_span_cost
-- vertical_cost / stack data
-- remaining_path_capacity
-- propagation direction/context
-- path length / quality score
-```
-
-Only a **real root** resets `horizontal_span_cost`.
-
-Example with Chapter-1 style max free span of 2:
-
-```text
-Grounded Foundation [root, span 0]
-  -> Ceiling A [span 1]
-  -> Ceiling B [span 2]
-  -> Ceiling C [span 3] INVALID
-```
-
-Putting a wall on Ceiling B does not reset span:
-
-```text
-Foundation(root)
-  -> Ceiling A(1)
-  -> Ceiling B(2)
-       -> Wall(inherits root/span 2)
-            -> outward Ceiling C still exceeds allowed horizontal reach
-```
-
-The wall may support pieces vertically and may support geometry back toward/inside the already-supported footprint when rules permit, but cannot create a new outward support origin.
-
-If a pillar under Ceiling B genuinely reaches terrain:
-
-```text
-Terrain
-  -> Pillar [new real root]
-       -> Ceiling B [span 0/near-root]
-       -> Ceiling C [span 1]
-       -> Ceiling D [span 2]
-```
-
-Now the extension is valid because support has a new grounded origin.
-
-This prevents the exploit:
-
-`wall -> ceiling outward -> wall -> ceiling outward -> ... -> sky`.
-
-A foundation placed on an unsupported/elevated ceiling follows the same rule: it is structural geometry, not a ground root.
-
-## Load/capacity: anti-one-pillar-planet rule
-
-Distance rules alone are insufficient. Each piece contributes structural load and support carriers/roots have capacity.
-
-Conceptually:
-
-```text
-wood pillar capacity < stone pillar capacity < reinforced pillar capacity
-small floor load < heavy stone floor/load-bearing machine/etc.
-```
-
-A single grounded pillar therefore cannot support an unlimited connected city even when every tile is within some topological path.
-
-### Solver stages
-
-After placement, removal or damage changes the graph, solve only the affected structural component/region whenever possible.
-
-Recommended logical stages:
-
-1. **Discover real roots** — grounded foundations, grounded pillars/posts or explicit future anchors.
-2. **Propagate candidate support paths** from all roots through compatible graph edges.
-3. **Reject invalid paths** exceeding span, direction, stack or material constraints.
-4. **Keep multiple candidate roots/paths** for pieces where possible; do not store only one parent dependency.
-5. **Resolve load/capacity** deterministically across valid candidate roots/paths.
-6. Mark nodes with at least one satisfiable support assignment as supported.
-7. Mark the remainder unsupported and schedule collapse.
-
-For Chapter 1, the load allocator may begin with a deterministic bounded candidate/greedy solver if benchmarks and tests prove it stable. Architecture must allow a stronger allocation method later without changing save semantics.
-
-## Why multiple support paths matter
-
-Consider a bridge with pillars P1 and P2:
-
-```text
-Ground  P1 ---- A ---- B ---- P2  Ground
-```
-
-B may have valid support from both directions. If P1 is destroyed, B must not collapse merely because its originally cached parent was P1.
-
-The solver recomputes candidate support and discovers the path through P2. Only pieces that lose **all valid support paths or capacity assignments** collapse.
-
-This is mandatory for avoiding the classic "break one pillar and the whole connected bridge disappears" bug.
-
-## Destruction and collapse
-
-Option B is accepted: players/mobs may destroy load-bearing pieces and unsupported structures can fail.
-
-Flow:
-
-`piece destroyed -> remove graph node/edges -> recompute affected component -> identify unsupported nodes -> collapse those nodes only`
-
-Collapse presentation may be staggered rather than deleting an entire component on one frame:
-
-- brief structural warning/crack feedback where appropriate;
-- detach unsupported piece/substructure;
-- fall/break VFX and sound;
-- convert to debris/resource drops according to game rules;
-- update occupancy and support graph incrementally/safely.
-
-Do not recursively decide collapse with naïve `connected_piece.destroy()` calls. The graph solver is authoritative.
+Compatibility is data-driven; snap validity is semantic first, geometric second.
 
 ## Placement validation
 
-Conceptual placement pipeline:
+`selected piece -> ray/probe -> BuildGrid/socket candidate -> occupancy -> terrain/contact -> support-candidate preview -> collision -> world-height rule -> valid/invalid ghost -> transaction/place`
 
-`selected recipe/item -> ray/probe -> BuildGrid/sockets -> snap candidate -> occupancy -> terrain contact -> structural support preview -> collision -> valid/invalid ghost -> place`
-
-Invalid reasons should be surfaced contextually, for example:
+Invalid reasons include:
 
 - occupied edge/cell;
 - invalid socket;
 - terrain obstruction;
-- missing support;
-- span exceeded;
-- structural capacity exceeded;
-- requires ground/foundation;
-- collision with protected object.
+- missing support root/path;
+- horizontal support reach exceeded;
+- requires foundation/ground;
+- protected collision;
+- world height limit.
 
-## Terrain interaction
+## Destruction and collapse
 
-Foundations sample terrain solidity/height/slope underneath their footprint. Exact tolerance is tunable.
+Option B is accepted: destroying load-bearing/support pieces can collapse unsupported structures.
 
-Future constrained leveling may edit nearby terrain voxels to prepare small build areas, but must obey terrain-edit limits rather than flattening mountains automatically.
+Flow:
 
-When construction replaces vegetation/ground props, the prop/foliage system must receive a local occupancy/suppression update; this remains part of the pending world-prop spec.
+`piece destroyed -> update topology -> recompute affected support graph -> supported pieces remain -> unsupported subset scheduled to collapse`
+
+Presentation can be staggered:
+
+- crack/warning feedback where useful;
+- detach/fall/break animation;
+- VFX/audio;
+- configured debris/resource drops;
+- occupancy cleanup.
+
+Support recomputation decides truth before presentation destroys anything.
+
+## Foundations and foliage
+
+Successful foundation placement suppresses grass/foliage in its footprint/clearance region. Demolition removes that suppression and natural regrowth may occur later if terrain remains eligible.
+
+See `FARMING_AND_FOLIAGE.md`.
 
 ## Required tests
 
-At minimum automated/system tests must cover:
-
-- adjacent foundations cannot create double walls on shared edge;
-- two-ceiling cantilever succeeds and third fails under chosen constants;
-- wall on second cantilever does not reset outward span;
-- floating pillar does not become a root;
-- grounded pillar resets support reach;
-- foundation placed on elevated ceiling does not become a false root;
-- bridge with two independent pillars survives removal of one where alternate support remains;
-- only dependent bridge section collapses when a unique support is removed;
-- capacity prevents one root from supporting unlimited load;
-- removing a wall only collapses upper structure that has no alternate valid path;
-- support recomputation stays local enough for mobile targets.
+- adjacent foundations share one wall edge;
+- one grounded root supports ceiling distance 1 and 2;
+- third outward ceiling fails;
+- diagonal reach follows configured 8-direction metric;
+- wall placed at distance 2 does not reset outward support;
+- inward placement from that wall remains possible when inside original envelope;
+- floating pillar does not reset support;
+- grounded pillar does reset support at its real column;
+- foundation placed on elevated floor is not a false root;
+- stacked walls propagate the same root vertically;
+- bridge with two support roots survives loss of one where alternate candidate remains;
+- only the genuinely unsupported bridge section collapses;
+- wood and stone variants have equal support reach but different durability;
+- world height limit cannot be bypassed through snaps;
+- recomputation remains local/mobile-safe.
