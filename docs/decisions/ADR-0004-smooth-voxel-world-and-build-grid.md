@@ -4,60 +4,72 @@ Status: Accepted
 
 ## Decision
 
-Black Island surface terrain is volumetric voxel data rendered as a smooth surface. Voxels are gameplay/storage cells, not visible cubes.
+Black Island surface terrain is volumetric voxel data rendered as a smooth surface. Voxels are gameplay/storage samples, not visible cubes.
 
-Construction is not stored as terrain voxels. It uses a separate integer-aligned `BuildGrid` whose unit size is an integer multiple of voxel size. Structure pieces occupy cells, shared edges or point/center sockets according to their role.
+Initial world scale is now:
 
-Mines/caves remain separate generated floor worlds/scenes. They may use the same smooth-voxel principles internally, but are not physically carved beneath the surface island.
+- terrain voxel spacing target: 0.5 m;
+- BuildGrid cell: 1.0 m;
+- project WorldChunk: 64 x 64 x 64 m;
+- chunks exist on X/Y/Z, including vertical streaming.
+
+Construction is not stored as terrain voxels. It uses a separate integer-aligned `BuildGrid`; pieces occupy cells, shared edges or point/center sockets.
+
+Caves remain separate generated worlds and are not physically carved below the island.
 
 ## Why
 
 This gives Black Island:
 
 - precise digging/removal and predictable empty volume;
-- runtime terrain deformation without a blocky visual style;
-- one material/state per voxel for farming, paths and terrain gameplay;
-- smooth hills, coastlines and material transitions;
-- future support for channels, holes, overhangs and more advanced terrain edits;
-- deterministic integer alignment between terrain and construction;
-- a clean separation between terrain topology and modular ARK-like structures.
+- smooth organic terrain rather than visible cubes;
+- runtime terrain deformation;
+- smooth material transitions;
+- channels/holes/overhang potential;
+- exact integer alignment between terrain and construction;
+- clean separation of terrain, farming state and modular ARK-like structures.
+
+## Important distinction
+
+A 64 m WorldChunk is a project streaming/persistence/addressing unit, not one dense render mesh/data block.
+
+At 0.5 m resolution it spans 128^3 sample positions. The voxel dependency subdivides it into smaller data/mesh/collision regions so local edits remain mobile-safe.
 
 ## Core invariants
 
 1. A voxel is data, never one Godot Node.
-2. Terrain chunks generate batched meshes and collision.
-3. Terrain edits dirty only affected chunks plus required border neighbors.
-4. `BUILD_UNIT / VOXEL_SIZE` must be an integer.
-5. Structure placement never relies on visual mesh coordinates as authoritative occupancy state.
-6. Walls occupy shared edges, not duplicated per adjacent cell.
-7. Structural support is graph-based and must trace to real support roots; connectivity alone is not support.
-8. Remote/content updates may add data/assets but must not execute arbitrary code.
+2. Terrain presentation is chunked/batched smooth mesh.
+3. Local terrain edits rebuild local internal blocks/borders, never the entire 64 m WorldChunk.
+4. `BUILD_UNIT / VOXEL_SIZE` remains an integer.
+5. Structure placement never uses visual mesh triangles as occupancy authority.
+6. Walls occupy shared edges.
+7. Structural support traces to real root provenance; connectivity alone is not support.
+8. WorldChunks stream vertically as well as horizontally.
+9. Untouched generated terrain should remain implicit/generator-backed where possible.
+10. Farming crop/fertilizer/moisture state is a dedicated FarmPlot domain, not generic voxel metadata.
+
+## Preferred implementation candidate
+
+Zylann Voxel Tools is the preferred current candidate because it provides smooth SDF terrain, Transvoxel LOD, runtime editing, streaming, physics integration and instancing.
+
+It remains wrapped behind Black Island interfaces and must pass Android/iOS export/performance tests. Architecture is not allowed to depend on one transient plugin scene layout.
 
 ## Material presentation
 
-Logical material ownership remains discrete per voxel, while rendering blends boundaries with neighboring materials. Neighbor topology, transition weights and controlled edge noise may be used to avoid visible square seams. Equal materials merge visually; different materials meet through smooth transition masks rather than a hard straight border whenever the material pair supports blending.
+Logical material ownership/weights remain precise, while rendering blends compatible material boundaries using smooth weights/masks and controlled edge variation.
 
-## Runtime terrain editing
+Paths can use terrain material painting.
 
-Conceptual flow:
+FarmPlots use dedicated gameplay state/visual patches anchored to terrain/build cells.
 
-`tool/action -> terrain probe -> voxel edit operation -> mark local chunk dirty -> worker prepares new mesh data -> main thread applies mesh/collision -> persist delta`
+## Persistence
 
-The save stores the deterministic world seed plus terrain deltas/persistent mutations rather than a full copy of every unmodified voxel whenever practical.
+Prefer:
 
-## Construction relationship
+`procedural seed/profile/version + edited voxel/data blocks + material edits + persistent entities`
 
-Terrain answers questions such as surface height, solidity, slope and support contact. `BuildGrid` answers occupancy, snap and structural questions.
+rather than full dense world serialization.
 
-Examples:
+## Detailed profile
 
-- Foundation: occupies a build cell and requires valid ground/structural support.
-- Wall/door/window wall: occupies one shared edge.
-- Ceiling/platform: occupies a structural cell at an elevation and can extend horizontally within support rules.
-- Pillar/post: occupies a point/center socket and can transmit support vertically when it reaches a valid support source.
-
-Detailed rules live in `docs/design/BUILDING_AND_STRUCTURAL_SUPPORT.md`.
-
-## Validation requirement
-
-The exact voxel size, chunk dimensions, meshing implementation and mobile budgets remain benchmark decisions. The architectural decision is voxel-authoritative + smooth presentation, not a commitment to one library or fixed chunk size.
+See `docs/architecture/VOXEL_WORLD_IMPLEMENTATION.md` for mesh block, LOD, collision, streaming and benchmark strategy.
