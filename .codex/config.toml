@@ -1,0 +1,15 @@
+# Black Island project-local Codex configuration.
+# Codex loads project config only for trusted repositories.
+# Wrapper scripts resolve the repository path dynamically so this file is portable across workspaces.
+
+[mcp_servers.godot]
+command = "bash"
+args = ["scripts/mcp/godot_mcp.sh"]
+startup_timeout_sec = 240
+tool_timeout_sec = 1800
+
+[mcp_servers.serena]
+command = "bash"
+args = ["scripts/mcp/serena_mcp.sh"]
+startup_timeout_sec = 240
+tool_timeout_sec = 600
