@@ -1,6 +1,6 @@
 # Repository Map — Authoritative
 
-`game/` is the Godot project. Everything else supports development and must not be imported as game content.
+`game/` is the Godot project. Everything else supports development and must not be imported as game content unless explicitly stated.
 
 ```text
 Black-Islands/
@@ -9,12 +9,15 @@ Black-Islands/
 ├── GOALS.md
 ├── PLANS.md
 ├── .gitignore
+├── .codex/
+│   └── config.toml             # portable project-local MCP launchers
 │
 ├── docs/
 │   ├── GDD.md
 │   ├── architecture/
 │   │   ├── REPOSITORY_MAP.md
 │   │   ├── TECH_STACK.md
+│   │   ├── CODEX_DEV_ENVIRONMENT.md
 │   │   ├── GAME_ARCHITECTURE.md
 │   │   ├── VOXEL_WORLD_IMPLEMENTATION.md
 │   │   ├── WORLD_STREAMING.md
@@ -59,6 +62,7 @@ Black-Islands/
 │
 ├── harness/
 │   ├── README.md
+│   ├── prompts/                # P00 -> P04 Codex execution prompts
 │   ├── build/
 │   ├── context/
 │   └── review/
@@ -69,9 +73,17 @@ Black-Islands/
 │   └── ARK_HARVESTING_REFERENCES.md
 │
 ├── scripts/
+│   ├── bootstrap_codex_env.sh  # reproducible local toolchain bootstrap
+│   ├── mcp/
+│   │   ├── godot_mcp.sh
+│   │   └── serena_mcp.sh
+│   └── tooling/
+│       └── versions.env
 │
 └── game/                       # GODOT PROJECT ROOT
     ├── project.godot
+    ├── .serena/
+    │   └── project.yml         # tracked GDScript semantic-tool config
     ├── addons/
     │   └── black_island_tools/
     ├── assets/
@@ -125,9 +137,15 @@ Black-Islands/
         └── fixtures/
 ```
 
+## Local generated dependencies
+
+`.tools/` and the fetched `game/addons/zylann.voxel/` GDExtension are intentionally recreated by `scripts/bootstrap_codex_env.sh` and ignored by Git. They are not authoritative source state.
+
+The Godot MCP editor addon is development tooling and is installed/validated during S01-P00 through the pinned MCP version when the live bridge is needed.
+
 ## Boundary rule
 
-If Godot needs to import, execute or load it, it belongs somewhere under `game/`. If it exists only for humans, Codex orchestration, planning, research or build history, it stays outside `game/`.
+If Godot runtime needs to import, execute or load authored game content, it belongs somewhere under `game/`. Human/Codex orchestration, planning, research, build history and development launchers stay outside `game/`.
 
 ## Documentation authority rule
 
