@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://27codnn5eqo8"]
+
+[ext_resource type="Shader" uid="uid://w05mbiesu5fm" path="res://shaders/terrain.gdshader" id="1_ymuqk"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ymuqk")
+shader_parameter/u_transition_mask = 0

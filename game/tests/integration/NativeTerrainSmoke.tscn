@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://okupjcfl2xvw"]
+
+[ext_resource type="Script" path="res://tests/integration/native_terrain_smoke.gd" id="1_6oyoe"]
+
+[node name="NativeTerrainSmoke" type="Node" unique_id=2103470277]
+script = ExtResource("1_6oyoe")
