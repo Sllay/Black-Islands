@@ -1,152 +1,415 @@
 # Inventory & Crafting — Design/Technical Spec
 
-Status: Accepted core direction; one queue-restoration edge case remains open.
+Status: Accepted core direction.
 
 ## Inventory model
 
-Black Island uses a slot/stack inventory inspired by survival-game inventories, without a carry-weight system.
+Black Island uses slot/stack inventories inspired by survival games, without carry weight.
 
-Core rules:
+### Player starting capacity
 
-- inventory capacity is limited by slot count;
-- items use stacks with per-item stack limits;
-- baseline common resource stack target is 256 unless an item overrides it;
-- progression, missions or equipped containers/backpacks may increase available slot count;
-- hotbar is a view/assignment over usable inventory items, not a separate economy;
-- equipment has its own semantic slots where appropriate.
+- 20 inventory slots total;
+- interpret the intended layout as **5 columns x 4 rows = 20 slots**;
+- capacity can later grow through progression, missions and backpack/container systems.
 
-## Inventory UI layout
+The 5x4 interpretation is intentional because 20 total slots and 4 rows cannot simultaneously mean 20 columns.
 
-Current direction:
+### Hotbar
 
-- crafting panel on the **left**;
+- 8 slots;
+- hotbar is an assignment/view over player-owned inventory stacks, not a second inventory economy;
+- only eligible categories may be assigned: weapons, tools, consumables/food, build/placement items and other explicitly hotbar-usable definitions;
+- selecting a weapon/tool/build item makes it the active equipped/usable item.
+
+### Equipment
+
+Initial semantic equipment slots:
+
+- helmet;
+- chest/torso armor;
+- legs/pants armor;
+- accessory 1;
+- accessory 2.
+
+Weapons are selected through the hotbar rather than a permanent weapon equipment slot.
+
+## Stack limits
+
+Initial defaults:
+
+- common resources: 256;
+- consumables/food: 32;
+- tools: 1;
+- weapons: 1;
+- armor: 1;
+- accessories: 1;
+- crafted construction pieces: 12;
+- projectile/ammunition-style stack: 999;
+- special definitions may override these values.
+
+Currency is not stored as physical inventory stacks. It belongs to a wallet/currency state and is shown near the player's primary status UI.
+
+## Normal inventory screen
+
+Inventory opens as a fullscreen/near-fullscreen interaction surface while core status bars remain visible.
+
+Normal mode:
+
+- crafting/recipes on the **left**;
 - player inventory on the **right**;
-- essential health/stamina/mana visibility remains available while inventory is open;
-- inventory grid scrolls in snapped full rows rather than showing awkward half rows;
-- hotbar remains available at the bottom where the final UX layout permits.
+- equipment slots sit adjacent to the player inventory;
+- bottom gameplay hotbar remains represented/accessible according to final responsive layout.
 
-Exact responsive dimensions remain a mobile UX task.
+### Recipe grid
 
-## Craft recipe browser
+- 5 recipe columns horizontally;
+- vertical row count is content-driven and scrollable;
+- scrolling snaps cleanly to rows/cards where practical;
+- selected recipe opens a dynamic detail/quantity panel.
 
-Crafting recipes are shown as slot/tile entries rather than a long text-only list. Selecting a recipe shows its output, requirements and quantity controls.
+### Craft queue
 
-Ingredient availability is aggregated by item ID across all inventory stacks. The UI should show totals such as `Stone 380 / 512`, not force the player to reason about which stack contains each unit.
+- five visible queue slots horizontally at the top of crafting;
+- entries remain contiguous;
+- only queue slot 1 advances its current unit timer.
 
-## Queue
+## Container mode
 
-The crafting panel has five visible queue slots at the top.
+Opening a chest/container turns the inventory into a dual-inventory interaction.
 
-Each `CraftQueueEntry` conceptually stores at least:
+Recommended adaptive layout:
+
+- player inventory on one pane;
+- opened container inventory on the other pane;
+- contextual tabs allow switching the non-player pane between relevant surfaces such as `Craft` and `Container` without closing the interaction.
+
+Exact left/right placement may flip from normal inventory mode if that produces clearer mobile drag direction; ownership labels and visual language must make the active source/destination unambiguous.
+
+## Stack transfer UX
+
+### Direct full-stack transfer
+
+Double-tapping/double-clicking a stack transfers as much of that stack as possible to the opposite active inventory using automatic stacking/free-slot placement.
+
+### Drag transfer
+
+Dragging a stack between inventories opens a quantity popup when partial transfer is meaningful.
+
+Popup:
+
+- slider from 1 to 100% of available quantity;
+- numeric quantity display/input;
+- explicit Cancel;
+- explicit Confirm.
+
+If the user enters a value greater than the current stack quantity, clamp to the available quantity; never underflow/duplicate.
+
+## Stable stack identity
+
+Runtime stack records should have stable transaction identity while loaded:
 
 ```text
-recipe_id
-requested_remaining
-active_remaining
-unit_duration
-elapsed_time
-queue_order
+InventoryStack
+- stack_uid
+- item_id
+- quantity
+- instance_data optional
+- revision
 ```
 
-Only the first queue entry actively advances its unit timer. Entries remain contiguous; removing an earlier entry shifts later entries forward.
+Items that cannot stack because of durability/unique metadata remain individual instances.
 
-A stack quantity means repeated per-unit craft operations, not one timer that magically creates the entire stack.
+## Inventory ownership and revisions
 
-Example:
+Every mutable inventory/container has:
+
+```text
+inventory_id
+owner/scope metadata
+revision
+slots
+```
+
+Every successful mutation increments its revision.
+
+UI never owns authoritative item counts.
+
+## InventoryTransactionCoordinator
+
+All inventory-changing operations go through one authoritative transaction service, including:
+
+- drag/drop;
+- quick transfer;
+- split/merge;
+- crafting payment;
+- crafting output insertion;
+- corpse/container looting;
+- world-drop pickup;
+- equipment changes that move stacks;
+- future multiplayer/tribe actions.
+
+No UI callback directly decrements one Array and increments another.
+
+## Atomic multi-inventory transaction
+
+For any operation touching multiple stores:
+
+1. resolve all participating inventories;
+2. capture their current revisions;
+3. compute an immutable transaction plan;
+4. validate ownership/access, capacity and exact quantities;
+5. acquire/logically serialize the affected inventory mutations in stable inventory-ID order;
+6. re-check revisions/counts;
+7. apply all removals/additions as one domain commit;
+8. increment revisions;
+9. emit one post-commit change set;
+10. if validation fails, apply nothing.
+
+Single-player still uses this architecture even though most commands execute on the main thread. It eliminates ordering glitches today and becomes the foundation for future authoritative multiplayer.
+
+## Command serialization
+
+Inventory mutations are processed through a deterministic command queue/transaction boundary.
+
+If the player drags stone into a chest on the same frame that crafting finishes, one command commits first. The second sees the new revisions/counts and must revalidate.
+
+There is no state where both operations can successfully spend the same stone snapshot.
+
+## Craft resource scopes
+
+Crafting consumes from an explicit `InventoryScope`, never from arbitrary world containers.
+
+Possible scopes:
+
+### Personal crafting
+
+- player inventory only;
+- plus an explicitly opened chest if the current UI/context rule allows it.
+
+### Workstation crafting
+
+A workstation may include:
+
+- player inventory;
+- workstation internal inventory if it has one;
+- authorized nearby chests within the workstation's configured logistics radius;
+- tribe/future ownership permissions.
+
+Nearby chest discovery produces a deterministic ordered list of inventory IDs. Ingredients are aggregated across that scope.
+
+The scope is recomputed/validated at transaction time; a chest leaving range or changing owner cannot remain an invisible ingredient source.
+
+## Ingredient aggregation
+
+UI shows total available amounts across the current craft scope:
+
+`Stone 380 / 512`
+
+It does not expose stack fragmentation as a crafting concern.
+
+The transaction planner chooses exact source stacks deterministically, e.g. partially filled stacks/low slot index/inventory-ID order according to one documented policy.
+
+## Queue representation
+
+Conceptual `CraftQueueEntry`:
+
+```text
+entry_id
+recipe_id
+original_requested
+active_remaining
+unit_duration
+queue_order
+state
+```
+
+`elapsed_time` is runtime-only and is intentionally not persisted across save/load.
+
+### Per-unit timing
 
 `10 foundations` means:
 
-`timer -> craft 1 -> reset timer -> craft 1 -> ...`
+`timer -> attempt craft one -> reset timer -> attempt craft one -> ...`
 
-until the entry reaches zero or becomes impossible/cancelled.
+The timer itself never consumes ingredients or creates output.
 
-## Timer is not the transaction
+## Unit craft transaction
 
-The timer never directly removes ingredients or creates output.
+At timer completion:
 
-At unit completion:
+`timer_ready -> CraftService.request_unit(entry) -> resolve craft scope -> build transaction -> revalidate -> atomically consume ingredients -> construct output -> insert output -> commit -> decrement queue -> next timer`
 
-`timer completes -> InventoryTransaction.try_craft(recipe) -> revalidate ingredients -> atomically consume -> create output -> insert/drop -> emit inventory changes -> decrement queue unit -> restart timer if remaining`
+The timer is only a scheduler/trigger.
 
-This protects against duplication caused by UI reorder, resource changes or timing races.
+## Output routing
 
-## Output when inventory is full
+After ingredients are successfully consumed, the crafted output must be preserved.
 
-Once a unit transaction has successfully consumed its ingredients, the output exists.
+Insertion priority depends on context.
 
-If inventory insertion cannot fit the result:
+### Personal craft
 
-`successful craft -> failed inventory insert -> spawn world drop near player`
+1. player inventory;
+2. current explicitly opened/authorized container if configured;
+3. world drop bag near player.
 
-The queue continues. The game must never delete a paid-for crafted item merely because the inventory filled during the timer.
+### Workstation craft
+
+1. player inventory where recipe/context allows;
+2. active workstation/output container;
+3. eligible nearby authorized container(s) according to deterministic output policy;
+4. world drop bag near workstation/player.
+
+Never delete a paid output because all inventories became full.
 
 ## Shared-resource queue behavior
 
-Current accepted behavior follows the user's survival-crafting model: queue entries are not full ingredient reservations. Resources are consumed per completed unit.
+Queue entries do not reserve all resources in advance.
 
 Example:
 
-- Foundation costs X stone.
-- Ceiling costs the same X stone.
-- Player owns enough stone for 10 units total.
-- Queue contains `10 Foundation` followed by `10 Ceiling`.
+- 10 Foundations queued;
+- 10 Ceilings queued;
+- both consume the same stone;
+- player currently has enough for only 10 total units.
 
-When one Foundation completes and consumes X stone, current inventory can now fund only 9 Ceiling units. The Ceiling queue entry is clamped from 10 to 9. As Foundations continue consuming the shared stone, the later Ceiling entry continues shrinking. If no unit remains possible, that queue entry is removed.
+Each completed Foundation consumes real stone. Later Ceiling feasibility shrinks immediately against actual remaining resources.
 
-Therefore queue quantity represents a request that can be reduced by real resource availability; it is not a promise/reservation of future ingredients.
+If an entry reaches zero feasible units, remove/cancel its impossible remaining quantity according to the queue rule.
 
-### Recalculation trigger
+## Resource-return policy — locked
 
-Whenever ingredient-relevant inventory state changes, the queue manager recalculates feasibility for affected recipes, including changes caused by:
+A queue quantity that was clamped downward because resources were consumed/removed does **not automatically regrow** when new resources later appear.
 
-- an earlier craft consuming resources;
-- player dropping/removing resources;
-- player receiving resources;
-- another system consuming the same resources.
+Example:
 
-For the behavior explicitly described so far, later entries are clamped against **current real inventory**, not against hypothetical reservations held by earlier queue entries.
+`Ceilings requested 10 -> clamped to 4 -> player later finds stone`
+
+The entry remains at 4. The player may explicitly queue more.
+
+Why:
+
+- predictable UI;
+- prevents "ghost jobs" reappearing after the user believes they were removed;
+- makes save/load deterministic;
+- simplifies multi-container scope changes;
+- avoids queue quantities oscillating as nearby chests enter/leave station range.
+
+`original_requested` may remain for telemetry/UI history, but only `active_remaining` is authoritative for future units.
 
 ## Cancellation
 
-Selecting a queue entry exposes a cancel/remove action.
+Selecting a queue entry exposes a remove/trash action.
 
-Cancelling an entry:
+Cancelling:
 
-- removes its remaining requested crafts from the queue;
+- removes unfinished requested units;
 - shifts later entries forward;
-- does not refund previously completed units because each completed unit already consumed its resources transactionally;
-- does not need to refund the currently ticking incomplete unit because ingredients are not consumed until its timer successfully completes.
+- never refunds completed units;
+- does not refund the currently ticking unit because no ingredients have been consumed yet.
 
-When slot 1 is removed, slot 2 becomes slot 1 and begins/continues according to active-timer policy.
+## Queue reorder — locked safety behavior
 
-## Resource loss example
+When queue order changes:
 
-If the player removes/drops the stone required by a queued Ceiling entry before that unit completes, the queue feasibility is recomputed. If zero Ceiling units remain possible, the entry is removed instead of allowing the timer to create an unpaid item.
+- stop the current timer;
+- reorder entries contiguously;
+- recompute feasibility against current scope;
+- restart the new slot-1 unit timer from full duration.
 
-## Resource addition — open semantic
+If the previously active entry remains slot 1 without changing order, its timer may continue.
 
-The conversation established that unavailable queued quantities shrink and may be deleted as resources disappear/are consumed. One detail is intentionally not invented yet:
+Resetting on active-entry reorder avoids timing exploits and ambiguous partially-paid work; no ingredients are lost because payment happens only at completion.
 
-- if an entry shrank from 10 to 4 and the player later acquires more ingredients before it finishes, should it automatically grow back toward the original requested 10, or remain permanently clamped at 4?
+## Save/load behavior — locked
 
-Implementation must preserve enough internal information to support either policy until this is locked. A safe model is to distinguish `original_requested` from `active_remaining`, even if the UI currently shows only active quantity.
+Persist:
 
-## Queue reorder
+- ordered queue entry IDs;
+- recipe IDs;
+- `active_remaining` quantities;
+- other required semantic state.
 
-Queue reordering, if enabled, must operate only on contiguous queue entries and trigger a fresh feasibility calculation. The exact active-unit timer behavior on reorder (reset, pause/resume or preserve progress) remains a UX/balance decision and must be locked before implementation.
+Do **not** persist the partially elapsed unit timer.
+
+On save/load/crash recovery:
+
+- restore queue;
+- revalidate recipes/resources;
+- slot 1 restarts one full unit timer.
+
+This deliberately favors safety/predictability over preserving a few seconds of progress.
+
+## Recipe migration
+
+Queue serialization stores stable recipe IDs and schema version.
+
+On load after a game update:
+
+- resolve recipe migration/alias;
+- if recipe no longer exists or is invalid, safely remove the queue entry without consuming resources;
+- never attempt to craft using stale serialized ingredient arrays.
+
+## Workbench/station tabs
+
+Interacting with a workbench opens inventory context with tabs such as:
+
+- Personal Craft;
+- Workbench Craft;
+- connected/nearby container context where useful.
+
+Workbench recipes remain separate data definitions/unlock categories rather than hard-coded UI lists.
+
+## Nearby chest integration
+
+A workstation can use chests in a configured logistics radius if:
+
+- chest is currently valid/alive;
+- ownership/tribe policy permits access;
+- chest is in the same world/loaded logistics domain;
+- it is not locked/reserved by another authoritative action;
+- inventory revision validates at craft commit.
+
+The workstation may aggregate many nearby chests, but the transaction uses exact source inventory IDs/stacks.
+
+## Future tribe ownership
+
+Inventory and structures should use an ownership abstraction from the start:
+
+```text
+OwnerScope
+- PLAYER
+- TRIBE
+- WORLD/SYSTEM
+```
+
+Chapter 1 can resolve most structures to the local player/village, while future multiplayer may make chest/structure ownership tribe-authoritative without rewriting item transactions.
 
 ## Transaction invariants
 
-1. Output cannot be created before successful ingredient consumption.
-2. Ingredients for a unit are consumed atomically.
-3. A failed transaction creates no output and consumes nothing.
-4. Queue UI cannot be the authority for inventory ownership.
-5. Inventory changes immediately invalidate/recalculate dependent queue feasibility.
-6. Full inventory after payment produces a world drop rather than item loss.
-7. Save/load must not duplicate an in-progress unit; serialized timer/queue state needs an explicit resume rule.
+1. Output cannot exist before successful payment.
+2. Payment is atomic across all ingredient source inventories.
+3. Failed validation consumes nothing and creates nothing.
+4. UI is never authoritative inventory state.
+5. Every mutation increments revisions.
+6. Transfer and craft cannot spend the same stale stack state.
+7. Full inventories redirect paid output; they never delete it.
+8. Queue timer is not payment.
+9. Save/load restarts active timer; it does not duplicate a half-completed unit.
+10. Future multiplayer server/host owns transaction commits.
 
 ## Data-driven definitions
 
-`RecipeDefinition` should contain stable recipe ID, output(s), ingredient requirements, unit duration, unlock/visibility rules, station requirements where relevant and tags/categories.
+`ItemDefinition` owns stack/category/eligibility data.
 
-Crafting logic resolves definitions by stable IDs; recipe UI does not own crafting rules.
+`RecipeDefinition` owns:
+
+- stable ID;
+- outputs;
+- ingredient requirements;
+- unit duration;
+- unlock/visibility rules;
+- station requirements;
+- tags/categories.
+
+UI renders these definitions; it does not encode recipes.
