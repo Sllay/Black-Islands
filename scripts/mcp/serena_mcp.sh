@@ -38,4 +38,4 @@ fi
 exec "$ROOT/.tools/bin/serena" start-mcp-server \
   --context=codex \
   --project "$ROOT/game" \
-  --open-web-dashboard=false
+  --open-web-dashboard False
