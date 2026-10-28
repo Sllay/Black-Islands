@@ -103,11 +103,7 @@ func _run() -> void:
 	await _frames()
 	var hud := current_scene.get_node("Canvas/MainView/ProductionHUD")
 	_check(hud.find_children("Hotbar*", "Button", true, false).size() == 8, "eight hotbar buttons")
-	var movement := hud.find_child("MoveUp", true, false) as Button
-	movement.emit_signal("button_down")
-	_check(Input.is_action_pressed("move_up"), "touch shell emits semantic action")
-	movement.emit_signal("button_up")
-	_check(not Input.is_action_pressed("move_up"), "touch shell releases semantic action")
+	await HudInputProbe.exercise(hud, _check)
 	var health_width: float = hud.find_child("Health", true, false).get_child(1).size.x
 	var stamina_width: float = hud.find_child("Stamina", true, false).get_child(1).size.x
 	var mana_width: float = hud.find_child("Mana", true, false).get_child(1).size.x

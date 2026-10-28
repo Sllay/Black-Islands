@@ -64,6 +64,54 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4o670"]
+bg_color = Color(0.105882354, 0.2, 0.25882354, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28235295, 0.3764706, 0.41568628, 1)
+corner_radius_top_left = 512
+corner_radius_top_right = 512
+corner_radius_bottom_right = 512
+corner_radius_bottom_left = 512
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hsmoj"]
+bg_color = Color(0.5254902, 0.7254902, 0.69803923, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.70980394, 0.87058824, 0.8392157, 1)
+corner_radius_top_left = 512
+corner_radius_top_right = 512
+corner_radius_bottom_right = 512
+corner_radius_bottom_left = 512
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mk7ga"]
+bg_color = Color(0.16078432, 0.28235295, 0.34901962, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8509804, 0.7294118, 0.47058824, 1)
+corner_radius_top_left = 512
+corner_radius_top_right = 512
+corner_radius_bottom_right = 512
+corner_radius_bottom_left = 512
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_er6a7"]
+bg_color = Color(0.8509804, 0.7294118, 0.47058824, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.8901961, 0.6431373, 1)
+corner_radius_top_left = 512
+corner_radius_top_right = 512
+corner_radius_bottom_right = 512
+corner_radius_bottom_left = 512
+
 [resource]
 default_font_size = 20
 Button/colors/font_color = Color(0.92941177, 0.94509804, 0.90588236, 1)
@@ -73,3 +121,7 @@ Button/styles/hover = SubResource("StyleBoxFlat_3lpsw")
 Button/styles/normal = SubResource("StyleBoxFlat_fo0vt")
 Button/styles/pressed = SubResource("StyleBoxFlat_5dee2")
 Label/colors/font_color = Color(0.92941177, 0.94509804, 0.90588236, 1)
+VirtualJoystick/styles/normal_joystick = SubResource("StyleBoxFlat_4o670")
+VirtualJoystick/styles/normal_tip = SubResource("StyleBoxFlat_hsmoj")
+VirtualJoystick/styles/pressed_joystick = SubResource("StyleBoxFlat_mk7ga")
+VirtualJoystick/styles/pressed_tip = SubResource("StyleBoxFlat_er6a7")

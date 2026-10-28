@@ -11,24 +11,11 @@ func _ready() -> void:
 	var layout := ShellUI.column(safe, 16)
 	var top := HBoxContainer.new()
 	layout.add_child(top)
-	var stats := ShellUI.column(top, 6)
-	for entry: Array in [["Health", "VIDA", 320, Color("cf786c")], ["Stamina", "VIGOR", 270, Color("a2c79b")], ["Mana", "MANA", 220, Color("84b9d6")]]:
-		var resource := ShellUI.column(stats, 2)
-		resource.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		resource.name = entry[0]
-		resource.add_child(ShellUI.label_text(entry[1] + "     100 / 100", 16, entry[3]))
-		var bar := ProgressBar.new()
-		bar.custom_minimum_size = Vector2(entry[2], 16)
-		bar.value = 100
-		bar.show_percentage = false
-		var fill := StyleBoxFlat.new()
-		fill.bg_color = entry[3]
-		fill.corner_radius_top_left = 5
-		fill.corner_radius_top_right = 5
-		fill.corner_radius_bottom_left = 5
-		fill.corner_radius_bottom_right = 5
-		bar.add_theme_stylebox_override("fill", fill)
-		resource.add_child(bar)
+	var stats := ShellUI.column(top, 8)
+	for entry: Array in [["Health", "❤️", 320, Color("cf786c")], ["Stamina", "⚡", 270, Color("a2c79b")], ["Mana", "🔮", 220, Color("84b9d6")]]:
+		var resource := HudResourceBar.new()
+		resource.configure(entry[0], entry[1], entry[2], entry[3])
+		stats.add_child(resource)
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(spacer)
@@ -49,15 +36,20 @@ func _ready() -> void:
 	bottom.add_theme_constant_override("separation", 20)
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
 	layout.add_child(bottom)
-	var movement := GridContainer.new()
+	var movement := VirtualJoystick.new()
 	movement.name = "Movement"
-	movement.columns = 3
+	movement.custom_minimum_size = Vector2(184, 184)
+	movement.size_flags_vertical = Control.SIZE_SHRINK_END
+	movement.joystick_size = 148
+	movement.tip_size = 60
+	movement.deadzone_ratio = 0.18
+	movement.joystick_mode = VirtualJoystick.JOYSTICK_FIXED
+	movement.visibility_mode = VirtualJoystick.VISIBILITY_ALWAYS
+	movement.action_left = "move_left"
+	movement.action_right = "move_right"
+	movement.action_up = "move_up"
+	movement.action_down = "move_down"
 	bottom.add_child(movement)
-	for entry: Array in [["", ""], ["↑", "move_up"], ["", ""], ["←", "move_left"], ["↓", "move_down"], ["→", "move_right"]]:
-		if entry[1].is_empty():
-			movement.add_child(Control.new())
-		else:
-			movement.add_child(_action(entry[0], entry[1]))
 	var hotbar := HBoxContainer.new()
 	hotbar.name = "Hotbar"
 	hotbar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -73,16 +65,7 @@ func _ready() -> void:
 		slot.button_pressed = index == 0
 		hotbar.add_child(slot)
 	hotbar.add_child(_action("Bolsa", "inventory", Vector2(86, 64)))
-	var actions := GridContainer.new()
-	actions.name = "Actions"
-	actions.columns = 2
-	bottom.add_child(actions)
-	actions.add_child(_action("Interagir", "interact", Vector2(114, 56)))
-	actions.add_child(_action("Esquivar", "dodge", Vector2(114, 56)))
-	var context := ShellUI.button("Contexto", "Context", Vector2(114, 56))
-	context.disabled = true
-	actions.add_child(context)
-	actions.add_child(_action("Atacar", "attack_primary", Vector2(114, 56)))
+	bottom.add_child(MobileActionCluster.new())
 
 func _action(title: String, action: String, minimum := Vector2(56, 56)) -> Button:
 	var button := ShellUI.button(title, action.to_pascal_case(), minimum)
