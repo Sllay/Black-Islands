@@ -2,180 +2,317 @@
 
 ## High concept
 
-Black Island is a mobile-first 2.5D life/farming action RPG with village management and procedural exploration. It takes structural inspiration from farming/life sims, the impact/readability of modern action roguelite combat, survival-game modular building and multi-floor cave exploration, while keeping its own world, systems and presentation.
+Black Island is a mobile-first 2.5D life/farming action RPG with village management, survival-style modular construction, procedural island exploration and regenerating multi-floor cave expeditions.
+
+The visual/world readability takes inspiration from games such as Cult of the Lamb while construction/inventory depth takes structural inspiration from survival games such as ARK. Systems remain Black Island-owned and data-driven.
 
 ## View and presentation
 
-- Real 3D world with 2D LPC-derived characters presented as composed/cached `Sprite3D` billboards.
-- Stylized cartoon/pixel-art hybrid presentation with strong readability.
-- Primary gameplay camera remains to be finalized between shoulder/angled and a more Cult-of-the-Lamb-like readable composition.
-- Optional first-person view remains possible.
-- Central/contextual probe for interaction, ranged targeting, terrain tools and construction.
-- Build mode uses a precise square grid; visual terrain itself remains smooth rather than blocky.
+- real 3D world;
+- 2D LPC-derived characters as composed/cached `Sprite3D` billboards;
+- cartoon/pixel-art hybrid art direction;
+- primary gameplay camera is elevated/angled for combat/world readability;
+- no core first-person mode;
+- Build Mode transitions to a closer third-person construction camera for precision;
+- contextual outlines are primarily interaction/target feedback rather than permanent full-scene outlines.
 
-## Player visual
+See `docs/design/PLAYER_LPC_AND_3D_PRESENTATION.md`.
 
-The player's physics/collision are fully 3D. LPC is presentation, not collision authority.
+## Player visual / LPC
 
-Character appearance is compiled from the LPC catalog: body type, selections, multiple recolor channels, layers/z-order, animation compatibility and equipment visuals. Ordinary gameplay should avoid one persistent `Sprite3D` per LPC layer; the preferred presentation is composed/cached animation output.
+Player/NPC appearance is compiled from the LPC catalog with body compatibility, layers/z-order, multiple recolor channels, custom/oversized animation support and license/credit validation.
 
-Gameplay asks for semantic actions such as `MOVE`, `MELEE_SLASH`, `CHOP`, `MINE`, `FISH` and `HURT`. The LPC resolver selects the best compatible upstream animation/fallback rather than gameplay hard-coding LPC animation names.
+Gameplay requests semantic actions (`MOVE`, `CHOP`, `MINE`, `MELEE_SLASH`, etc.); it never depends directly on upstream LPC filenames/animation strings.
 
-See `docs/architecture/LPC_PIPELINE.md` and `docs/design/PLAYER_LPC_AND_3D_PRESENTATION.md`.
+See `docs/architecture/LPC_PIPELINE.md`.
 
-## World
+## Character creator
 
-Each save generates a medium island from a deterministic seed. The long-term world format must allow larger islands containing multiple major/minor biomes without a rewrite.
+Creator shows a large live preview plus catalog-driven category tabs/grids for body, face, hair, clothing, accessories and colors.
 
-Generation is constrained by design profiles rather than unrestricted noise. A valid island may contain 0–1 primary river depending on profile and approximately 0–2 small/medium lakes. Hydrology, village placement, buildable terrain and points of interest are validated before accepting a seed result.
+Recolor UI exposes LPC semantic palette channels instead of one generic tint.
 
-The surface is authoritative volumetric voxel data rendered as a smooth terrain mesh. Voxels are gameplay/storage cells, not visible cubes. This permits precise digging/material editing while preserving organic hills, coastlines and slopes.
+A Randomize action intentionally uses only light curation: compatibility/legal breakage is prevented, but unusual combinations are allowed.
 
-Logical material ownership remains discrete, but compatible material boundaries blend visually rather than meeting as obvious square seams. Terrain painting/farming may combine neighbor topology, smooth masks and controlled edge noise.
+The same framework can customize newly recruited NPCs without changing their gameplay identity.
 
-Houses/buildings are physical and entered without loading screens.
+See `docs/design/CHARACTER_CREATOR.md`.
 
-## Terrain persistence
+## World terrain
 
-Prefer saving:
+Each surface save generates an island from a deterministic seed/profile.
 
-`procedural base(seed) + terrain/material deltas + persistent entities/world state`
+Accepted terrain architecture:
 
-rather than writing every unchanged voxel to the save.
+- volumetric voxel authority;
+- target voxel spacing 0.5 m;
+- smooth SDF/Transvoxel-style rendered surface;
+- `BuildGrid` cell = 1 m;
+- project WorldChunks = 64 x 64 x 64 m and exist vertically as well as horizontally;
+- WorldChunk is a streaming/persistence unit, not one monolithic dense mesh allocation.
 
-Terrain edits rebuild only affected chunks/required border neighbors.
+Initial near streaming region is the player chunk plus 8 horizontal neighbors (3x3). Vertical residency is sparse. Additional rings are added only after mobile profiling remains stable.
 
-## Intro
+See `docs/architecture/VOXEL_WORLD_IMPLEMENTATION.md` and `WORLD_STREAMING.md`.
 
-The player arrives mysteriously on the island near a devastated village. An introductory sequence leads to finding a poor-condition weapon, regaining control and defending the remaining villagers. Approximately three survivors establish the initial social/village loop.
+## Island scale and boundary
 
-## Village
+Intended island traversal should feel roughly 20-30 minutes point-to-point at ordinary travel speed. Physical diameter is derived after player movement speed is tuned rather than guessed first.
 
-The player becomes the practical leader/caretaker of the settlement. Villagers can receive jobs based on strengths, improve skills through work and participate in schedules, relationships, social events, raids and story events.
+Ocean continues visually beyond the playable world. An outer soft ocean boundary creates a treadmill/attenuated-progress illusion before a hard invisible fail-safe boundary. Long persistence in the soft boundary can trigger a humorous localized thought line after roughly five minutes.
 
-Chapter 1 targets at most roughly ten meaningful live villagers, making individual depth more valuable than crowd size.
+## Surface biome direction
 
-NPC death can be persistent where the event/system explicitly permits it.
+Chapter 1 surface uses:
+
+- tropical/beach shoreline surrounding island;
+- open plains/tropical interior transition;
+- central/appropriate forest;
+- broad gentle elevations/hills mixed with buildable lower-relief terrain.
+
+World should feel visually filled, not like sparse procedural terrain.
+
+See `docs/design/BIOMES_AND_PROP_GENERATION.md`.
+
+## Water
+
+Water is gameplay-simulated locally rather than only visual.
+
+Goals include:
+
+- generated oceans/rivers/lakes;
+- local downhill propagation into player-dug channels;
+- accumulation;
+- currents affecting actors;
+- swimming;
+- waterfall classification/presentation;
+- water sources for farming.
+
+The ocean horizon is not fully cell-simulated. Stable inland water sleeps until disturbed.
+
+See `docs/architecture/WATER_AND_HYDROLOGY.md`.
+
+## Props and foliage
+
+Biome-driven prop generation uses deterministic stable spawn IDs for persistent harvestables and batched/instanced presentation for disposable grass/clutter.
+
+Foundations, paths, FarmPlots, water and terrain edits locally suppress incompatible foliage.
+
+When suppression disappears, eligible natural grass can regrow.
 
 ## Farming
 
-Farming targets the authoritative terrain surface/material state. Tilling/watering need not create one scene node per soil tile.
+Farming uses dedicated `FarmPlotState` anchored to the 1 m grid/surface rather than encoding full crop state inside voxel material.
 
-Examples:
+Hoe on valid grass/dirt suppresses grass/prepares dirt and creates a FarmPlot without physically mining the terrain.
 
-- `GRASS -> TILLED_DRY`
-- `TILLED_DRY -> TILLED_WET`
-- path painting changes the relevant surface material/state.
+Shovel/path creation remains terrain material painting.
 
-Material transitions remain visually smooth even though gameplay ownership is discrete.
+FarmPlot tracks seed, growth, moisture, fertilizer and decay.
 
-Full crop lifecycle/regrowth/season rules still require a dedicated design pass.
+Direction:
+
+- normal watering protects moisture for around one in-game day;
+- strong rain may extend to roughly three days;
+- crop growth is day-oriented but visually progresses continuously;
+- fertilizer can provide configurable growth multipliers;
+- abandoned dry plots may decay after about 30 active gameplay minutes;
+- natural dirt may return to grass after roughly 3-6 in-game days when eligible.
+
+See `docs/design/FARMING_AND_FOLIAGE.md`.
 
 ## Building
 
-Construction is modular, physical and deliberately precise. It uses a square `BuildGrid` aligned by an integer ratio to voxel resolution.
+Construction uses square 1 m cells plus shared wall edges and center/point sockets.
 
-Different structures occupy different logical domains:
+- foundations/floors/ceilings/platforms occupy structural cells;
+- walls/door/window frames occupy shared edges;
+- pillars use point/center support sockets;
+- adjacent foundations share the same edge, preventing double walls.
 
-- foundations/ceilings/platforms use structural cells;
-- walls/doors/window walls use shared edges;
-- pillars/posts use point/center sockets.
+A grounded support origin provides an initial two-cell horizontal ceiling/platform reach in supported directions. Walls/elevated foundations/floating pillars inherit the original support root; they do not reset horizontal reach. A pillar genuinely reaching ground creates a new support root.
 
-Adjacent foundations share one boundary edge, preventing double walls on the same border.
+Destroying support recomputes all valid root paths. Only structures with no remaining valid support candidate collapse.
 
-Support is not simple connectivity. A structural graph tracks real support roots, support provenance, horizontal span and load/capacity. Walls/pillars/foundations placed on already-cantilevered geometry do not automatically reset support distance. Only genuine support reaching valid ground/root conditions can create a fresh support origin.
+Wood/stone structural tiers share support reach; stone differs mainly through durability/HP/cost/visuals, not magical load capacity.
 
-This blocks infinite `wall -> ceiling -> wall -> ceiling` sky staircases and prevents one pillar from supporting an unlimited floating structure.
-
-Destroying a load-bearing piece triggers local graph recomputation. Only pieces that lose all valid support paths/capacity collapse; alternate pillars/walls can keep connected bridge sections alive.
+Initial construction height cap is approximately +100 m from world reference/sea level.
 
 See `docs/design/BUILDING_AND_STRUCTURAL_SUPPORT.md`.
 
-## World props and biomes
+## Intro and initial village
 
-Surface and cave floors will use biome-driven terrain materials, grass/foliage, trees, rocks, resources and props. Exact deterministic scatter, clustering, suppression under buildings, regrowth and streaming rules remain an open design task.
+The player appears mysteriously near a devastated settlement and regains control during an attack/tutorial sequence.
 
-Placing foundations or painting/digging terrain must notify the local foliage/prop system so vegetation does not remain clipping through new structures or invalid ground.
+Initial core survivors/roles:
 
-## Inventory/HUD
+- Farmer — survives opening; supplies/sells seeds and supports farming introduction;
+- Explorer/Adventurer — survives opening and supports exploration/content guidance;
+- Miner — can die if the player is too slow during the opening, making the village's early resource support materially different.
 
-Gameplay HUD direction:
+The player becomes the settlement's practical leader/caretaker.
 
-- top-left health, stamina and mana bars with stepped visual widths;
-- bottom-left movement joystick;
-- bottom-center 8 hotbar slots plus inventory button;
-- bottom-right attack/use and interaction controls, with contextual extra combat controls only when justified.
+## Inventory
 
-Inventory uses slot/stack capacity without a weight system. Slot count may expand through progression/container/backpack systems.
+No carry-weight system.
 
-Current inventory screen direction places crafting on the **left** and player inventory on the **right**, while preserving essential status visibility.
+Initial player inventory:
 
-Common resource stack target is 256 unless item rules override it.
+- 20 slots total, interpreted as a 5x4 grid;
+- 8-slot hotbar;
+- hotbar accepts weapons, tools, consumables/food, structures/build items and explicitly eligible usable items;
+- equipment: helmet, torso, legs, two accessories;
+- active weapon is selected from hotbar.
 
-## Crafting
+Initial stack defaults:
 
-Crafting uses a five-slot visible queue and is processed per unit.
-
-A timer only measures when an attempted unit becomes ready; it does not directly pay/create items.
-
-At unit completion:
-
-`timer -> revalidate -> atomic ingredient consumption -> create output -> insert into inventory or world-drop -> decrement queue -> next timer`
-
-Queue entries do not reserve all ingredients in advance. Later entries sharing resources can shrink as earlier crafts or other systems consume the real inventory resources. If an entry becomes impossible at zero units, it can be removed.
-
-Cancelling an unfinished entry does not require refunding its current timer because ingredients are paid only when a unit successfully completes.
-
-If output has already been paid for but inventory is full, the crafted output drops into the world rather than disappearing.
-
-One remaining semantic to lock is whether a queue entry that shrank can automatically grow back toward its original requested amount if resources are later added.
+- resources 256;
+- consumables 32;
+- tools/weapons/armor/accessories 1;
+- structures 12;
+- projectile/ammunition-style items 999;
+- currency is a separate wallet/UI value.
 
 See `docs/design/INVENTORY_AND_CRAFTING.md`.
 
+## Inventory UI / containers
+
+Normal fullscreen inventory places crafting and player inventory in opposing panes while keeping health/stamina/mana visible.
+
+Craft recipe grid uses 5 horizontal columns and scrollable vertical rows. Craft queue has 5 visible slots.
+
+Opening a chest/container enters dual-inventory mode with drag/drop, full-stack quick transfer and partial-stack quantity popup.
+
+Workstations may craft using authorized nearby chests within a logistics radius.
+
+## Crafting safety
+
+All item mutation goes through one `InventoryTransactionCoordinator`.
+
+UI never directly owns or mutates authoritative quantities.
+
+Craft timer only schedules a unit attempt. At completion:
+
+`timer -> resolve allowed inventory scope -> revalidate revisions/resources -> atomic consume -> create output -> insert into valid destination or world drop -> queue decrement`
+
+Queue resources are not reserved globally in advance. Later jobs sharing ingredients shrink as real resources are consumed. Once quantity is clamped down, newly acquired resources do not magically regrow the queue; the player queues more explicitly.
+
+Saving stores queue entries/remaining counts but not partial timer progress. Loading restarts the current unit timer.
+
+## World drops
+
+Loose dropped items prefer a generic small bag/package inventory rather than one physics node per stack.
+
+Crafted output that cannot fit a valid inventory becomes a world drop bag rather than disappearing.
+
+## Mobs
+
+Base dispositions:
+
+- Passive;
+- Neutral;
+- Aggressive.
+
+Conditions are data-driven.
+
+Examples:
+
+- passive flee on threat;
+- defensive passive retaliates only when attacked;
+- neutral territorial/proximity behavior;
+- aggressive on sight;
+- night-only aggression;
+- pack aggression only above member threshold.
+
+See `docs/design/MOBS_CORPSES_AND_LOOT.md`.
+
+## Corpses and harvesting
+
+Mobs generally become temporary corpses rather than instantly spawning loose loot.
+
+Two loot channels exist:
+
+- delicate/interact inventory loot (for example feathers or creature-specific items);
+- tool-based corpse harvest yields (meat/hide etc.) with tool-dependent efficiency.
+
+Easy passive animals may lose unclaimed delicate loot if the body is harvested first. Bosses/important aggressive enemies/player death use persistent death-bag fallback for protected unclaimed inventory.
+
 ## Combat
 
-Weapons define the practical class. Switching weapon changes moveset, combos, reach, costs and available actions.
+Combat is weapon-defined and Cult-of-the-Lamb-like in readability.
 
-An attack is data-driven around windup/active/recovery, hitbox, movement, damage, knockback, hitstop, costs, effects and combo transitions.
+- tap Attack = normal combo;
+- hold Attack = directional HeavyAim; player pauses/limits movement and joystick points attack direction; release executes heavy attack;
+- weapon Skill button;
+- boss-derived equipped Ultimate button;
+- Dodge/Roll with explicit i-frames;
+- selected weapon sets support Guard/Parry.
 
-Enemy contact alone is generally not an attack. Enemies telegraph, execute an attack window and recover so avoidance is readable.
+Guard is frontal and slows movement. Rear/out-of-arc attacks bypass/break it. Well-timed frontal guard can parry for zero damage and brief enemy stun/stagger.
+
+See `docs/design/PLAYER_COMBAT.md`.
 
 ## Elements
 
-Common/core families include fire, water, earth and plant/nature. Rare/special families include pure light, pure darkness and blood/sanguine. Equipment combinations can produce synergies/conflicts through a data-driven reaction system rather than hard-coded pairwise logic spread across scripts.
+Core families include fire, water, earth and plant/nature. Rare families include pure light, pure darkness and blood/sanguine.
 
-## Progression
+Weapon/skill effects and element reactions are data-driven.
 
-XP/levels improve baseline capability and award passive-tree points. The tree emphasizes modifiers and playstyle changes rather than replacing weapon-based active combat.
+## Caves
 
-## Mines / caves
+Caves are separate procedural floor worlds.
 
-The mine is treated as multi-floor cave exploration rather than a continuous underground volume physically carved beneath the surface island. Each floor is a separate generated world/map state with its own terrain, biome, props, lighting and streaming state.
+Ordinary floors are ephemeral per `CaveRun`: during one run backtracking can preserve temporary state, but returning to surface allows unanchored floors to reset/reroll.
 
-Entering the dark cave mouth transitions to a cave floor. Approaching a descent point begins preloading the next floor's spawn envelope. The rest streams after transition. Previous floor state may remain in a short hot cache for quick return.
+A rare special cave anchor totem can make a floor persistent. Anchoring progresses consecutively through floors and unlocks elevator destinations; the player cannot anchor floor 1 and jump straight to floor 10 persistence.
 
-Authoritative `MineFloorData` persists destroyed terrain/cells, containers, special NPCs, important enemies, exits, POIs and events even when the visual Scene is unloaded.
+Chapter 1 cave biome direction includes:
 
-Underground biome direction includes room for bioluminescent, dark/hostile, gothic and other unusual themes, but the Chapter 1 biome list is not yet locked.
+- Standard Cave — dark with sparse weak luminous crystals/mushrooms and mixed ecology;
+- Darkness — effectively no natural light, aggressive creatures dominate, torches/lighting required;
+- Enchanted/Luminous Forest — bright bioluminescent trees/crystals/mushrooms with more neutral/passive ecology plus selected dangerous mobs.
+
+See `docs/design/CAVES_AND_ANCHOR_PROGRESSION.md`.
 
 ## NPCs
 
-NPC depth comes from local deterministic systems first: personality, schedule, needs, skills/jobs, memories, relationship dimensions and social/event logic.
+NPC depth remains local-first: personality, schedules, skills/jobs, memory and multidimensional relationships.
 
-Relationship dimensions may include affection, trust, respect, attraction, resentment, fear and familiarity. Labels such as friend, crush, partner or enemy are derived states rather than the only stored value.
+Appearance can be randomized locally or later drawn from a cached community appearance pool; recruited NPCs may be customized by the player.
 
-NPC visual randomization uses LPC compatibility filters mainly to prevent broken combinations; it should remain genuinely random enough to produce unusual appearances rather than relying on hundreds of hand-made presets.
+Names begin with large local first-name/surname pools behind a generator interface so a future syllabic generator can plug in without rewriting NPC identity.
 
-## Optional LLM enrichment
+## Village future / tribes
 
-The game remains complete offline. Optional user-configured AI providers may enrich a minority of social/narrative decisions.
+Architecture should not block future multiplayer tribes.
 
-The model proposes structured Social Intents or text variants. It cannot directly mutate the world. Local validators, event planners, Dialogue Manager and LimboAI execute or reject proposals.
+Structures and containers use an ownership abstraction compatible with player/village today and tribe ownership later. Multiplayer/raids/PvP are not Chapter 1 implementation scope.
+
+## Visual direction
+
+Target is a dense, readable cartoon/pixel-art hybrid.
+
+- stylized smooth terrain;
+- pixel/cartoon character sprites;
+- restrained mobile lighting;
+- soft readable shadows rather than expensive realism;
+- foliage density achieved through instancing/LOD;
+- interaction outline/highlight where context requires it;
+- VFX communicate attacks, harvesting, build validity and world interaction clearly.
 
 ## Content tooling
 
-Producer-facing content should be creatable through Black Island Tools inside the Godot editor wherever practical: items, recipes, weapons/movesets, NPC definitions, quests/cutscenes, validation and world content.
+Producer-facing systems should remain data-driven through Black Island Tools wherever practical: items, recipes, structures, weapons/movesets, crops, NPCs, mobs, biomes, quests/cutscenes and validation.
 
-## Open design work
+## Implementation order
 
-The living priority list is maintained in `docs/design/OPEN_DESIGN_CHECKLIST.md`. It currently includes biome/prop generation, grass suppression/regrowth, exact voxel/chunk/mobile profile, hydrology, player/camera feel, interaction priorities, farming/resource gathering, combat feel, build constants, inventory UX edge cases and remaining content/presentation rules.
+Current hands-on priority:
+
+1. world/voxel/streaming/water foundation;
+2. player movement/camera/LPC presentation;
+3. biome props/vegetation/farming surface reactions;
+4. NPC/mob baseline;
+5. item drops/corpses/containers;
+6. remaining Chapter 1 loops layered on top.
+
+The active remaining decisions/checks live in `docs/design/OPEN_DESIGN_CHECKLIST.md`.

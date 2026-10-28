@@ -1,47 +1,104 @@
 # Player LPC + 3D Presentation — Design/Technical Spec
 
-Status: Accepted direction; exact animation/runtime implementation still requires profiling.
+Status: Accepted core direction; tuning requires playable profiling.
 
 ## Core presentation
 
 Black Island is a real 3D world with 2D LPC-derived characters presented inside it.
 
-The preferred player visual root is conceptually:
+Conceptual player root:
 
 ```text
 Player (CharacterBody3D)
 ├── CollisionShape3D
-├── movement/action components
-├── interaction/combat probes
+├── PlayerMotor
+├── PlayerActionController
+├── InteractionTargeter
+├── CombatController
+├── Equipment/Inventory adapters
 └── CharacterVisual3D
     ├── LPC Sprite3D / billboard presentation
     ├── shadow
     └── local VFX/equipment presentation adapters
 ```
 
-The authoritative physical position is the character's feet/contact point, not the visual sprite center.
+The authoritative physical position is the character's feet/contact point, not the center of the sprite.
+
+## Camera modes
+
+First-person is not part of the core Black Island direction.
+
+### Gameplay camera — `GAMEPLAY_ANGLED`
+
+Primary exploration/combat camera is an elevated angled camera inspired by the readable composition of Cult of the Lamb.
+
+Goals:
+
+- readable enemy telegraphs;
+- visible surrounding terrain/props;
+- stable LPC presentation;
+- strong mobile combat readability;
+- enough depth/perspective to feel like a 3D world without becoming over-the-shoulder combat.
+
+Initial implementation should test a perspective camera with a long focal length/narrower FOV against orthographic presentation. Choose based on visual feel and depth readability, not ideology.
+
+Camera heading may be fixed or rotate only through controlled increments if later testing proves useful; gameplay must not require free FPS-style look.
+
+### Build camera — `BUILD_THIRD_PERSON`
+
+Entering build mode transitions smoothly from the angled gameplay composition to a closer third-person construction camera.
+
+Goals:
+
+- precise ray/probe targeting;
+- clear square build grid;
+- readable socket previews;
+- easier vertical placement of walls/pillars/ceilings;
+- optional limited orbit/rotation around player/build target.
+
+Build placement remains snapped to grid/sockets even though targeting is free 3D.
+
+Exiting build mode returns to the previous gameplay camera state.
+
+## Camera obstruction
+
+Trees, roofs and tall props between camera and player should not make the player disappear.
+
+Preferred solution order:
+
+1. camera-aware foliage/roof fade or dither for obstructing presentation;
+2. small camera reposition/zoom correction where appropriate;
+3. avoid destructive camera collision that causes large uncomfortable jumps.
+
+Use object/pixel dither or project-specific cutaway treatment instead of heavy full alpha blending where possible on mobile.
 
 ## LPC composition
 
 Do not represent every LPC body/clothing layer as a separate persistent `Sprite3D` during ordinary gameplay.
 
-Preferred pipeline:
+Pipeline:
 
-`CharacterAppearance -> LPC catalog/layer resolver -> body/variant/recolor/path compatibility -> zPos ordering -> compose/cache -> runtime character texture/clip -> Sprite3D`
+`CharacterAppearance -> LPC catalog/layer resolver -> compatibility/recolor/zPos -> compose/cache -> runtime animation texture/clip -> Sprite3D`
 
-Recompose only when appearance/equipment/required visual state changes. Reuse cached results when appearance keys match.
+Recompose only when appearance/equipment/required visual state changes. Reuse cache where appearance keys match.
 
-## Direction and camera
+## Billboard and direction
 
-The Sprite3D faces/billboards toward the gameplay camera. LPC directional animation is selected from movement/action direction relative to camera/actor orientation rather than physically turning the sprite plane away from the camera.
+The Sprite3D remains camera-facing/readable.
 
-The direction resolver must remain compatible with future camera rotation.
+LPC directional frame selection is based on actor/action direction transformed relative to camera orientation.
+
+The player may physically face a world direction while the flat visual plane remains camera-facing.
+
+`world action direction -> camera-relative direction resolver -> LPC up/down/left/right clip`
+
+This keeps directional animation correct if camera heading changes.
 
 ## Animation abstraction
 
-Gameplay code should not hard-code upstream LPC animation names.
+Gameplay code never hard-codes LPC upstream names.
 
-Use semantic visual actions such as:
+Semantic visual actions include:
 
 - `IDLE`
 - `MOVE`
@@ -54,35 +111,40 @@ Use semantic visual actions such as:
 - `FISH`
 - `WATER`
 - `SIT`
+- `SWIM`
+- `DODGE`
+- `GUARD`
 - `HURT`
 - `DEAD`
 
-The LPC animation resolver maps semantic actions to the best compatible catalog animation/body/equipment clip with fallback rules.
-
-This isolates Black Island gameplay from upstream LPC naming changes and missing animation coverage.
+`LPCAnimationResolver` maps semantic action to the best compatible catalog animation/fallback for current body/equipment.
 
 ## Variable/custom animation sizes
 
-Do not assume every clip uses one 64x64 sheet layout. The LPC ecosystem includes custom/oversized animations with different frame sizes and sequences.
+Do not assume one 64x64 frame layout.
 
-Black Island runtime should consume compiled animation metadata equivalent to:
+Runtime clip metadata can contain:
 
 ```text
 AnimationClip
 - semantic action
-- source animation/catalog animation
+- source catalog animation
 - directions
-- frame rectangles / sequence
-- frame/pivot size
+- frame rectangles/sequence
+- pivot/origin
 - frame duration
-- visual events
+- events
 - supported body types
-- required layers/equipment
+- required equipment/layers
 ```
+
+Oversized tool/weapon animations can therefore coexist with normal movement frames without resizing the physical player.
 
 ## Animation events
 
-Gameplay effects are not triggered merely because an animation ends. Clips expose semantic event markers such as:
+The gameplay action owns mechanics. Animation markers synchronize presentation/mechanical windows.
+
+Examples:
 
 - `HIT_START`
 - `HIT_END`
@@ -91,61 +153,110 @@ Gameplay effects are not triggered merely because an animation ends. Clips expos
 - `FOOTSTEP`
 - `FISH_CAST`
 
-The gameplay action owns authoritative mechanics. The visual event synchronizes the correct moment.
+`TOOL_IMPACT` may call a validated gather/terrain action. `HIT_START` activates a combat hitbox defined by the attack state.
 
-Examples:
+## Movement controller
 
-`TOOL_IMPACT -> TerrainEditService / resource target action`
+Use `CharacterBody3D` with project-owned motor logic.
 
-`HIT_START -> combat hitbox activation`
+Controller must handle:
 
-`PROJECTILE_RELEASE -> ranged attack spawn`
+- acceleration/deceleration rather than binary velocity;
+- ground snapping;
+- configurable maximum slope;
+- small step/terrain seam handling;
+- airborne/fall handling;
+- knockback impulses;
+- water/swim state;
+- temporary movement locks from heavy attacks/tool actions;
+- mobile joystick input normalized independently of camera pitch.
 
-## Player states
+Do not infer traversal from the rendered Sprite3D.
 
-Initial movement/action states may include:
+## Slope handling
+
+Smooth voxel terrain means floor normals vary continuously.
+
+Movement should:
+
+- project desired ground motion onto valid walkable plane;
+- reject/slide on slopes above configured limit;
+- maintain stable grounded snap over small Transvoxel surface variation;
+- use a modest step/snap tolerance so tiny mesh seams do not stop the player;
+- never allow camera/build grid precision to depend on visual terrain triangle IDs.
+
+Exact slope angle and step height are tuning constants after player prototype exists.
+
+## Stamina
+
+Stamina is a 0-100 player resource.
+
+Confirmed primary uses include physical gathering/tool work such as:
+
+- chopping trees;
+- mining/resource veins;
+- repeated heavy gathering actions.
+
+Combat/weapon definitions may also consume stamina if the design for that weapon requires it, but stamina is not a hunger surrogate.
+
+Stamina costs are requested by semantic actions; animation does not directly modify stamina.
+
+## Player action states
+
+Initial states include:
 
 - Idle
 - Move
 - Run
 - Attack
+- HeavyAim
+- HeavyAttack
+- Skill
+- Ultimate
+- Dodge
+- Guard/Parry where supported
 - UseTool
 - Interact
 - Build
+- Swim
 - Hurt
 - Dead
 
-Future states such as swim, fish, sit, sleep, carry and push should compose with the same semantic action layer rather than creating LPC-specific gameplay code.
+Systems should use composable state/action locks where possible rather than one giant unmaintainable enum.
 
 ## Appearance changes
 
-Appearance is data, not a sprite filename. A character appearance references catalog selections/body/recolors and Black Island-specific metadata/migrations.
+Appearance references stable LPC catalog selections/body/recolors plus Black Island migrations.
 
-Clothing and equipment are distinct concepts:
+Clothing and equipment remain distinct:
 
-- **Clothing** — mostly visual/social, changed through wardrobe/customization and unlock rules.
-- **Equipment/armor/weapons** — gameplay items/stats that may alter visual layers and animations.
+- **Clothing** — visual/social wardrobe state;
+- **Equipment/armor/weapons** — gameplay items that may add/replace visual layers.
 
-Pregnancy/body-state changes must re-resolve compatible clothing/animations rather than assuming all normal assets work. Missing assets use explicit compatibility fallback, never a silent invisible body/clothing layer.
+Body-state changes such as pregnancy re-resolve compatible clothing/animations using explicit fallback rules.
 
 ## Runtime cache
 
-A cache key should include all inputs that affect final visual output, for example:
+Appearance/clip cache key includes all visual inputs, for example:
 
-`catalog version + body type + selections + recolors + equipment visual state + compiled animation set version`
+`catalog version + body type + selections + recolors + equipment visual state + compiled animation version`
 
-Identical appearances may share immutable texture/clip resources where safe.
+Identical appearances may share immutable visual resources.
 
-## Interaction with world
+## World interaction
 
-The character's physical body remains normal 3D gameplay geometry even though the visible character is 2D.
+Terrain/build targeting is fully 3D.
 
-Terrain/build targeting uses 3D ray/probe results and authoritative terrain/build grids. The LPC sprite is presentation and must not define collision, targeting or occupancy.
+LPC visual is never collision authority.
 
-## First person
+Interaction probe resolves world targets through `InteractionTargeter`, which can query terrain, structures, props, mobs/NPCs, corpses, bags, crops and water according to action context.
 
-Optional first-person mode may hide the local third-person billboard and use a dedicated first-person equipment/hands presentation. Other actors remain LPC Sprite3D characters.
+## Visual direction
 
-## Visual style target
+Target presentation is cartoon/pixel-art hybrid:
 
-The intended scene language is readable stylized 3D/cartoon terrain and props with pixel-art/cartoon LPC characters, strong silhouettes and clear action feedback. Exact lighting, outline, shadow, sprite filtering and material treatment remain part of the pending visual-art direction pass.
+- smooth/stylized 3D world;
+- pixel/cartoon LPC characters;
+- strong silhouettes;
+- restrained mobile lighting;
+- outline primarily as contextual interaction/target feedback rather than a permanent heavy full-scene outline.
