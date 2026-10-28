@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://2g6w0wv5d0w7"]
+
+[ext_resource type="Script" uid="uid://duhgnlv0lan4t" path="res://scripts/core/boot.gd" id="1_4qrgx"]
+
+[node name="Boot" type="Control" unique_id=1204483893]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_4qrgx")

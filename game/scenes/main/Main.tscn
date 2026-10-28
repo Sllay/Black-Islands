@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bfyxlpt8wn67m"]
+
+[ext_resource type="Script" uid="uid://dy3qi0qvr1mmy" path="res://scripts/ui/main_view.gd" id="1_u1xfj"]
+
+[node name="Main" type="Node3D" unique_id=679985240]
+
+[node name="WorldRoot" type="Node3D" parent="." unique_id=1143006158]
+
+[node name="PlayerRoot" type="Node3D" parent="." unique_id=319592805]
+
+[node name="EntityRoot" type="Node3D" parent="." unique_id=1437969103]
+
+[node name="Canvas" type="CanvasLayer" parent="." unique_id=521318643]
+
+[node name="MainView" type="Control" parent="Canvas" unique_id=1116463096]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_u1xfj")
