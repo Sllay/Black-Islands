@@ -7,13 +7,26 @@
 - GDScript is the default game-language unless a measured hotspot or native dependency justifies another language.
 - Offline gameplay remains complete without external services.
 
+## Codex development toolchain
+
+The reproducible development environment is defined in `docs/architecture/CODEX_DEV_ENVIRONMENT.md` and pinned in `scripts/tooling/versions.env`.
+
+Current baseline:
+
+- Godot 4.7.2;
+- Godot MCP 0.1.2 in compact mode for editor/runtime/scene/resource/debug/test integration;
+- Serena 2.1.0 for symbol-aware GDScript navigation/refactoring/editing through Godot's built-in LSP;
+- Voxel Tools GDExtension 1.7 / `v1.7x` as the first smooth-voxel implementation route.
+
+Do not silently upgrade these pins.
+
 ## Planned/evaluated dependencies
 
-Dependencies are pinned only when introduced and validated.
+Dependencies are pinned when introduced and validated.
 
 ### Voxel Tools (Zylann)
 
-Preferred terrain implementation candidate.
+Preferred first terrain implementation route: pinned GDExtension 1.7 / `v1.7x`.
 
 Current researched capability includes:
 
@@ -27,7 +40,7 @@ Current researched capability includes:
 - voxel material channels;
 - instancing.
 
-Shipping choice between module/custom engine and GDExtension requires Android+iOS validation.
+The GDExtension is chosen for the first prototype because it avoids maintaining a custom Godot build. Upstream explicitly warns that the GDExtension route has received less testing than module builds, so Android/iOS/editor/export behavior must be validated before shipping. If it fails a required platform/performance gate, a module/custom-engine route remains an implementation fallback behind Black Island terrain interfaces.
 
 Terrain3D is no longer the primary Black Island surface strategy; ADR-0002 is superseded by ADR-0004.
 
