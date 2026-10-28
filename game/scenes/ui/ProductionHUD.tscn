@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cenwl8dld8xmn"]
+
+[ext_resource type="Script" uid="uid://6ygpyppv8eir" path="res://scripts/ui/shell_hud.gd" id="1_fb6v0"]
+
+[node name="ProductionHUD" type="Control" unique_id=584661779]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_fb6v0")

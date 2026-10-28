@@ -8,6 +8,9 @@ func show_saves() -> void:
 	_navigate(SAVE_SELECT)
 
 func enter_main() -> void:
+	if Profiles.current_profile().is_empty():
+		show_saves()
+		return
 	_navigate(MAIN)
 
 func _navigate(scene_path: String) -> void:
