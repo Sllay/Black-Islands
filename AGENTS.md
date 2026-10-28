@@ -66,7 +66,21 @@ See `agents/SUBAGENTS.md`.
 - Content creation must trend toward editor tools/resources rather than producer code edits.
 - Runtime truth belongs in data/state, not in whether a Scene happens to be loaded.
 
-## 8. Mobile performance
+## 8. Codex/Godot development tools
+
+- The reproducible development bootstrap is `bash scripts/bootstrap_codex_env.sh`.
+- Exact pins/checksums live in `scripts/tooling/versions.env`.
+- Project-local Codex MCP configuration is `.codex/config.toml`.
+- Use **Serena** as the preferred semantic navigation/refactoring/editing layer for existing GDScript.
+- Use **Godot MCP** for engine-aware scene/resource/project edits, diagnostics, editor/runtime inspection, tests, debugging and profiling.
+- Do not read/rewrite a whole large `.gd` file to change one method when Serena can locate and edit that symbol safely.
+- If Serena GDScript tools fail, verify Godot's built-in LSP/editor connection before falling back to blind text surgery.
+- Voxel Tools is fetched from the pinned GDExtension release for the initial prototype; keep Black Island terrain/save authority behind project-owned interfaces.
+- Never silently upgrade Godot, Godot MCP, Serena or Voxel Tools.
+
+See `docs/architecture/CODEX_DEV_ENVIRONMENT.md`.
+
+## 9. Mobile performance
 
 - SceneTree mutations stay on the main thread.
 - Worker threads prepare data; the main thread applies Nodes/resources that require SceneTree access.
@@ -75,7 +89,7 @@ See `agents/SUBAGENTS.md`.
 - Prefer batched rendering/instancing for large repeated populations.
 - Profile on a real mobile device before calling an optimization phase complete.
 
-## 9. AI/LLM rule
+## 10. AI/LLM rule
 
 Black Island must remain a complete game with no network and no LLM.
 
@@ -86,7 +100,7 @@ Required chain:
 
 Never commit provider API keys.
 
-## 10. Definition of done
+## 11. Definition of done
 
 For each phase:
 - acceptance criteria pass;
