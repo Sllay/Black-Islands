@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AttackDefinition" format=3 uid="uid://mcnn8uhjb6l7"]
+
+[ext_resource type="Script" uid="uid://d25mb7gqd0aky" path="res://scripts/combat/attack_definition.gd" id="1_hpkpi"]
+[ext_resource type="Shape3D" uid="uid://cy34ews6bcimn" path="res://resources/combat/LightVolume.tres" id="2_o0d1o"]
+
+[resource]
+script = ExtResource("1_hpkpi")
+id = "sword.light.1"
+shape = ExtResource("2_o0d1o")
+offset = Vector3(0, 0.8, -1)
+knockback = 1.8

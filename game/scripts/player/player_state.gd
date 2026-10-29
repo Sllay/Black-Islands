@@ -17,9 +17,10 @@ func can_consume(amount: float) -> bool:
 func consume(amount: float) -> bool:
 	if not can_consume(amount):
 		return false
-	current_stamina -= amount
-	_recovery_delay = 0.65
-	stamina_changed.emit(current_stamina, max_stamina)
+	if amount > 0:
+		current_stamina -= amount
+		_recovery_delay = 0.65
+		stamina_changed.emit(current_stamina, max_stamina)
 	return true
 
 func recover(delta: float, rate: float = 18.0) -> void:
@@ -28,6 +29,10 @@ func recover(delta: float, rate: float = 18.0) -> void:
 		return
 	current_stamina = minf(max_stamina, current_stamina + rate * delta)
 	stamina_changed.emit(current_stamina, max_stamina)
+
+func set_stamina(value: float) -> void:
+	current_stamina = clampf(value,0,max_stamina)
+	stamina_changed.emit(current_stamina,max_stamina)
 
 func set_health(value: float) -> void:
 	current_health = clampf(value, 0, max_health)

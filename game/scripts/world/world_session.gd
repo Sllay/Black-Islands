@@ -21,6 +21,11 @@ var _started := 0
 
 var grid_debug_visible := false
 
+var player_store: PlayerSaveStore
+var player_save: PlayerSaveCoordinator
+var qa_dummy: CombatDummy
+var player_metrics: Label
+
 func _ready() -> void:
 	if get_tree().has_meta("ui_only_smoke"):
 		return
@@ -29,8 +34,13 @@ func _ready() -> void:
 	if profile.is_empty():
 		return
 	var storage_root := "user://worlds" if Profiles.store.directory == "user://profiles" else "user://qa_worlds"
-	store = WorldDeltaStore.new(storage_root.path_join(profile.save_id), profile)
+	store = WorldDeltaStore.new(storage_root.path_join(profile.save_id),profile)
 	var error := store.load_world()
+	if error != OK:
+		_show_load_error(error)
+		return
+	player_store = PlayerSaveStore.new(store.directory,profile)
+	error = player_store.load_player()
 	if error != OK:
 		_show_load_error(error)
 		return
@@ -48,16 +58,21 @@ func _ready() -> void:
 	pawn.terrain = terrain
 	pawn.water = water
 	add_child(pawn)
+	player_save = PlayerSaveCoordinator.new()
+	player_save.name = "PlayerSave"
+	add_child(player_save)
+	player_save.configure(pawn,player_store)
 	streamer = WorldStreamer.new()
 	streamer.name = "WorldStreamer"
 	streamer.field = terrain.field
 	streamer.viewer = pawn
 	add_child(streamer)
 	var lake := terrain.field.lake_body()
-	$Lake.position = Vector3(lake.center.x, lake.level, lake.center.y)
+	$Lake.position = Vector3(lake.center.x,lake.level,lake.center.y)
 	if OS.is_debug_build():
 		_create_tools()
-	print("WORLD seed=", profile.world_seed, " generation=", profile.world_generation_version, " profile=", profile.world_profile, " deltas=", store.metrics())
+		_create_player_qa()
+	print("WORLD seed=",profile.world_seed," generation=",profile.world_generation_version," profile=",profile.world_profile," deltas=",store.metrics())
 
 func _unhandled_input(event: InputEvent) -> void:
 	if pawn == null:
@@ -142,20 +157,62 @@ func _create_tools() -> void:
 	add_child(canvas)
 	var panel := VBoxContainer.new()
 	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	panel.position = Vector2(-215, 20)
+	panel.position = Vector2(-215,20)
 	panel.theme = load("res://resources/ui/ShellTheme.tres")
 	canvas.add_child(panel)
-	var toggle := ShellUI.button("QA WORLD • F2 / F4 Grade", "WorldTools", Vector2(200, 42))
+	var toggle := ShellUI.button("QA WORLD / PLAYER • F2","WorldTools",Vector2(200,42))
 	panel.add_child(toggle)
-	tools = ShellUI.column(panel, 6)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(430,minf(570,get_viewport().get_visible_rect().size.y-120))
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
+	tools = ShellUI.column(scroll,6)
 	tools.visible = false
+	scroll.visible = false
+	tools.visibility_changed.connect(func() -> void: scroll.visible = tools.visible)
 	toggle.pressed.connect(func() -> void: tools.visible = not tools.visible)
-	metrics_label = ShellUI.label_text("", 16)
+	metrics_label = ShellUI.label_text("",16)
 	tools.add_child(metrics_label)
-	for entry: Array in [["F • Escavar", func() -> void: edit_ahead(false)], ["P • Pintar solo", func() -> void: edit_ahead(true)], ["F3 • Panorama", pawn.toggle_overview], ["Borda 64m", func() -> void: pawn.inspect_at(Vector3(74, 40, 0))], ["Praia", func() -> void: pawn.inspect_at(Vector3(199, 40, 0))], ["Oceano / limite suave", func() -> void: pawn.inspect_at(Vector3(380, 2, 0))], ["Clareira", func() -> void: pawn.inspect_at(Vector3(0, 40, 0))]]:
-		var button := ShellUI.button(entry[0], "QA", Vector2(200, 44))
+	for entry: Array in [["F • Escavar",func() -> void: edit_ahead(false)],["P • Pintar solo",func() -> void: edit_ahead(true)],["F3 • Panorama",pawn.toggle_overview],["Borda 64m",func() -> void: pawn.inspect_at(Vector3(74,40,0))],["Praia",func() -> void: pawn.inspect_at(Vector3(199,40,0))],["Oceano / limite suave",func() -> void: pawn.inspect_at(Vector3(380,2,0))],["Clareira",func() -> void: pawn.inspect_at(Vector3(0,40,0))]]:
+		var button := ShellUI.button(entry[0],"QA",Vector2(200,44))
 		button.pressed.connect(entry[1])
 		tools.add_child(button)
+
+func _create_player_qa() -> void:
+	var row := HBoxContainer.new()
+	tools.add_child(row)
+	tools.move_child(row,0)
+	for entry: Array in [["Alvo P03",spawn_combat_qa],["Pulso",pulse_combat_qa],["Reset alvo",reset_combat_qa]]:
+		var button := ShellUI.button(entry[0],"PlayerQA",Vector2(110,44))
+		button.pressed.connect(entry[1])
+		row.add_child(button)
+	player_metrics = ShellUI.label_text("",16)
+	tools.add_child(player_metrics)
+	tools.move_child(player_metrics,1)
+
+func spawn_combat_qa() -> void:
+	if pawn == null or not pawn.spawned:
+		return
+	if is_instance_valid(qa_dummy):
+		qa_dummy.queue_free()
+	var point := pawn.global_position+pawn.motor.facing*1.7
+	var surface := terrain.surface_hit(point.x,point.z)
+	if surface.is_empty():
+		return
+	qa_dummy = load("res://scenes/debug/CombatDummy.tscn").instantiate()
+	qa_dummy.position = surface.position+Vector3.UP*0.04
+	add_child(qa_dummy)
+
+func pulse_combat_qa() -> void:
+	if is_instance_valid(qa_dummy):
+		qa_dummy.pulse_player(pawn)
+
+func reset_combat_qa() -> void:
+	if is_instance_valid(qa_dummy):
+		qa_dummy.reset()
+	pawn.state.set_health(pawn.state.max_health)
+	pawn.state.set_stamina(pawn.state.max_stamina)
+	pawn.combat.cancel()
 
 func _process(delta: float) -> void:
 	if terrain == null:
@@ -171,6 +228,10 @@ func _process(delta: float) -> void:
 	if _refresh < 0.25:
 		return
 	_refresh = 0
+	if tools.visible and player_metrics != null:
+		var combat_report := pawn.combat.report()
+		var visual_report := pawn.visual.report()
+		player_metrics.text = "P03 • pos %s\nvel %s • floor %s\ncamera %s • target %s\nLPC %s / %s • cache %s\ncombat %s • i-frame %s\nplayer save rev %d / %dms" % [pawn.global_position.snapped(Vector3.ONE*0.1),pawn.velocity.snapped(Vector3.ONE*0.1),pawn.is_on_floor(),"Build" if pawn.camera_rig.build_mode else "Gameplay",TargetResult.Kind.keys()[pawn.targeter.current.kind],visual_report.action,visual_report.direction,visual_report.cache.compositions,combat_report.phase,combat_report.invulnerable,player_store.revision,player_save.last_commit_ms]
 	var target := pawn.targeter.current
 	$BuildHighlight.visible = (grid_debug_visible or pawn.camera_rig.build_mode) and target.kind != TargetResult.Kind.NONE
 	if $BuildHighlight.visible:

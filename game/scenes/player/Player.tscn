@@ -9,6 +9,10 @@
 [ext_resource type="Script" uid="uid://bkwwjanf1oau" path="res://scripts/player/interaction_targeter.gd" id="9_ejd4k"]
 [ext_resource type="Script" uid="uid://dj2pd18cd7uam" path="res://scripts/lpc/lpc_visual_3d.gd" id="9_pn6s4"]
 [ext_resource type="Script" uid="uid://0gg7qfhp01p3" path="res://scripts/inventory/inventory_component.gd" id="10_7oing"]
+[ext_resource type="Script" uid="uid://swexnpo5k1ri" path="res://scripts/combat/player_combat.gd" id="10_20koh"]
+[ext_resource type="Material" uid="uid://cio8lw7noboiv" path="res://resources/combat/AimMaterial.tres" id="11_ov1oi"]
+[ext_resource type="BoxMesh" uid="uid://beub3u1ps0n8x" path="res://resources/combat/AimShaft.tres" id="12_rn7t0"]
+[ext_resource type="CylinderMesh" uid="uid://cenl1gvu8c210" path="res://resources/combat/AimTip.tres" id="13_8qjgm"]
 
 [node name="Player" type="CharacterBody3D" unique_id=382088037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
@@ -52,3 +56,21 @@ pixel_size = 0.03125
 billboard = 1
 alpha_cut = 1
 texture_filter = 0
+
+[node name="PlayerCombat" type="Node" parent="." unique_id=758838842]
+script = ExtResource("10_20koh")
+
+[node name="AimIndicator" type="Node3D" parent="." unique_id=676134501]
+visible = false
+
+[node name="Shaft" type="MeshInstance3D" parent="AimIndicator" unique_id=1707014946]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, -0.9)
+material_override = ExtResource("11_ov1oi")
+cast_shadow = 0
+mesh = ExtResource("12_rn7t0")
+
+[node name="Tip" type="MeshInstance3D" parent="AimIndicator" unique_id=2117600737]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.08, -1.7)
+material_override = ExtResource("11_ov1oi")
+cast_shadow = 0
+mesh = ExtResource("13_8qjgm")

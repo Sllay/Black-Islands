@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bpslyg4d03wwy"]
+
+[ext_resource type="Script" path="res://tests/integration/player_c03_smoke.gd" id="1_7cnv1"]
+
+[node name="PlayerC03Smoke" type="Node3D" unique_id=445124674]
+script = ExtResource("1_7cnv1")

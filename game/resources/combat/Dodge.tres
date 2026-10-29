@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="DodgeDefinition" format=3 uid="uid://dgfcbfmkn6wtl"]
+
+[ext_resource type="Script" uid="uid://c3d7jn3kpcok6" path="res://scripts/combat/dodge_definition.gd" id="1_mtkx5"]
+
+[resource]
+script = ExtResource("1_mtkx5")

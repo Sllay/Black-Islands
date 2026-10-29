@@ -75,6 +75,7 @@ func present_world() -> void:
 		bind_player(actor)
 
 func bind_player(actor: PlayerActor) -> void:
+	_bind_health(actor)
 	var stamina_bar := find_child("Stamina", true, false) as HudResourceBar
 	var cluster := find_child("Actions", true, false) as MobileActionCluster
 	actor.state.stamina_changed.connect(stamina_bar.set_fraction)
@@ -94,6 +95,11 @@ func bind_player(actor: PlayerActor) -> void:
 	stamina_bar.get_parent().add_child(wallet)
 	actor.inventory.state.changed.connect(func(_revision: int) -> void: _refresh_inventory(actor, hotbar, wallet))
 	_refresh_inventory(actor, hotbar, wallet)
+
+func _bind_health(actor: PlayerActor) -> void:
+	var bar := find_child("Health",true,false) as HudResourceBar
+	actor.state.health_changed.connect(bar.set_fraction)
+	bar.set_fraction(actor.state.current_health,actor.state.max_health)
 
 func _refresh_inventory(actor: PlayerActor, hotbar: HBoxContainer, wallet: Label) -> void:
 	for index: int in range(8):

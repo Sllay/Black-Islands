@@ -104,6 +104,9 @@ func _run() -> void:
 	hud.present_world()
 	await _frames(4)
 	await HudInputProbe.exercise(hud, _check)
+	# Actions now drive real combat; let its explicit recovery finish before
+	# measuring independent joystick locomotion (the InputMap test above overlaps).
+	await _frames(40)
 	var joystick := hud.find_child("Movement", true, false) as VirtualJoystick
 	var center := joystick.get_global_rect().get_center()
 	var before_touch := player.global_position

@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cqu13qadm6isy"]
+
+[ext_resource type="Script" uid="uid://g7petfb7uplf" path="res://scripts/debug/combat_dummy.gd" id="1_e8bbl"]
+[ext_resource type="Shape3D" uid="uid://bnwty8wma5h2u" path="res://resources/combat/DummyShape.tres" id="2_gm7od"]
+[ext_resource type="Material" uid="uid://cgote5fhotfu7" path="res://resources/combat/DummyMaterial.tres" id="3_pl6rw"]
+[ext_resource type="CylinderMesh" uid="uid://boxca3u3a1ym" path="res://resources/combat/DummyMesh.tres" id="4_rvb2y"]
+
+[node name="CombatDummy" type="CharacterBody3D" unique_id=324474699]
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("1_e8bbl")
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1502417609]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = ExtResource("2_gm7od")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=1645373013]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+material_override = ExtResource("3_pl6rw")
+mesh = ExtResource("4_rvb2y")
+
+[node name="Label" type="Label3D" parent="." unique_id=110104729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+pixel_size = 0.006
+billboard = 1
+outline_size = 8

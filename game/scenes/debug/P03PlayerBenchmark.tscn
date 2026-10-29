@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dwb6iuo5k114"]
+
+[ext_resource type="Script" path="res://tests/integration/world_player_benchmark.gd" id="1_7isgu"]
+
+[node name="P03PlayerBenchmark" type="Node3D" unique_id=359813410]
+script = ExtResource("1_7isgu")

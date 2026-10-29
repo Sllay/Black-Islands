@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MovesetDefinition" format=3 uid="uid://dhek5q6ust8ev"]
+
+[ext_resource type="Script" uid="uid://d25mb7gqd0aky" path="res://scripts/combat/attack_definition.gd" id="1_sh1ca"]
+[ext_resource type="Resource" uid="uid://mcnn8uhjb6l7" path="res://resources/combat/SwordLight1.tres" id="2_n10rq"]
+[ext_resource type="Resource" uid="uid://bavja61toijqt" path="res://resources/combat/SwordLight2.tres" id="3_6fqg4"]
+[ext_resource type="Resource" uid="uid://qhccocejfk2w" path="res://resources/combat/SwordLight3.tres" id="4_6ohdf"]
+[ext_resource type="Resource" uid="uid://dhtx0b1hi8pxk" path="res://resources/combat/SwordHeavy.tres" id="5_t1xwd"]
+[ext_resource type="Script" uid="uid://8vuweslu1kyo" path="res://scripts/combat/moveset_definition.gd" id="6_d1mma"]
+
+[resource]
+script = ExtResource("6_d1mma")
+id = "sword.training.v1"
+attacks = Array[ExtResource("1_sh1ca")]([ExtResource("2_n10rq"), ExtResource("3_6fqg4"), ExtResource("4_6ohdf"), ExtResource("5_t1xwd")])
+light_entry = "sword.light.1"
+heavy_entry = "sword.heavy.1"
+transitions = {
+"sword.light.1/HEAVY": "sword.heavy.1",
+"sword.light.1/LIGHT": "sword.light.2",
+"sword.light.2/HEAVY": "sword.heavy.1",
+"sword.light.2/LIGHT": "sword.light.3"
+}

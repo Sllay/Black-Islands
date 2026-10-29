@@ -37,7 +37,7 @@ func planar_direction(axis: Vector2) -> Vector3:
 
 func tick(delta: float) -> void:
 	blend = move_toward(blend, 1.0 if build_mode else 0.0, delta / transition_seconds)
-	_anchor = _anchor.lerp(actor.global_position + Vector3.UP, 1.0 - exp(-12.0 * delta))
+	_anchor = _anchor.lerp(actor.global_position + Vector3.UP * (0.9 if benchmark_legacy else 1.0), 1.0 - exp(-12.0 * delta))
 	var offset := Vector3(0, 16, 14).lerp(Vector3(0, 4, 7), smoothstep(0, 1, blend))
 	var look := _anchor + Vector3.FORWARD.rotated(Vector3.UP, deg_to_rad(heading_degrees)) * lerpf(0.5, 2.0, blend)
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE

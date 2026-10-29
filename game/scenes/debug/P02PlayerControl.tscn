@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://ccfupdnooo6cc"]
+
+[ext_resource type="Script" path="res://tests/integration/world_player_benchmark.gd" id="1_8xt0n"]
+
+[node name="P02PlayerControl" type="Node3D" unique_id=1553162999]
+script = ExtResource("1_8xt0n")
+legacy = true

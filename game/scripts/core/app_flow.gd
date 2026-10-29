@@ -4,8 +4,24 @@ extends Node
 const SAVE_SELECT := "res://scenes/ui/SaveSelect.tscn"
 const MAIN := "res://scenes/main/Main.tscn"
 
+func _ready() -> void:
+	get_tree().auto_accept_quit = false
+	get_tree().root.close_requested.connect(request_quit)
+
+func _flush_players() -> Error:
+	for coordinator: PlayerSaveCoordinator in get_tree().get_nodes_in_group("player_save_coordinators"):
+		var error := coordinator.flush()
+		if error != OK:
+			return error
+	return OK
+
+func request_quit() -> void:
+	if _flush_players() == OK:
+		get_tree().quit()
+
 func show_saves() -> void:
-	_navigate(SAVE_SELECT)
+	if _flush_players() == OK:
+		_navigate(SAVE_SELECT)
 
 func enter_main() -> void:
 	if Profiles.current_profile().is_empty():

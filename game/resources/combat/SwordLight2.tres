@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AttackDefinition" format=3 uid="uid://bavja61toijqt"]
+
+[ext_resource type="Script" uid="uid://d25mb7gqd0aky" path="res://scripts/combat/attack_definition.gd" id="1_oneu2"]
+[ext_resource type="Shape3D" uid="uid://cy34ews6bcimn" path="res://resources/combat/LightVolume.tres" id="2_t07vv"]
+
+[resource]
+script = ExtResource("1_oneu2")
+id = "sword.light.2"
+windup = 0.09
+recovery = 0.22
+damage = 20.0
+shape = ExtResource("2_t07vv")
+offset = Vector3(0, 0.8, -1)
+knockback = 1.8
