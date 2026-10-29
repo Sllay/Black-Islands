@@ -25,6 +25,9 @@ func select_slot(slot_id: String) -> Error:
 			"save_id": Crypto.new().generate_random_bytes(16).hex_encode(),
 			"created_at": now, "display_name": "Jornada %s" % slot_id.trim_prefix("slot_"),
 		}
+	var identity_error := WorldIdentity.establish(metadata)
+	if identity_error != OK:
+		return identity_error
 	metadata["last_played_at"] = now
 	var error := store.write_slot(metadata)
 	if error == OK:

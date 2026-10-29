@@ -33,8 +33,6 @@ func _verify() -> void:
 			break
 	var after := adapter.surface_hit(0, 0)
 	if after.is_empty() or after.position.y >= before.y - 1.5:
-		print("COLLISION_TRACE before=", before, " after=", after, " statistics=", adapter.statistics())
-		print("DENSITY_TRACE center=", adapter.density_at(before), " below=", adapter.density_at(before - Vector3(0, 1, 0)))
 		_fail("native collision did not rebuild")
 		return
 	print("NATIVE_EDIT_COLLISION PASS latency_ms=", Time.get_ticks_msec() - started, " before=", before, " after=", after.position)
@@ -64,7 +62,27 @@ func _verify() -> void:
 		_fail("border edit did not rebuild both sides")
 		return
 	print("NATIVE_BORDER_COLLISION PASS x=64m ", adapter.statistics())
+	if not await _verify_paint(adapter):
+		_fail("bounded native material paint")
+		return
 	get_tree().quit()
+
+func _verify_paint(adapter: VoxelTerrainAdapter) -> bool:
+	var point := Vector3(64, 12, 10)
+	if not await _wait_surface(adapter, point):
+		return false
+	var hit := adapter.surface_hit(point.x, point.z)
+	var center: Vector3 = hit.position
+	var outside := center + Vector3(5, 0, 0)
+	var before_sdf := adapter.density_at(center)
+	var outside_material := adapter.material_at(outside)
+	if not adapter.paint_sphere(center, 1.5, 2):
+		return false
+	if adapter.material_at(center) != 2 or adapter.material_at(outside) != outside_material or adapter.density_at(center) != before_sdf:
+		return false
+	await get_tree().create_timer(0.3).timeout
+	print("NATIVE_MATERIAL_PAINT PASS local soil, outside unchanged, density unchanged")
+	return true
 
 func _fail(message: String) -> void:
 	push_error(message)

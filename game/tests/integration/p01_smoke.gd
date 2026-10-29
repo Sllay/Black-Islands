@@ -16,7 +16,8 @@ var current_scene: Node:
 func _ready() -> void:
 	tree = get_tree()
 	root = tree.root
-	# Keep only this test controller alive while real production scenes change.
+	tree.set_meta("ui_only_smoke", true)
+	# Keep only this UI/save controller alive while production scenes change.
 	tree.current_scene = null
 	_run.call_deferred()
 
@@ -38,6 +39,8 @@ func _clean() -> void:
 			var path := TEST_DIRECTORY.path_join(slot_id + suffix)
 			if FileAccess.file_exists(path):
 				DirAccess.remove_absolute(path)
+
+# P01 tests exercise UI/save only; P02 has an independent native-world gate.
 
 func _run() -> void:
 	_clean()

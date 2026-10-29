@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://bfyxlpt8wn67m"]
 
+[ext_resource type="PackedScene" uid="uid://ctbcbfn0flsfc" path="res://scenes/world/WorldSession.tscn" id="1_nha0i"]
 [ext_resource type="Script" uid="uid://dy3qi0qvr1mmy" path="res://scripts/ui/main_view.gd" id="1_u1xfj"]
 
 [node name="Main" type="Node3D" unique_id=679985240]
 
 [node name="WorldRoot" type="Node3D" parent="." unique_id=1143006158]
+
+[node name="WorldSession" parent="WorldRoot" unique_id=138808288 instance=ExtResource("1_nha0i")]
 
 [node name="PlayerRoot" type="Node3D" parent="." unique_id=319592805]
 

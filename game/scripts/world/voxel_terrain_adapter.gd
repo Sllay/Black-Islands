@@ -18,9 +18,13 @@ func _ready() -> void:
 	native.view_distance = 512
 	native.streaming_system = VoxelLodTerrain.STREAMING_SYSTEM_CLIPBOX
 	native.collision_lod_count = 1
-	native.collision_update_delay = 0
+	native.collision_update_delay = 16
+	native.collision_layer = 1
 	native.cache_generated_blocks = true
-	native.mesher = VoxelMesherTransvoxel.new()
+	var mesher := VoxelMesherTransvoxel.new()
+	mesher.texturing_mode = VoxelMesherTransvoxel.TEXTURES_MIXEL4_S4
+	mesher.textures_ignore_air_voxels = true
+	native.mesher = mesher
 	native.material = load("res://resources/world/TerrainMaterial.tres")
 	generator = VoxelIslandGenerator.new()
 	generator.field = field
@@ -49,6 +53,36 @@ func dig_sphere(center: Vector3, radius: float) -> bool:
 	edit_requests += 1
 	region_changed.emit(AABB(center - Vector3.ONE * radius, Vector3.ONE * radius * 2.0))
 	return true
+
+func paint_sphere(center: Vector3, radius: float, logical_material: int) -> bool:
+	if logical_material < 0 or logical_material > 3 or not is_editable(center, radius):
+		return false
+	var tool := native.get_voxel_tool()
+	tool.channel = VoxelBuffer.CHANNEL_SDF
+	tool.mode = VoxelTool.MODE_TEXTURE_PAINT
+	tool.texture_index = logical_material
+	tool.texture_opacity = 1.0
+	tool.texture_falloff = 0.5
+	tool.do_sphere(native.to_local(center), radius / WorldCoordinates.VOXEL_SIZE)
+	edit_requests += 1
+	region_changed.emit(AABB(center - Vector3.ONE * radius, Vector3.ONE * radius * 2.0))
+	return true
+
+func material_at(world_point: Vector3) -> int:
+	var tool := native.get_voxel_tool()
+	var coord := Vector3i(native.to_local(world_point).floor())
+	tool.channel = VoxelBuffer.CHANNEL_INDICES
+	var indices := tool.get_voxel(coord)
+	tool.channel = VoxelBuffer.CHANNEL_WEIGHTS
+	var weights := tool.get_voxel(coord)
+	var maximum := -1
+	var selected := 0
+	for index: int in range(4):
+		var weight := (weights >> (index * 4)) & 15
+		if weight > maximum:
+			maximum = weight
+			selected = (indices >> (index * 4)) & 15
+	return selected
 
 func surface_hit(x: float, z: float) -> Dictionary:
 	var query := PhysicsRayQueryParameters3D.create(Vector3(x, 100, z), Vector3(x, -120, z))

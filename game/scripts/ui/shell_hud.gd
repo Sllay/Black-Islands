@@ -67,6 +67,10 @@ func _ready() -> void:
 	hotbar.add_child(_action("Bolsa", "inventory", Vector2(86, 64)))
 	bottom.add_child(MobileActionCluster.new())
 
+func present_world() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	feedback.get_parent().visible = false
+
 func _action(title: String, action: String, minimum := Vector2(56, 56)) -> Button:
 	var button := ShellUI.button(title, action.to_pascal_case(), minimum)
 	button.button_down.connect(func() -> void:

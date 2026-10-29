@@ -1,53 +1,40 @@
-// Transvoxel vertex path: Zylann/godot_voxel v1.7x, MIT; see licenses/voxel_tools.txt.
+// Native Transvoxel vertex path: Zylann/godot_voxel v1.7x, MIT.
+// See licenses/voxel_tools.txt. Palette presentation belongs to Black Island.
 shader_type spatial;
-
-// From Voxel Tools API
 uniform int u_transition_mask;
+varying flat vec4 material_ids;
+varying vec4 material_weights;
 
-float get_transvoxel_secondary_factor(int idata) {
-	int transition_mask = u_transition_mask & 0xff;
-
-	int cell_border_mask = idata & 63; // Which sides the cell is touching
-	int vertex_border_mask = (idata >> 8) & 63; // Which sides the vertex is touching
-	// If the vertex is near a side where there is a low-resolution neighbor,
-	// move it to secondary position
-	int m = transition_mask & cell_border_mask;
-	float t = float(m != 0);
-	// If the vertex lies on one or more sides, and at least one side has no low-resolution neighbor,
-	// don't move the vertex.
-	t *= float((vertex_border_mask & ~transition_mask) == 0);
-	
-	// Debugging
-	//t *= 0.5 + 0.5 * sin(TIME * 4.0);
-	//t *= 2.0;
-
-	return t;
+vec4 unpack_bytes(uint value) {
+	return vec4(float(value & 255u), float((value >> 8u) & 255u),
+		float((value >> 16u) & 255u), float((value >> 24u) & 255u));
 }
-
-vec3 get_transvoxel_position(vec3 vertex_pos, vec4 fdata) {
-	int idata = floatBitsToInt(fdata.a);
-
-	// Move vertices to smooth transitions
-	float secondary_factor = get_transvoxel_secondary_factor(idata);
-	vec3 secondary_position = fdata.xyz;
-	vec3 pos = mix(vertex_pos, secondary_position, secondary_factor);
-
-	// If the mesh combines transitions and the vertex belongs to a transition,
-	// when that transition isn't active we change the position of the vertices so
-	// all triangles will be degenerate and won't be visible.
-	// This is an alternative to rendering them separately,
-	// which has less draw calls and less mesh resources to create in Godot.
-	// Ideally I would tweak the index buffer like LOD does but Godot does not
-	// expose anything to use it that way.
-	int itransition = (idata >> 16) & 0xff; // Is the vertex on a transition mesh?
-	float transition_cull = float(itransition == 0 || (itransition & u_transition_mask) != 0);
-	pos *= transition_cull;
-
-	return pos;
+float secondary_factor(int data) {
+	int mask = u_transition_mask & 255;
+	int cell_border = data & 63;
+	int vertex_border = (data >> 8) & 63;
+	return float((mask & cell_border) != 0) * float((vertex_border & ~mask) == 0);
 }
-
+vec3 transvoxel_position(vec3 primary, vec4 data) {
+	int bits = floatBitsToInt(data.a);
+	vec3 position = mix(primary, data.xyz, secondary_factor(bits));
+	int transition = (bits >> 16) & 255;
+	return position * float(transition == 0 || (transition & u_transition_mask) != 0);
+}
+vec3 palette(float id) {
+	if (id < 0.5) { return vec3(0.77, 0.64, 0.38); }
+	if (id < 1.5) { return vec3(0.27, 0.48, 0.21); }
+	if (id < 2.5) { return vec3(0.37, 0.23, 0.13); }
+	return vec3(0.39, 0.42, 0.43);
+}
 void vertex() {
-	VERTEX = get_transvoxel_position(VERTEX, CUSTOM0);
+	VERTEX = transvoxel_position(VERTEX, CUSTOM0);
+	material_ids = unpack_bytes(floatBitsToUint(CUSTOM1.x));
+	material_weights = unpack_bytes(floatBitsToUint(CUSTOM1.y)) / 255.0;
 }
-
-void fragment() { ALBEDO = vec3(0.32, 0.49, 0.24); ROUGHNESS = 0.92; }
+void fragment() {
+	vec4 weights = material_weights / max(dot(material_weights, vec4(1.0)), 0.001);
+	ALBEDO = palette(material_ids.x) * weights.x + palette(material_ids.y) * weights.y
+		+ palette(material_ids.z) * weights.z + palette(material_ids.w) * weights.w;
+	ROUGHNESS = 0.94;
+}
