@@ -66,6 +66,52 @@ func offscreen_sample() -> void:
 	result = {"id":id,"removed_far":removed,"restored_instances":count,"health":runtime.mobs.domain.states[id].health}
 	print("P04_OFFSCREEN ",result)
 
+func corrections() -> void:
+	# Explicit QA provision moves old stacks into a container; nothing is deleted.
+	var supply := runtime.containers.create(runtime.ledger.new_id("qa_supplies"),runtime.player.position,"WorldDropBag")
+	var remaining := {"bi.resource.wood":80,"bi.resource.stone":20,"bi.seed.turnip":8}
+	for attempt: int in range(4):
+		var output := InventoryTransactions.output(runtime.player.inventory.state,remaining)
+		if output.error != OK:
+			break
+		remaining = output.overflow
+		if remaining.is_empty():
+			break
+		var row := runtime.player.inventory.state.slot_at(19-attempt)
+		if not row.is_empty():
+			InventoryTransactions.transfer(runtime.player.inventory.state,supply,row.stack_uid,int(row.quantity),runtime.player.inventory.state.revision,supply.revision)
+	if not remaining.is_empty():
+		runtime.create_bag(runtime.player.position,remaining)
+	c02()
+
+func collapse_sample() -> void:
+	for id: String in runtime.building.pieces.keys():
+		var row: Dictionary = runtime.building.pieces[id]
+		if row.definition != "foundation":
+			continue
+		var cell := SupportGraph.cell(row)
+		runtime.actions.selected_structure = "chest"
+		var before := runtime.containers.records.keys()
+		var placed := runtime.actions.build_at(cell,id)
+		var chest_id := ""
+		for candidate: String in runtime.containers.records:
+			if candidate not in before and runtime.containers.records[candidate].kind == "Chest":
+				chest_id = candidate
+		if chest_id.is_empty():
+			result = {"error":"chest placement","code":placed}
+			return
+		InventoryTransactions.output(runtime.containers.inventories[chest_id],{"bi.resource.stone":7})
+		var edit := runtime.session.edits.apply(StructureModule.center(cell),1.7,false)
+		await get_tree().create_timer(2).timeout
+		var bag_id := "broken_chest:"+chest_id
+		var total := 0
+		if runtime.containers.inventories.has(bag_id):
+			for index: int in InventoryState.CAPACITY:
+				total += int(runtime.containers.inventories[bag_id].slot_at(index).get("quantity",0))
+		result = {"edit":edit,"foundation_removed":not runtime.building.pieces.has(id),"chest_removed":not runtime.containers.records.has(chest_id),"bag_quantity":total}
+		print("RC0_NATIVE_COLLAPSE ",result)
+		return
+
 func c02() -> void:
 	result = {"running":true}
 	var point := runtime.player.global_position+farm_offset

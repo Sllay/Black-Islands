@@ -23,14 +23,17 @@ func _material(color: Color) -> StandardMaterial3D:
 
 func reconcile() -> void:
 	var rows: Dictionary = {}
+	var floor_top := float(SurfaceCatalog.data().structures.foundation.dimensions[1])
 	for id: String in runtime.building.pieces:
 		var piece: Dictionary = runtime.building.pieces[id]
 		var cell := SupportGraph.cell(piece)
 		var dimensions: Array = SurfaceCatalog.data().structures[piece.definition].dimensions
 		var size := Vector3(dimensions[0],dimensions[1],dimensions[2])
-		var point := Vector3(cell)+Vector3(.5,size.y*.5,.5)
-		if piece.definition == "wall":
-			point = Vector3(cell)+Vector3(1,1,.5) if int(piece.rotation) == 0 else Vector3(cell)+Vector3(.5,1,1)
+		var point := StructureModule.center(cell)+Vector3.UP*size.y*.5
+		if piece.definition == "ceiling":
+			point.y = cell.y+floor_top-size.y*.5
+		elif piece.definition == "wall":
+			point = Vector3(cell)+Vector3(2,1+floor_top,1) if int(piece.rotation) == 0 else Vector3(cell)+Vector3(1,1+floor_top,2)
 			if int(piece.rotation) == 1:
 				size = Vector3(size.z,size.y,size.x)
 		var colors := {"thatch":"bfa773","wood":"ae8962","stone":"89969f","darkstone":"515575","scrap":"887365","iron":"aac5c4"}
@@ -42,39 +45,48 @@ func reconcile() -> void:
 	for id: String in runtime.containers.records:
 		var row: Dictionary = runtime.containers.records[id]
 		if row.kind == "Corpse":
-			continue # The biological actor owns presentation, inventory is shared.
-		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*.22,"size":Vector3(.75,.44,.5),"color":Color("b49560") if row.kind == "Chest" else Color("bdb087"),"role":"container"}
+			continue
+		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*.22,"size":Vector3(.75,.44,.5),"color":Color("b49560") if row.kind == "Chest" else Color("bdb087"),"role":"container","blocking":row.kind == "Chest"}
 	for id: String in views.keys():
 		if not rows.has(id) or views[id].get_meta("row") != rows[id] or views[id].position.distance_to(runtime.player.position) > 64:
 			views[id].queue_free()
 			views.erase(id)
 	for id: String in rows:
 		var row: Dictionary = rows[id]
-		if views.has(id) or row.position.distance_to(runtime.player.position) > 64:
-			continue
-		var view := SurfaceObject.new()
-		view.runtime = runtime
-		view.object_id = id
-		view.role = row.role
-		view.position = row.position
-		view.collision_layer = 16 if row.role == "structure" else 4
-		view.collision_mask = 0
-		view.add_to_group("build_surfaces" if row.role == "structure" else "interactables")
-		var visual := MeshInstance3D.new()
-		visual.mesh = _mesh(row.size)
-		visual.material_override = _material(row.color)
-		view.add_child(visual)
-		var shape := BoxShape3D.new()
-		shape.size = row.size
+		if not views.has(id) and row.position.distance_to(runtime.player.position) <= 64:
+			_create_view(id,row)
+
+func _create_view(id: String, row: Dictionary) -> void:
+	var view := SurfaceObject.new()
+	view.runtime = runtime
+	view.object_id = id
+	view.role = row.role
+	view.position = row.position
+	view.add_to_group("build_surfaces" if row.role == "structure" else "interactables")
+	var visual := MeshInstance3D.new()
+	visual.mesh = _mesh(row.size)
+	visual.material_override = _material(row.color)
+	view.add_child(visual)
+	var shape := BoxShape3D.new()
+	shape.size = row.size
+	if row.role == "structure" or row.get("blocking",false):
+		var blocker := StaticBody3D.new()
+		blocker.name = "Blocker"
+		blocker.collision_layer = CollisionLayers.STRUCTURE
+		blocker.collision_mask = 0
 		var collision := CollisionShape3D.new()
 		collision.shape = shape
-		view.add_child(collision)
-		if row.get("seeded",false):
-			var plant := MeshInstance3D.new()
-			plant.mesh = load("res://resources/surface/plant.res")
-			plant.scale = Vector3.ONE*(.4+float(row.stage)*.23)
-			plant.position.y = .1
-			view.add_child(plant)
-		view.set_meta("row",row)
-		add_child(view)
-		views[id] = view
+		blocker.add_child(collision)
+		view.add_child(blocker)
+	var query := InteractionVolume.new()
+	query.configure(view,shape)
+	view.add_child(query)
+	if row.get("seeded",false):
+		var plant := MeshInstance3D.new()
+		plant.mesh = load("res://resources/surface/plant.res")
+		plant.scale = Vector3.ONE*(.4+float(row.stage)*.23)
+		plant.position.y = .1
+		view.add_child(plant)
+	view.set_meta("row",row)
+	add_child(view)
+	views[id] = view

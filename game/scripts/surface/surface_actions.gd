@@ -5,6 +5,7 @@ var runtime: SurfaceRuntime
 var selected_structure := "foundation"
 var tier := "wood"
 var rotation := 0
+var selected_support := ""
 
 func _init(surface: SurfaceRuntime) -> void:
 	runtime = surface
@@ -15,7 +16,7 @@ func primary() -> void:
 		return
 	var target := runtime.player.targeter.current
 	if item.category == "BUILDING_PIECE":
-		build_at(snap_cell(target))
+		build_at(snap_cell(target),selected_support)
 		return
 	if item.id in SurfaceCatalog.data().tools:
 		if target.entity is PropActor:
@@ -59,28 +60,32 @@ func primary() -> void:
 	runtime.objects.reconcile()
 
 func snap_cell(target: TargetResult) -> Vector3i:
+	selected_support = ""
 	if not target.entity is SurfaceObject or target.entity.role != "structure":
-		var point := target.build_cell
+		var point := StructureModule.snap(target.build_cell)
 		if selected_structure in ["foundation","pillar","chest"]:
 			point.y = roundi(target.world_position.y)
 		return point
 	var source: Dictionary = runtime.building.pieces.get(target.entity.object_id,{})
 	if source.is_empty():
-		return target.build_cell
+		return StructureModule.snap(target.build_cell)
 	var base := SupportGraph.cell(source)
-	var relative := target.world_position-Vector3(base)-Vector3(.5,0,.5)
+	if selected_structure == "chest" and source.definition in ["foundation","ceiling"]:
+		selected_support = str(source.id)
+		return base
+	var relative := target.world_position-StructureModule.center(base)
 	var direction := Vector3i.RIGHT if relative.x >= 0 else Vector3i.LEFT
 	if absf(relative.z) > absf(relative.x):
 		direction = Vector3i.BACK if relative.z >= 0 else Vector3i.FORWARD
 	if selected_structure == "wall":
 		if source.definition == "wall":
 			rotation = int(source.rotation)
-			return base+Vector3i.UP*2
+			return base+Vector3i.UP*StructureModule.HEIGHT
 		rotation = [Vector3i.RIGHT,Vector3i.BACK,Vector3i.LEFT,Vector3i.FORWARD].find(direction)
 		return base
 	if source.definition in ["pillar","wall"]:
-		return base+Vector3i.UP*2
-	return base if selected_structure == "pillar" else base+direction
+		return base+Vector3i.UP*StructureModule.HEIGHT
+	return base if selected_structure == "pillar" else base+direction*StructureModule.SIZE
 
 func farm_interact(key: String) -> void:
 	if not runtime.farms.plots.has(key):
@@ -96,13 +101,28 @@ func farm_interact(key: String) -> void:
 		runtime.message.emit("Nabo • crescimento %d%% • água %s" % [plot.growth_progress*100,"disponível" if plot.moisture_deadline > runtime.ledger.clock else "necessária"])
 	runtime.objects.reconcile()
 
-func build_at(cell: Vector3i) -> Error:
+func build_at(cell: Vector3i, support_id: String = "") -> Error:
+	cell = StructureModule.snap(cell)
 	if selected_structure == "chest":
-		var point := Vector3(cell)+Vector3(.5,.05,.5)
-		if not runtime.ground_contact(cell) or InventoryTransactions.pay(runtime.player.inventory.state,{"bi.resource.wood":8}) != OK:
+		var point := StructureModule.center(cell)+Vector3.UP*.02
+		var supported := runtime.ground_contact(cell)
+		if support_id.is_empty():
+			var hit := runtime.terrain.surface_hit(point.x,point.z)
+			if not hit.is_empty():
+				point.y = hit.position.y+.02
+			else:
+				supported = false
+		if not support_id.is_empty():
+			var floor_row: Dictionary = runtime.building.pieces.get(support_id,{})
+			supported = not floor_row.is_empty() and floor_row.definition in ["foundation","ceiling"] and not runtime.building.candidates.get(support_id,{}).is_empty()
+			point.y += float(SurfaceCatalog.data().structures.foundation.dimensions[1])
+		if not supported or not runtime.containers.in_area(AABB(point-Vector3.ONE*.3,Vector3.ONE*.6)).is_empty():
+			return ERR_UNAVAILABLE
+		if InventoryTransactions.pay(runtime.player.inventory.state,{"bi.resource.wood":8}) != OK:
 			return ERR_UNAVAILABLE
 		var chest_id := runtime.ledger.new_id("chest")
 		runtime.containers.create(chest_id,point)
+		runtime.containers.records[chest_id].support_id = support_id
 		runtime.objects.reconcile()
 		return OK
 	var id := runtime.ledger.new_id("structure")
@@ -119,16 +139,13 @@ func build_at(cell: Vector3i) -> Error:
 		runtime.message.emit("Faltam madeira/pedra.")
 		return error
 	if selected_structure == "foundation":
-		var position := Vector3(cell)+Vector3(.5,.05,.5)
-		runtime.ledger.suppress(position,"foundation:"+id)
-		runtime.refresh(position)
+		runtime.foundation_foliage(runtime.building.pieces[id],true)
 	runtime.objects.reconcile()
 	return OK
 
 func demolish(id: String) -> void:
 	for row: Dictionary in runtime.building.remove(id):
 		if row.definition == "foundation":
-			var point := Vector3(SupportGraph.cell(row))+Vector3(.5,.05,.5)
-			runtime.ledger.release(point,"foundation:"+row.id)
-			runtime.refresh(point)
+			runtime.foundation_foliage(row,false)
+		runtime.reconcile_container_support(AABB(Vector3(SupportGraph.cell(row)),Vector3(2,4,2)))
 	runtime.objects.reconcile()

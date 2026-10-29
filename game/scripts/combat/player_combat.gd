@@ -31,7 +31,7 @@ var _query := PhysicsShapeQueryParameters3D.new()
 func configure(player: PlayerActor) -> void:
 	actor = player
 	dodge = CombatCatalog.dodge()
-	_query.collision_mask = 8
+	_query.collision_mask = CollisionLayers.MOB
 	_query.exclude = [actor.get_rid()]
 	actor.inventory.state.changed.connect(func(_revision: int) -> void: _refresh_weapon())
 	_refresh_weapon()

@@ -11,6 +11,7 @@ func create(id: String, point: Vector3, kind: String = "Chest") -> InventoryStat
 	inventory.owner_scope = "WORLD"
 	inventories[id] = inventory
 	records[id] = {"id":id,"position":[point.x,point.y,point.z],"kind":kind,"deadline":-1,"policy":"persistent"}
+	_index_record(id,point)
 	return inventory
 
 func snapshot() -> Dictionary:
@@ -31,6 +32,43 @@ func restore(data: Dictionary) -> Error:
 		inventory.owner_scope = "WORLD"
 		inventories[id] = inventory
 		records[id] = row.duplicate(true)
+		_index_record(id,Vector3(row.position[0],row.position[1],row.position[2]))
+	return OK
+
+var _regions: Dictionary = {}
+
+func _index_record(id: String, point: Vector3) -> void:
+	var key := Vector3i((point/64.0).floor())
+	if not _regions.has(key):
+		_regions[key] = []
+	if id not in _regions[key]:
+		_regions[key].append(id)
+
+func in_area(area: AABB) -> Array[String]:
+	var result: Array[String] = []
+	var start := Vector3i((area.position/64.0).floor())
+	var end := Vector3i((area.end/64.0).floor())
+	for y: int in range(start.y,end.y+1):
+		for z: int in range(start.z,end.z+1):
+			for x: int in range(start.x,end.x+1):
+				for id: String in _regions.get(Vector3i(x,y,z),[]):
+					if records.has(id):
+						var p: Array = records[id].position
+						if area.has_point(Vector3(p[0],p[1],p[2])):
+							result.append(id)
+	return result
+
+func break_chest(id: String) -> Error:
+	if not records.has(id) or records[id].kind != "Chest":
+		return ERR_ALREADY_IN_USE
+	var row: Dictionary = records[id]
+	var point := Vector3(row.position[0],row.position[1],row.position[2])
+	var bag := create("broken_chest:"+id,point,"WorldDropBag")
+	var error := transfer_all(inventories[id],bag)
+	if error != OK:
+		return error
+	records.erase(id)
+	inventories.erase(id)
 	return OK
 
 func transfer_all(source: InventoryState, destination: InventoryState) -> Error:

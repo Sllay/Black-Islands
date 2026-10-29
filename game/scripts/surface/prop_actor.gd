@@ -5,7 +5,7 @@ var spawn_id: String
 var runtime: SurfaceRuntime
 func _ready() -> void:
 	add_to_group("interactables")
-	collision_layer = 4
+	collision_layer = CollisionLayers.PROP
 	collision_mask = 0
 	var collision := CollisionShape3D.new()
 	var shape := CapsuleShape3D.new()
@@ -14,6 +14,14 @@ func _ready() -> void:
 	collision.position.y = .9
 	collision.shape = shape
 	add_child(collision)
+	var query := InteractionVolume.new()
+	query.position.y = .9
+	query.configure(self,shape)
+	add_child(query)
+
+func available_actions(actor: PlayerActor) -> Array[String]:
+	var item := actor.inventory.state.active_definition()
+	return ["harvest"] if item != null and SurfaceCatalog.data().tools.has(item.id) else []
 
 func interact(player: PlayerActor) -> void:
 	runtime.harvest_prop(spawn_id,player)

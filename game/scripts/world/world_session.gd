@@ -252,6 +252,7 @@ func _process(delta: float) -> void:
 		if jobs.generation == 0 and jobs.meshing == 0 and jobs.main_thread == 0:
 			ready_ms = Time.get_ticks_msec() - _started
 			print("WORLD_READY ", ready_ms, "ms")
+	_update_placement_preview()
 	if metrics_label == null:
 		return
 	_refresh += delta
@@ -262,12 +263,21 @@ func _process(delta: float) -> void:
 		var combat_report := pawn.combat.report()
 		var visual_report := pawn.visual.report()
 		player_metrics.text = "P03 • pos %s\nvel %s • floor %s\ncamera %s • target %s\nLPC %s / %s • cache %s\ncombat %s • i-frame %s\nplayer save rev %d / %dms" % [pawn.global_position.snapped(Vector3.ONE*0.1),pawn.velocity.snapped(Vector3.ONE*0.1),pawn.is_on_floor(),"Build" if pawn.camera_rig.build_mode else "Gameplay",TargetResult.Kind.keys()[pawn.targeter.current.kind],visual_report.action,visual_report.direction,visual_report.cache.compositions,combat_report.phase,combat_report.invulnerable,player_store.revision,player_save.last_commit_ms]
-	var target := pawn.targeter.current
-	$BuildHighlight.visible = (grid_debug_visible or pawn.camera_rig.build_mode) and target.kind != TargetResult.Kind.NONE
-	if $BuildHighlight.visible:
-		var cell := target.build_cell
-		$BuildHighlight.position = Vector3(cell.x + 0.5, target.world_position.y + 0.06, cell.z + 0.5)
 	var report := terrain.statistics()
 	var ring := streamer.metrics()
 	var water_sample := water.sample(pawn.global_position)
 	metrics_label.text = "P02 DEBUG • DESKTOP PROXY\nseed %s • cell %s\nregions %s • chunks %s • pending %s\nloads %s • unloads %s • transition %sms\nnative data %s • meshes %s\njobs gen %s / mesh %s • pool %.1f MiB\nremesh confirmations %s • collision %s\ndelta %s voxels • water %s\nedit commit %sms / mesh %sms / collision %sms" % [terrain.field.world_seed, WorldCoordinates.world_to_cell(pawn.global_position), ring.horizontal_regions, ring.loaded_chunks, ring.pending_jobs, ring.applied, ring.unloaded, ring.transition_ms, report.data_blocks, report.mesh_blocks, report.engine.tasks.generation, report.engine.tasks.meshing, report.engine.memory_pools.voxel_total / 1048576.0, remesh_confirmations, collision_confirmations, store.metrics().changed_voxels, water_sample.kind, last_edit.get("commit_ms", "-"), last_edit.get("mesh_ms", "-"), last_edit.get("collision_ms", "-")]
+
+func _update_placement_preview() -> void:
+	var target := pawn.targeter.current
+	$BuildHighlight.visible = (grid_debug_visible or pawn.camera_rig.build_mode) and target.kind in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID]
+	if not $BuildHighlight.visible:
+		return
+	var item := pawn.inventory.state.active_definition()
+	if surface != null and item != null and item.category == "BUILDING_PIECE":
+		var cell := surface.actions.snap_cell(target)
+		$BuildHighlight.scale = Vector3(2,1,2)
+		$BuildHighlight.position = StructureModule.center(cell)+Vector3.UP*(target.world_position.y-cell.y+.06)
+	else:
+		$BuildHighlight.scale = Vector3.ONE
+		$BuildHighlight.position = Vector3(target.build_cell)+Vector3(.5,target.world_position.y-target.build_cell.y+.06,.5)

@@ -478,9 +478,9 @@
         "bi.resource.stone": 2
       },
       "dimensions": [
-        1,
-        0.2,
-        1
+        2,
+        0.26,
+        2
       ],
       "sockets": [
         "FLOOR_SIDE",
@@ -496,9 +496,9 @@
         "bi.resource.stone": 0
       },
       "dimensions": [
-        0.12,
+        0.16,
         2,
-        1
+        2
       ],
       "sockets": [
         "WALL_BOTTOM",
@@ -513,9 +513,9 @@
         "bi.resource.stone": 0
       },
       "dimensions": [
-        1,
-        0.15,
-        1
+        2,
+        0.1,
+        2
       ],
       "sockets": [
         "FLOOR_SIDE",
@@ -530,9 +530,9 @@
         "bi.resource.stone": 1
       },
       "dimensions": [
-        0.2,
-        2,
-        0.2
+        0.22,
+        2.26,
+        0.22
       ],
       "sockets": [
         "PILLAR_BOTTOM",
@@ -542,43 +542,43 @@
   },
   "tiers": {
     "thatch": {
-      "hp": 80,
-      "durability": 80,
+      "hp": 5000,
+      "durability": 5000,
       "resistance": 0,
       "cost_multiplier": 0.5,
       "visual": "thatch"
     },
     "wood": {
-      "hp": 200,
-      "durability": 200,
+      "hp": 10000,
+      "durability": 10000,
       "resistance": 10,
       "cost_multiplier": 1,
       "visual": "wood"
     },
     "stone": {
-      "hp": 500,
-      "durability": 500,
+      "hp": 20000,
+      "durability": 20000,
       "resistance": 30,
       "cost_multiplier": 2,
       "visual": "stone"
     },
     "darkstone": {
-      "hp": 800,
-      "durability": 800,
+      "hp": 40000,
+      "durability": 40000,
       "resistance": 50,
       "cost_multiplier": 3,
       "visual": "darkstone"
     },
     "scrap": {
-      "hp": 900,
-      "durability": 900,
+      "hp": 60000,
+      "durability": 60000,
       "resistance": 60,
       "cost_multiplier": 4,
       "visual": "scrap"
     },
     "iron": {
-      "hp": 1200,
-      "durability": 1200,
+      "hp": 100000,
+      "durability": 100000,
       "resistance": 80,
       "cost_multiplier": 5,
       "visual": "iron"
@@ -672,5 +672,6 @@
       "decomposition": 180,
       "protected_loot": true
     }
-  }
+  },
+  "structure_module_version": 2
 }

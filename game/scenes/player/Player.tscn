@@ -17,7 +17,7 @@
 [node name="Player" type="CharacterBody3D" unique_id=382088037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
 collision_layer = 2
-collision_mask = 29
+collision_mask = 77
 script = ExtResource("1_pn6s4")
 
 [node name="Collision" type="CollisionShape3D" parent="." unique_id=387379881]
@@ -53,7 +53,7 @@ script = ExtResource("9_pn6s4")
 
 [node name="Sprite3D" type="Sprite3D" parent="LPCVisual3D" unique_id=1591895067]
 pixel_size = 0.03125
-billboard = 1
+billboard = 2
 alpha_cut = 1
 texture_filter = 0
 

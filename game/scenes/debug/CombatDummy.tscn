@@ -6,8 +6,7 @@
 [ext_resource type="CylinderMesh" uid="uid://boxca3u3a1ym" path="res://resources/combat/DummyMesh.tres" id="4_rvb2y"]
 
 [node name="CombatDummy" type="CharacterBody3D" unique_id=324474699]
-collision_layer = 8
-collision_mask = 3
+collision_layer = 4
 script = ExtResource("1_e8bbl")
 
 [node name="Collision" type="CollisionShape3D" parent="." unique_id=1502417609]

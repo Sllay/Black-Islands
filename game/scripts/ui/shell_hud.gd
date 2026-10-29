@@ -82,8 +82,8 @@ func bind_player(actor: PlayerActor) -> void:
 	actor.state.stamina_changed.connect(stamina_bar.set_fraction)
 	stamina_bar.set_fraction(actor.state.current_stamina, actor.state.max_stamina)
 	actor.targeter.target_changed.connect(func(result: TargetResult) -> void:
-		cluster.set_context_available(result.kind != TargetResult.Kind.NONE))
-	cluster.set_context_available(actor.targeter.current.kind != TargetResult.Kind.NONE)
+		cluster.set_context_available(not result.available_actions.is_empty()))
+	cluster.set_context_available(not actor.targeter.current.available_actions.is_empty())
 	var panel: PlayerInventoryPanel = load("res://scenes/ui/PlayerInventory.tscn").instantiate()
 	panel.configure(actor.inventory)
 	add_child(panel)
@@ -101,12 +101,26 @@ func _bind_surface() -> void:
 	var surface := get_tree().get_first_node_in_group("surface_runtime")
 	if surface == null:
 		return
-	var hint := ShellUI.label_text("Machado: árvores • Picareta: rochas\nToque em Bolsa para organizar suas ferramentas.",16,ShellUI.GOLD)
+	var hint := ShellUI.label_text("",16,ShellUI.GOLD)
 	hint.name = "SurfaceHint"
 	hint.custom_minimum_size.x = 260
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	find_child("ReturnToSaves",true,false).get_parent().add_child(hint)
-	surface.message.connect(func(text: String) -> void: hint.text = text)
+	hint.visible = false
+	var column := find_child("ReturnToSaves",true,false).get_parent()
+	column.add_child(hint)
+	var timeout := Timer.new()
+	timeout.one_shot = true
+	timeout.wait_time = 4
+	add_child(timeout)
+	timeout.timeout.connect(func() -> void: hint.visible = false)
+	surface.message.connect(func(text: String) -> void:
+		hint.text = text
+		hint.visible = true
+		timeout.start())
+	var camera := ShellUI.button("Câmera • Overview","CameraMode",Vector2(220,48))
+	column.add_child(camera)
+	camera.pressed.connect(surface.player.camera_rig.toggle_view)
+	surface.player.camera_rig.view_changed.connect(func(mode: String) -> void: camera.text = "Câmera • "+mode)
 
 func _bind_health(actor: PlayerActor) -> void:
 	var bar := find_child("Health",true,false) as HudResourceBar

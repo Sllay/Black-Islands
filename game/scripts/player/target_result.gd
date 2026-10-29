@@ -11,13 +11,15 @@ var voxel := Vector3i.ZERO
 var build_cell := Vector3i.ZERO
 var build_edge := ""
 var distance := 0.0
+var available_actions: Array[StringName] = []
 
 func clear() -> void:
 	kind = Kind.NONE
 	entity = null
 	build_edge = ""
 	distance = 0
+	available_actions.clear()
 
 func summary() -> Dictionary:
 	return {"type": Kind.keys()[kind], "position": world_position, "normal": normal,
-		"voxel": voxel, "build_cell": build_cell, "build_edge": build_edge, "distance": distance}
+		"voxel": voxel, "build_cell": build_cell, "build_edge": build_edge, "distance": distance,"available_actions":available_actions}

@@ -17,8 +17,8 @@ var collision: CollisionShape3D
 
 func _ready() -> void:
 	definition = SurfaceCatalog.data().mobs[system.domain.states[entity_id].definition]
-	collision_layer = 8
-	collision_mask = 1|2|4|16
+	collision_layer = CollisionLayers.MOB
+	collision_mask = CollisionLayers.MOB_MASK
 	floor_snap_length = .5
 	var shape := CapsuleShape3D.new()
 	shape.radius = float(definition.radius)
@@ -27,6 +27,10 @@ func _ready() -> void:
 	collision.shape = shape
 	collision.position.y = shape.height*.5
 	add_child(collision)
+	var interaction := InteractionVolume.new()
+	interaction.position.y = shape.height*.5
+	interaction.configure(self,shape)
+	add_child(interaction)
 	mesh = MeshInstance3D.new()
 	mesh.mesh = load("res://resources/surface/"+str(definition.visual)+".res")
 	add_child(mesh)
@@ -51,12 +55,13 @@ func sync_life() -> void:
 		else:
 			remove_from_group("combat_targets")
 			add_to_group("interactables")
-			collision_layer = 4
+			collision_layer = 0
 			mesh.rotation.z = PI*.5
 			mesh.scale = Vector3.ONE*.7
 			collision.scale = Vector3(1,.3,1)
 			collision.position.y = .2
 	label.text = str(definition.title)+(" • %d"%state.health if _life == "ALIVE" else " • Corpo")
+	label.visible = system.runtime.player.targeter.current.entity == self or (system.runtime.session.tools != null and system.runtime.session.tools.visible)
 	if _life == "ALIVE" and intent == "WARN_ATTACK":
 		label.text += "\nAfaste-se!"
 
@@ -113,6 +118,9 @@ func interact(_actor: PlayerActor) -> void:
 	var state: Dictionary = system.domain.states[entity_id]
 	if state.life == "CORPSE":
 		system.runtime.container_opened.emit(state.corpse_inventory)
+
+func available_actions(_actor: PlayerActor) -> Array[String]:
+	return ["open","harvest"] if system.domain.states[entity_id].life == "CORPSE" else []
 
 func harvest() -> void:
 	system.harvest_corpse(entity_id)

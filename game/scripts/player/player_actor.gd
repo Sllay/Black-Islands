@@ -50,9 +50,9 @@ func _physics_process(delta: float) -> void:
 	visual.tick(0.0 if combat.hitstopped() else delta,motor.facing,deg_to_rad(camera_rig.heading_degrees),locomotion)
 	_surface_action()
 	if not inventory.is_open and not combat.movement_locked():
-		if Input.is_action_just_pressed("build_mode") or Input.is_action_just_pressed("context_action"):
+		if Input.is_action_just_pressed("build_mode"):
 			camera_rig.toggle_build()
-		if Input.is_action_just_pressed("interact"):
+		if Input.is_action_just_pressed("interact") or Input.is_action_just_pressed("context_action"):
 			targeter.interact()
 
 func _surface_action() -> void:

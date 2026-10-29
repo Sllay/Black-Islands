@@ -21,17 +21,13 @@ var objects: SurfaceObjects
 var actions: SurfaceActions
 
 func ground_contact(cell: Vector3i) -> bool:
-	var point := Vector3(cell)+Vector3(.5,0,.5)
-	if _density(point-Vector3.UP*.55) > 0 or _density(point+Vector3.UP*.55) < 0:
-		return false
-	var hit := terrain.surface_hit(point.x,point.z)
-	if not hit.is_empty():
-		return absf(float(hit.position.y)-cell.y) < .45 and hit.normal.y > .65
-	# Far roots are validated against generator + authoritative sparse SDF,
-	# never against another structure's collision layer.
-	var low := point-Vector3.UP*.25
-	var high := point+Vector3.UP*.45
-	return _density(low) < 0 and _density(high) > 0
+	return _ground_at(StructureModule.center(cell))
+
+func _ground_at(point: Vector3) -> bool:
+	return _density(point-Vector3.UP*.55) < 0 and _density(point+Vector3.UP*.55) > 0
+
+func foundation_contact(cell: Vector3i) -> bool:
+	return StructureModule.footprint_supported(cell,_ground_at)
 
 func _density(point: Vector3) -> float:
 	var voxel := WorldCoordinates.world_to_voxel(point)
@@ -101,6 +97,7 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	farms.plots = restored.get("farms",{}).duplicate(true)
 	building = SupportGraph.new()
 	building.ground = ground_contact
+	building.foundation_ground = foundation_contact
 	assert(building.restore(restored.get("structures",{})) == OK)
 	containers = ContainerService.new()
 	assert(containers.restore(restored.get("containers",{})) == OK)
@@ -118,6 +115,13 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	objects = SurfaceObjects.new()
 	objects.runtime = self
 	add_child(objects)
+	for row: Dictionary in building.removed_on_restore:
+		if row.definition == "foundation":
+			foundation_foliage(row,false)
+	for row: Dictionary in containers.records.values().duplicate():
+		if row.kind == "Chest":
+			var point := Vector3(row.position[0],row.position[1],row.position[2])
+			reconcile_container_support(AABB(point-Vector3.ONE,Vector3.ONE*2))
 	_configure_mobs(restored)
 	var ui: SurfaceUI = load("res://scenes/ui/SurfaceGameplayUI.tscn").instantiate()
 	ui.runtime = self
@@ -266,15 +270,43 @@ func terrain_changed(area: AABB) -> void:
 			refresh(point)
 	for row: Dictionary in building.terrain_changed(area):
 		if row.definition == "foundation":
-			var point := Vector3(SupportGraph.cell(row))+Vector3(.5,.05,.5)
-			ledger.release(point,"foundation:"+row.id)
+			foundation_foliage(row,false)
+		reconcile_container_support(AABB(Vector3(SupportGraph.cell(row)),Vector3(2,4,2)))
+	reconcile_container_support(area)
+	objects.reconcile()
+
+func foundation_foliage(row: Dictionary, suppress: bool) -> void:
+	var cell := SupportGraph.cell(row)
+	for z: int in StructureModule.SIZE:
+		for x: int in StructureModule.SIZE:
+			var point := Vector3(cell)+Vector3(x+.5,.05,z+.5)
+			if suppress:
+				ledger.suppress(point,"foundation:"+str(row.id))
+			else:
+				ledger.release(point,"foundation:"+str(row.id))
 			refresh(point)
+
+func reconcile_container_support(area: AABB) -> void:
+	for id: String in containers.in_area(area.grow(1)):
+		var row: Dictionary = containers.records[id]
+		if row.kind != "Chest":
+			continue
+		var support: String = row.get("support_id","")
+		var valid := false
+		if not support.is_empty():
+			valid = building.pieces.has(support) and not building.candidates.get(support,{}).is_empty()
+		else:
+			var point := Vector3(row.position[0],row.position[1],row.position[2])
+			valid = _density(point-Vector3.UP*.14) < 0 and _density(point+Vector3.UP*.18) > 0
+		if not valid:
+			containers.break_chest(id)
 	objects.reconcile()
 
 func snapshot() -> Dictionary:
 	mobs.sync_positions()
 	var data := ledger.snapshot()
 	data.content_version = SurfaceCatalog.VERSION
+	data.structure_module_version = 2
 	data.farms = farms.plots.duplicate(true)
 	data.structures = building.pieces.duplicate(true)
 	data.containers = containers.snapshot()
