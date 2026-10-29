@@ -88,7 +88,10 @@ func material_at(world_point: Vector3) -> int:
 	return selected
 
 func surface_hit(x: float, z: float) -> Dictionary:
-	var query := PhysicsRayQueryParameters3D.create(Vector3(x, 100, z), Vector3(x, -120, z), 1)
+	# Frontend navigation can detach a world before queued presenters finish.
+	if not is_inside_tree():
+		return {}
+	var query := PhysicsRayQueryParameters3D.create(Vector3(x,100,z),Vector3(x,-120,z),CollisionLayers.WORLD)
 	return get_world_3d().direct_space_state.intersect_ray(query)
 
 func density_at(world_position: Vector3) -> float:

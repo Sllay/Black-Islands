@@ -102,6 +102,7 @@ func _locomotion() -> void:
 	body.position.y = .05
 	add_child(body)
 	var terrain := ReadyTerrain.new()
+	check(terrain.surface_hit(0,0).is_empty(),"detached world query safely ignored during navigation")
 	var locomotion := MobLocomotion.new()
 	locomotion.configure(body,terrain,2)
 	for frame: int in 50:
@@ -143,6 +144,11 @@ func _save_domains() -> void:
 	surface.mobs.domain = MobDomain.new(surface.ledger,surface.containers)
 	add_child(surface)
 	surface.set_process(false)
+	var composition := WorldSession.new()
+	composition.frontend_save = session
+	surface.session = composition
+	surface._provision_tools()
+	check(session.portable.unlocks.get("starter_tools",false),"starter kit belongs to portable character")
 	session.bind_surface(surface)
 	check(session.flush() == OK,"initial schema2 commit")
 	var revision := session.world_document.revision
@@ -177,6 +183,10 @@ func _save_domains() -> void:
 	var second := FrontendSessionSave.new()
 	check(second.prepare(library,2,1) == OK and second.portable.profile.player_id == profile_owner.player_id and second.restored_surface.is_empty(),"same player in independent world")
 	check(second.portable.document.path == reload.portable.document.path and second.world_document.path != reload.world_document.path,"independent ownership paths")
+	var inventory_revision := player.inventory.state.revision
+	composition.frontend_save = second
+	surface._provision_tools()
+	check(player.inventory.state.revision == inventory_revision,"entering another world does not grant duplicate kit")
 	var reloaded_terrain := WorldDeltaStore.new(library.world_directory(world),world)
 	check(reloaded_terrain.load_world() == OK and reloaded_terrain.revision == terrain.revision,"terrain deltas preserved independently")
 	# C01 schemas, explicit upgrade and retained source archive.
@@ -193,6 +203,7 @@ func _save_domains() -> void:
 	_legacy_import(session.snapshot(),snapshot)
 	surface.mobs.free()
 	surface.building.ground = Callable()
+	composition.free()
 	reload.free()
 	second.free()
 	session.free()

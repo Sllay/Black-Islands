@@ -97,6 +97,7 @@ static func _one(library: FrontendLibrary, metadata: Dictionary, source: String,
 	if SurfaceSaveValidator.validate(surface,snapshot.inventory) != OK:
 		return {"error":ERR_INVALID_DATA}
 	var portable := PortablePlayerStore.new(library.player_directory(player),player)
+	portable.unlocks.starter_tools = bool(surface.get("flags",{}).get("starter_tools",false))
 	var world_store := DirtyWorldStore.new(destination,world.world_id)
 	var converted := world_store.migrate_1_to_2({"surface":surface,"sessions":{id:snapshot.spawn},"played_seconds":world.played_seconds})
 	if converted.error != OK:

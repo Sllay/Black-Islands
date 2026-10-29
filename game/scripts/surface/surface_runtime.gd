@@ -135,8 +135,18 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	_provision_tools()
 
 func _provision_tools() -> void:
-	if ledger.flags.get("starter_tools",false):
+	var authority: Dictionary = session.frontend_save.portable.unlocks if session.frontend_save != null else ledger.flags
+	if authority.get("starter_tools",false):
 		return
+	if session.frontend_save != null:
+		# Older portable profiles already received this kit. Do not duplicate it
+		# when a character enters another world for the first time.
+		var carried: Dictionary = {}
+		for index: int in InventoryState.CAPACITY:
+			carried[player.inventory.state.slot_at(index).get("item_id","")] = true
+		if carried.has_all(["bi.tool.axe","bi.tool.knife","bi.tool.hoe","bi.tool.watering_can","bi.tool.shovel"]):
+			authority.starter_tools = true
+			return
 	var kit := {"bi.tool.axe":1,"bi.tool.knife":1,"bi.tool.hoe":1,"bi.tool.watering_can":1,"bi.tool.shovel":1,"bi.seed.turnip":8}
 	var output := InventoryTransactions.output(player.inventory.state,kit)
 	if output.error != OK:
@@ -150,7 +160,7 @@ func _provision_tools() -> void:
 		var row := player.inventory.state.slot_at(slot)
 		if row.get("item_id","") in quickbar_tools:
 			player.inventory.state.assign_hotbar(4+quickbar_tools.find(row.item_id),slot)
-	ledger.flags.starter_tools = true
+	authority.starter_tools = true
 
 func definition(id: String) -> Dictionary:
 	return _definitions[id]

@@ -55,6 +55,15 @@ func _ready() -> void:
 	if error != OK:
 		_show_load_error(error)
 		return
+	if frontend_save != null and not profile.generated:
+		var metadata := Profiles.library.document("world",Profiles.world_slot)
+		error = metadata.read()
+		if error == OK:
+			metadata.loaded.generated = true
+			error = metadata.commit(metadata.loaded)
+		if error != OK:
+			_show_load_error(error)
+			return
 	terrain = load("res://scenes/world/WorldTerrain.tscn").instantiate()
 	terrain.field = IslandField.new(int(profile.world_seed))
 	terrain.deltas = store

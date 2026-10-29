@@ -54,9 +54,10 @@ func publish(id: String) -> void:
 	command = {"kind":id,"target":target}
 
 func deactivate() -> void:
-	if machine != null:
+	if machine != null and machine.is_active():
 		machine.dispatch(&"STASIS")
 		machine.set_active(false)
 
 func report() -> Dictionary:
-	return {"executor":"LimboAI 1.8.1 HSM","state":str(machine.get_active_state().name),"intent":command.kind}
+	var active := machine.get_active_state()
+	return {"executor":"LimboAI 1.8.1 HSM","state":str(active.name) if active != null else "INACTIVE","intent":command.kind}

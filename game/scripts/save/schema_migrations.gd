@@ -43,4 +43,5 @@ static func player_1_to_2(data: Dictionary) -> Dictionary:
 	character.stats.merge({"mana":100.0,"max_mana":100.0},false)
 	result.cosmetics = character.appearance.duplicate(true)
 	result.unlocks = result.get("unlocks",{"skills":[],"recipes":[]})
+	result.unlocks.starter_tools = true # C01 records only persisted after kit provisioning.
 	return {"error":OK,"data":result}
