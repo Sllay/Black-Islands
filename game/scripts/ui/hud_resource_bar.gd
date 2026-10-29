@@ -27,3 +27,14 @@ func configure(node_name: String, icon: String, width: float, color: Color) -> v
 	percent.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	percent.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	bar.add_child(percent)
+
+func set_fraction(current: float, maximum: float) -> void:
+	var bar: ProgressBar = get_child(1)
+	var value := clampf(current / maxf(1, maximum), 0, 1) * 100.0
+	if is_equal_approx(bar.value, value):
+		return
+	bar.value = value
+	var label: Label = bar.get_node("Percentage")
+	var text_value := "%d%%" % roundi(value)
+	if label.text != text_value:
+		label.text = text_value

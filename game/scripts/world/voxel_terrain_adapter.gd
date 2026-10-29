@@ -131,5 +131,9 @@ func restore_samples(origin: Vector3i, extent: Vector3i, samples: Dictionary) ->
 		buffer.set_voxel(weights, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_WEIGHTS)
 	native.get_voxel_tool().paste(origin, buffer, generator._get_used_channels_mask())
 
+func collision_data_ready(world_point: Vector3) -> bool:
+	var point := native.to_local(world_point)
+	return native.is_area_meshed(AABB(point - Vector3(2,4,2), Vector3(4,8,4)), 0)
+
 func statistics() -> Dictionary:
 	return {"native": native.get_statistics(), "engine": Engine.get_singleton("VoxelEngine").call("get_stats"), "data_blocks": native.debug_get_data_block_count(), "mesh_blocks": native.debug_get_mesh_block_count(), "edit_requests": edit_requests}

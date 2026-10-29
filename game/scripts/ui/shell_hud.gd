@@ -70,6 +70,18 @@ func _ready() -> void:
 func present_world() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	feedback.get_parent().visible = false
+	var actor := get_tree().get_first_node_in_group("local_player") as PlayerActor
+	if actor != null:
+		bind_player(actor)
+
+func bind_player(actor: PlayerActor) -> void:
+	var stamina_bar := find_child("Stamina", true, false) as HudResourceBar
+	var cluster := find_child("Actions", true, false) as MobileActionCluster
+	actor.state.stamina_changed.connect(stamina_bar.set_fraction)
+	stamina_bar.set_fraction(actor.state.current_stamina, actor.state.max_stamina)
+	actor.targeter.target_changed.connect(func(result: TargetResult) -> void:
+		cluster.set_context_available(result.kind != TargetResult.Kind.NONE))
+	cluster.set_context_available(actor.targeter.current.kind != TargetResult.Kind.NONE)
 
 func _action(title: String, action: String, minimum := Vector2(56, 56)) -> Button:
 	var button := ShellUI.button(title, action.to_pascal_case(), minimum)

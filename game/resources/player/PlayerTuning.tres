@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="PlayerTuning" format=3 uid="uid://w7h0bicgyu6u"]
+
+[ext_resource type="Script" uid="uid://d27qdkpa72t00" path="res://scripts/player/player_tuning.gd" id="1_tqe6w"]
+
+[resource]
+script = ExtResource("1_tqe6w")

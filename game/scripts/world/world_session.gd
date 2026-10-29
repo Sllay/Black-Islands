@@ -3,7 +3,7 @@ extends Node3D
 ## Composition root for this save's world, not a global gameplay singleton.
 
 var terrain: VoxelTerrainAdapter
-var pawn: DebugWorldPawn
+var pawn: PlayerActor
 var streamer: WorldStreamer
 var metrics_label: Label
 var tools: VBoxContainer
@@ -44,7 +44,7 @@ func _ready() -> void:
 	edits.terrain = terrain
 	edits.store = store
 	edits.terrain_changed.connect(water.invalidate_terrain)
-	pawn = load("res://scenes/debug/DebugWorldPawn.tscn").instantiate()
+	pawn = load("res://scenes/player/Player.tscn").instantiate()
 	pawn.terrain = terrain
 	pawn.water = water
 	add_child(pawn)
@@ -76,13 +76,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func edit_ahead(paint: bool) -> bool:
 	if pawn == null:
 		return false
-	var point := pawn.global_position + Vector3(0, 0, -4)
-	var hit := terrain.surface_hit(point.x, point.z)
-	if hit.is_empty():
+	var target := pawn.targeter.current
+	if target.kind not in [TargetResult.Kind.TERRAIN, TargetResult.Kind.BUILD_GRID]:
 		return false
-	if edits.apply(hit.position, 2, paint, 2) != OK:
+	if edits.apply(target.world_position, 2, paint, 2) != OK:
 		return false
-	_observe_edit(edits.last_result.duplicate(), hit.position.y)
+	_observe_edit(edits.last_result.duplicate(), target.world_position.y)
 	return true
 
 func _observe_edit(operation: Dictionary, before_y: float) -> void:
@@ -172,13 +171,11 @@ func _process(delta: float) -> void:
 	if _refresh < 0.25:
 		return
 	_refresh = 0
-	$BuildHighlight.visible = grid_debug_visible
-	if grid_debug_visible:
-		var point := pawn.global_position + Vector3(0, 0, -4)
-		var hit := terrain.surface_hit(point.x, point.z)
-		if not hit.is_empty():
-			var cell := WorldCoordinates.world_to_cell(hit.position)
-			$BuildHighlight.position = Vector3(cell.x + 0.5, hit.position.y + 0.06, cell.z + 0.5)
+	var target := pawn.targeter.current
+	$BuildHighlight.visible = (grid_debug_visible or pawn.camera_rig.build_mode) and target.kind != TargetResult.Kind.NONE
+	if $BuildHighlight.visible:
+		var cell := target.build_cell
+		$BuildHighlight.position = Vector3(cell.x + 0.5, target.world_position.y + 0.06, cell.z + 0.5)
 	var report := terrain.statistics()
 	var ring := streamer.metrics()
 	var water_sample := water.sample(pawn.global_position)

@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://c646s5mk2f8t7"]
+
+[ext_resource type="Script" uid="uid://xasaohf5p6v7" path="res://tests/integration/player_c01_smoke.gd" id="1_5qgt7"]
+[ext_resource type="Shape3D" uid="uid://qj75mq0tjaqi" path="res://resources/player/QAGroundShape.tres" id="2_1q37a"]
+[ext_resource type="Shape3D" uid="uid://c12f13x5rmkj0" path="res://resources/player/QASlopeShape.tres" id="3_vta6o"]
+[ext_resource type="Shape3D" uid="uid://chgkmsll50a8g" path="res://resources/player/QAStepShape.tres" id="4_p7jkn"]
+
+[node name="PlayerC01Smoke" type="Node3D" unique_id=1987656241]
+script = ExtResource("1_5qgt7")
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=2094288389]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -10)
+
+[node name="Collision" type="CollisionShape3D" parent="Ground" unique_id=1646606539]
+shape = ExtResource("2_1q37a")
+
+[node name="Slope" type="StaticBody3D" parent="." unique_id=1988019594]
+transform = Transform3D(1, 0, 0, 0, 0.9396926, -0.34202012, 0, 0.34202012, 0.9396926, 0, 1.5, -17)
+
+[node name="Collision" type="CollisionShape3D" parent="Slope" unique_id=133979843]
+shape = ExtResource("3_vta6o")
+
+[node name="Step" type="StaticBody3D" parent="." unique_id=1545415253]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0.1, -2.5)
+
+[node name="Collision" type="CollisionShape3D" parent="Step" unique_id=960449445]
+shape = ExtResource("4_p7jkn")
