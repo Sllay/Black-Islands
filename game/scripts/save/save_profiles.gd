@@ -51,6 +51,8 @@ func current_profile() -> Dictionary:
 	return store.read_slot(selected_slot_id).metadata.duplicate(true)
 
 func use_test_profiles() -> void:
+	world_slot = 0
+	player_slot = 0
 	store = SlotStore.new("user://qa_profiles")
 	selected_slot_id = ""
 
@@ -68,5 +70,7 @@ func reset_test_profiles() -> Error:
 	return OK
 
 func use_production_profiles() -> void:
+	world_slot = 0
+	player_slot = 0
 	store = SlotStore.new()
 	selected_slot_id = ""

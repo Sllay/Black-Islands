@@ -24,6 +24,9 @@ func read() -> Error:
 		if backup.error == OK:
 			result = backup
 			recovered = true
+		elif inspect(path+".tmp").error == OK:
+			result = inspect(path+".tmp")
+			recovered = true
 		elif not FileAccess.file_exists(path) and not FileAccess.file_exists(path+".bak") and not FileAccess.file_exists(path+".tmp"):
 			return OK
 		else:
@@ -40,10 +43,13 @@ func inspect(file_path: String) -> Dictionary:
 		return {"error":ERR_FILE_CORRUPT}
 	if float(row.get("schema",0)) > schema:
 		return {"error":ERR_UNAVAILABLE}
-	if row.get("schema") != schema or row.get("identity") != identity or not row.get("payload") is String or row.get("checksum") != row.payload.sha256_text():
+	if row.get("schema") != schema or not row.get("identity") is Dictionary or row.identity.size() != identity.size() or not row.get("payload") is String or row.get("checksum") != row.payload.sha256_text():
 		return {"error":ERR_FILE_CORRUPT}
+	for key: String in identity:
+		if row.identity.get(key) != identity[key]:
+			return {"error":ERR_FILE_CORRUPT}
 	var data: Variant = JSON.parse_string(row.payload)
-	if not data is Dictionary or not row.get("revision") is float or row.revision < 1 or row.revision != int(row.revision):
+	if not data is Dictionary or not (row.get("revision") is float or row.get("revision") is int) or row.revision < 1 or row.revision != int(row.revision):
 		return {"error":ERR_FILE_CORRUPT}
 	return {"error":OK,"data":data,"revision":row.revision}
 

@@ -27,6 +27,8 @@ var qa_dummy: CombatDummy
 var player_metrics: Label
 
 var surface: SurfaceRuntime
+var frontend_save: FrontendSessionSave
+var preview: WorldPreview
 
 func _ready() -> void:
 	if get_tree().has_meta("ui_only_smoke"):
@@ -36,12 +38,19 @@ func _ready() -> void:
 	if profile.is_empty():
 		return
 	var storage_root := "user://worlds" if Profiles.store.directory == "user://profiles" else "user://qa_worlds"
+	if Profiles.world_slot > 0:
+		frontend_save = FrontendSessionSave.new()
+		var preparation := frontend_save.prepare(Profiles.library,Profiles.world_slot,Profiles.player_slot)
+		if preparation != OK:
+			_show_load_error(preparation)
+			return
+		storage_root = Profiles.library.world_directory(profile).get_base_dir()
 	store = WorldDeltaStore.new(storage_root.path_join(profile.save_id),profile)
 	var error := store.load_world()
 	if error != OK:
 		_show_load_error(error)
 		return
-	player_store = PlayerSaveStore.new(store.directory,profile)
+	player_store = frontend_save.portable if frontend_save != null else PlayerSaveStore.new(store.directory,profile)
 	error = player_store.load_player()
 	if error != OK:
 		_show_load_error(error)
@@ -60,7 +69,7 @@ func _ready() -> void:
 	pawn.terrain = terrain
 	pawn.water = water
 	add_child(pawn)
-	player_save = PlayerSaveCoordinator.new()
+	player_save = frontend_save if frontend_save != null else PlayerSaveCoordinator.new()
 	player_save.name = "PlayerSave"
 	add_child(player_save)
 	player_save.configure(pawn,player_store)
@@ -70,6 +79,7 @@ func _ready() -> void:
 	streamer.viewer = pawn
 	add_child(streamer)
 	_create_surface()
+	GameSettings.apply_scene(self)
 	var lake := terrain.field.lake_body()
 	$Lake.position = Vector3(lake.center.x,lake.level,lake.center.y)
 	if OS.is_debug_build():
@@ -81,7 +91,18 @@ func _create_surface() -> void:
 	surface = SurfaceRuntime.new()
 	surface.name = "Surface"
 	add_child(surface)
-	surface.configure(self,player_store.loaded.get("surface",{}))
+	surface.configure(self,frontend_save.world_document.loaded.get("surface",{}) if frontend_save != null else player_store.loaded.get("surface",{}))
+	if frontend_save != null and DisplayServer.get_name() != "headless":
+		preview = WorldPreview.new()
+		preview.session = self
+		add_child(preview)
+		_capture_preview()
+
+func _capture_preview() -> void:
+	while not pawn.spawned:
+		await get_tree().process_frame
+	await get_tree().create_timer(3).timeout
+	await preview.capture()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if pawn == null:

@@ -573,6 +573,7 @@
       "variant": "light",
       "palette": "skin.light",
       "required": true,
+      "title": "Body color • light",
       "body_types": [
         "male"
       ],
@@ -611,6 +612,7 @@
       "variant": "light",
       "palette": "skin.light",
       "required": true,
+      "title": "Human male • light",
       "body_types": [
         "male"
       ],
@@ -649,6 +651,7 @@
       "variant": "chestnut",
       "palette": "hair.chestnut",
       "required": false,
+      "title": "Plain • chestnut",
       "body_types": [
         "male"
       ],
@@ -687,6 +690,7 @@
       "variant": "bluegray",
       "palette": "cloth.bluegray",
       "required": true,
+      "title": "Longsleeve • bluegray",
       "body_types": [
         "male"
       ],
@@ -725,6 +729,7 @@
       "variant": "brown",
       "palette": "cloth.brown",
       "required": true,
+      "title": "Pants • brown",
       "body_types": [
         "male"
       ],
@@ -763,8 +768,10 @@
       "variant": "longsword",
       "palette": "",
       "required": false,
+      "title": "Longsword • longsword",
       "body_types": [
-        "male"
+        "male",
+        "female"
       ],
       "technical_status": "verified_slice",
       "legal_status": "accepted",

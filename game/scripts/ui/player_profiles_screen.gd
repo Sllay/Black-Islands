@@ -26,11 +26,14 @@ func _refresh() -> void:
 			body.add_child(ShellUI.label_text("Perfil indisponível • preservado",20))
 			continue
 		var portrait := LPCPortrait.new()
-		portrait.present(row.data.appearance)
+		portrait.present(Profiles.library.preview_appearance(row.data))
 		body.add_child(portrait)
 		var info := ShellUI.column(body,4)
 		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		info.add_child(ShellUI.label_text(row.data.name,24,ShellUI.GOLD))
+		var title := ShellUI.label_text(row.data.name,24,ShellUI.GOLD)
+		title.clip_text = true
+		title.tooltip_text = row.data.name
+		info.add_child(title)
 		info.add_child(ShellUI.label_text("Level %d • %s" % [row.data.level,duration(row.data.played_seconds)],18))
 		action(body,"Excluir",confirm_delete.bind("player",row.slot,_refresh),"DeletePlayer%d"%row.slot)
 		action(body,"Editar",Flow.edit_player.bind(row.slot,true),"EditPlayer%d"%row.slot)

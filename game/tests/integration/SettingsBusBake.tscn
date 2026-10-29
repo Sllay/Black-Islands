@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dvt3ho58nvhkp"]
+
+[ext_resource type="Script" path="res://tests/integration/settings_bus_bake.gd" id="1_hj08i"]
+
+[node name="SettingsBusBake" type="Node" unique_id=1954265461]
+script = ExtResource("1_hj08i")

@@ -41,6 +41,13 @@ static func save(staged: Dictionary) -> Error:
 		return error
 	error = doc.commit(staged)
 	if error == OK:
+		var startup := ConfigFile.new()
+		var method: String = catalog.backends[staged.backend]
+		startup.set_value("rendering","renderer/rendering_method",method)
+		startup.set_value("rendering","renderer/rendering_method.mobile",method)
+		error = startup.save(path.get_base_dir().path_join("renderer_override.cfg"))
+		if error != OK:
+			return error
 		current = staged.duplicate(true)
 		apply_safe()
 	return error
@@ -53,6 +60,7 @@ static func apply_safe() -> void:
 			AudioServer.add_bus()
 			index = AudioServer.bus_count-1
 			AudioServer.set_bus_name(index,bus)
+		AudioServer.set_bus_send(index,"Master")
 		var volume := int(current.audio[bus])
 		AudioServer.set_bus_mute(index,volume == 0)
 		AudioServer.set_bus_volume_db(index,linear_to_db(volume/100.0) if volume > 0 else -80.0)

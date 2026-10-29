@@ -54,7 +54,7 @@ static func normalize(config: Dictionary) -> Dictionary:
 		result.selections[role] = id
 		result.palettes[role] = entry.palette
 	for id: Variant in config.get("equipment_visuals",[]):
-		if not id is String or asset(id).get("role") != "weapon":
+		if not id is String or asset(id).get("role") != "weapon" or config.body_type not in asset(id).get("body_types",[]):
 			return {}
 		if id not in result.equipment_visuals:
 			result.equipment_visuals.append(id)

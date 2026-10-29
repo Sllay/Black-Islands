@@ -56,5 +56,5 @@ func confirm_delete(kind: String, slot: int, refresh: Callable) -> void:
 	dialog.popup_centered(Vector2i(480,180))
 
 static func duration(seconds: float) -> String:
-	var minutes := int(seconds)/60
-	return "%dh %02dmin" % [minutes/60,minutes%60]
+	var minutes := floori(seconds/60.0)
+	return "%dh %02dmin" % [floori(minutes/60.0),minutes%60]

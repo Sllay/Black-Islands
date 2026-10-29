@@ -77,6 +77,9 @@ func _slider(parent: Node, title: String, value: int, minimum: int, maximum: int
 func _tab(index: int) -> void:
 	audio_page.visible = index == 0
 	graphics_page.visible = index == 1
+	var tab := find_child("Tab%d"%index,true,false) as Button
+	if tab != null:
+		tab.button_pressed = true
 
 func _save() -> void:
 	if GameSettings.save(staged) == OK:

@@ -68,6 +68,17 @@ func edit_player(slot: int, appearance: Dictionary) -> Error:
 	doc.loaded.appearance = LPCCatalog.normalize(appearance)
 	return doc.commit(doc.loaded)
 
+func preview_appearance(player: Dictionary) -> Dictionary:
+	var config: Dictionary = player.appearance.duplicate(true)
+	var doc := AtomicDocument.new(player_directory(player).path_join("profile.json"),1,{"player_id":player.player_id})
+	if doc.read() == OK and not doc.loaded.is_empty():
+		var inventory := InventoryState.new()
+		if inventory.restore(doc.loaded.character.inventory) == OK:
+			var item := inventory.active_definition()
+			if item != null and not item.visual_id.is_empty():
+				config.equipment_visuals = [item.visual_id]
+	return config
+
 func trash(kind: String, slot: int) -> Error:
 	var doc := document(kind,slot)
 	if doc.read() != OK or doc.loaded.is_empty():

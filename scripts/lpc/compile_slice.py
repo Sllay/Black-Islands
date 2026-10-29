@@ -94,6 +94,7 @@ def compile_catalog(source, fetch=False):
         definition = json.loads(blob(definition_path))
         assert spec["variant"] in definition["variants"], spec["id"]
         asset = {k:v for k,v in spec.items() if k != "definition"}
+        asset.setdefault("title", definition.get("name", spec["role"].title()) + " • " + spec["variant"])
         asset.update(body_types=[body_type], technical_status="verified_slice",
                      legal_status="accepted", license=manifest["selected_license"],
                      source_definition=definition_path, aliases=[], layers=[],
@@ -131,6 +132,11 @@ def compile_catalog(source, fetch=False):
                 "frame_size":source_size, "custom_action":"MELEE_SLASH" if animation else "",
                 "credit":credit["filename"]})
         assert asset["layers"], asset["id"]
+        if asset["role"] == "weapon":
+            supported_layers = [definition[key] for key in definition if re.fullmatch(r"layer_\d+", key)
+                                and definition[key].get("custom_animation", "") in ["", "slash_oversize"]]
+            asset["body_types"] = [kind for kind in ["male", "female"]
+                                   if all(layer.get(kind) == layer.get(body_type) for layer in supported_layers)]
         assets.append(asset)
     blob("cc-by-sa-3_0.txt")
     selected_csv = io.StringIO()

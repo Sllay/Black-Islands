@@ -38,7 +38,10 @@ func _refresh() -> void:
 		body.add_child(preview)
 		var info := ShellUI.column(body,2)
 		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		info.add_child(ShellUI.label_text(row.data.display_name,24,ShellUI.GOLD))
+		var title := ShellUI.label_text(row.data.display_name,24,ShellUI.GOLD)
+		title.clip_text = true
+		title.tooltip_text = row.data.display_name
+		info.add_child(title)
 		info.add_child(ShellUI.label_text("%s  •  %s  •  Dia %d" % [row.data.difficulty,duration(row.data.played_seconds),1+int(row.data.world_clock/SurfaceLedger.DAY)],18))
 		action(body,"Excluir",confirm_delete.bind("world",row.slot,_refresh),"DeleteWorld%d"%row.slot)
 		action(body,"Editar",Flow.edit_world.bind(row.slot,true),"EditWorld%d"%row.slot)

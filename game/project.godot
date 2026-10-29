@@ -12,7 +12,12 @@ config_version=5
 
 config/name="Black Island"
 run/main_scene="res://scenes/boot/Boot.tscn"
+config/project_settings_override="user://rc0/renderer_override.cfg"
 config/features=PackedStringArray("4.7")
+
+[audio]
+
+default_bus_layout="res://default_bus_layout.tres"
 
 [autoload]
 
