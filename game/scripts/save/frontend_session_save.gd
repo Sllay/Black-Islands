@@ -1,8 +1,12 @@
 class_name FrontendSessionSave
 extends PlayerSaveCoordinator
 ## World truth and portable character records have independent files/identities.
-## C03 replaces the initial coalesced world document with dirty domain records.
+## Independent owners, dirty regions, coalesced atomic ownership commits.
 var world_document: AtomicDocument
+var world_store: DirtyWorldStore
+var restored_surface: Dictionary = {}
+var world_played := 0.0
+var last_write_report: Dictionary = {}
 var portable: PortablePlayerStore
 var library: FrontendLibrary
 var world_slot: int
@@ -23,19 +27,29 @@ func prepare(profiles: FrontendLibrary, selected_world: int, selected_player: in
 	var error := AtomicBatch.recover(journal_path)
 	if error != OK:
 		return error
-	world_document = AtomicDocument.new(library.world_directory(world).path_join("surface.json"),1,{"world_id":world.world_id})
-	error = world_document.read()
-	if error != OK:
-		return error
 	portable = PortablePlayerStore.new(library.player_directory(player),player)
 	error = portable.load_player()
+	if error != OK:
+		return error
+	world_store = DirtyWorldStore.new(library.world_directory(world),world.world_id)
+	error = world_store.load_world()
+	if error != OK:
+		return error
+	world_document = world_store.document
+	restored_surface = world_store.restore_surface()
+	if restored_surface.has("load_error"):
+		return ERR_FILE_CORRUPT
+	if not restored_surface.is_empty():
+		var inventory: Dictionary = portable.loaded.get("inventory",InventoryState.new().snapshot())
+		error = SurfaceSaveValidator.validate(restored_surface,inventory)
+		if error != OK:
+			return error
 	played = float(portable.document.loaded.get("played_seconds",player.played_seconds))
+	world_played = float(world_document.loaded.get("played_seconds",world.played_seconds))
 	_real_tick = Time.get_ticks_msec()
-	return error
+	return OK
 
 func configure(player: PlayerActor, storage: PlayerSaveStore) -> void:
-	if not portable.loaded.is_empty():
-		portable.loaded.appearance = portable.profile.appearance
 	var position: Dictionary = world_document.loaded.get("sessions",{}).get(portable.profile.player_id,{})
 	if not position.is_empty():
 		if portable.loaded.is_empty():
@@ -54,30 +68,44 @@ func _fresh(player: PlayerActor) -> Dictionary:
 func _process(delta: float) -> void:
 	var now := Time.get_ticks_msec()
 	if actor != null and actor.spawned:
-		played += maxf(0,(now-_real_tick)/1000.0)
+		var elapsed := maxf(0,(now-_real_tick)/1000.0)
+		played += elapsed
+		world_played += elapsed
 	_real_tick = now
 	super(delta)
 
 func flush() -> Error:
-	if actor == null or not actor.spawned:
+	if actor == null or not actor.spawned or world_store.runtime == null:
 		return OK
 	var snapshot_data := snapshot()
 	last_error = PlayerSaveStore.validate_snapshot(snapshot_data)
 	if last_error != OK:
 		return last_error
-	var world := world_document.loaded.duplicate(true)
-	world.surface = snapshot_data.get("surface",{})
-	if not world.has("sessions"):
-		world.sessions = {}
-	world.sessions[portable.profile.player_id] = snapshot_data.spawn
-	world.played_seconds = float(world.get("played_seconds",0))+maxf(0,played-float(portable.document.loaded.get("played_seconds",0)))
 	var started := Time.get_ticks_msec()
-	last_error = AtomicBatch.commit(journal_path,[portable.document,world_document],[portable.payload(snapshot_data,played),world])
+	var sessions: Dictionary = world_document.loaded.get("sessions",{}).duplicate(true)
+	sessions[portable.profile.player_id] = snapshot_data.spawn
+	var staged := world_store.stage(DirtyWorldStore.global_state(world_store.runtime),sessions,world_played)
+	if staged.error != OK:
+		return staged.error
+	var payload := portable.payload(snapshot_data,played)
+	var documents: Array[AtomicDocument] = []
+	var payloads: Array[Dictionary] = []
+	last_write_report = {"player_documents":0,"world_manifests":0,"world_regions":world_store.last_writes,"world_records":world_store.last_records}
+	if not AtomicDocument.same_value(payload,portable.document.loaded):
+		documents.append(portable.document)
+		payloads.append(payload)
+		last_write_report.player_documents = 1
+	if not AtomicDocument.same_value(staged.data,world_document.loaded):
+		documents.append(world_document)
+		payloads.append(staged.data)
+		last_write_report.world_manifests = 1
+	last_error = AtomicBatch.commit(journal_path,documents,payloads) if not documents.is_empty() else OK
 	if last_error == OK:
+		world_store.committed()
 		portable.loaded = portable.bridge(portable.document.loaded)
 		portable.revision = portable.document.revision
 		_since_save = 0
-		_update_cards(world)
+		_update_cards(staged.data)
 	last_commit_ms = Time.get_ticks_msec()-started
 	return last_error
 
@@ -86,10 +114,24 @@ func _update_cards(world: Dictionary) -> void:
 	if doc.read() == OK:
 		doc.loaded.generated = true
 		doc.loaded.played_seconds = world.played_seconds
-		doc.loaded.world_clock = world.surface.get("clock",0)
+		doc.loaded.world_clock = world.global.get("clock",0)
 		doc.commit(doc.loaded)
 	var player := library.document("player",player_slot)
 	if player.read() == OK:
 		player.loaded.appearance = portable.document.loaded.character.appearance
 		player.loaded.played_seconds = played
 		player.commit(player.loaded)
+
+func bind_surface(surface: SurfaceRuntime) -> void:
+	world_store.bind(surface)
+
+func snapshot() -> Dictionary:
+	# Player-only capture: never calls SurfaceRuntime.snapshot or hashes world.
+	var feet := actor.global_position if actor.is_on_floor() else _safe_feet
+	var appearance := actor.visual.configuration.duplicate(true)
+	appearance.equipment_visuals = []
+	return {"schema_version":1,"spawn":{"context":"surface","feet":[feet.x,feet.y,feet.z],
+		"facing":[actor.motor.facing.x,actor.motor.facing.y,actor.motor.facing.z]},
+		"appearance":appearance,"inventory":actor.inventory.state.snapshot(),
+		"stats":{"health":actor.state.current_health,"max_health":actor.state.max_health,
+		"stamina":actor.state.current_stamina,"max_stamina":actor.state.max_stamina,"defense":actor.state.defense}}

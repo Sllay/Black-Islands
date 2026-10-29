@@ -66,12 +66,23 @@ func edit_player(slot: int, appearance: Dictionary) -> Error:
 		if appearance.selections.get(role,"") != prior.selections.get(role,""):
 			return ERR_UNAUTHORIZED
 	doc.loaded.appearance = LPCCatalog.normalize(appearance)
+	var portable := PortablePlayerStore.new(player_directory(doc.loaded),doc.loaded)
+	var error := portable.load_player()
+	if error != OK:
+		return error
+	if not portable.document.loaded.is_empty():
+		portable.document.loaded.character.appearance = doc.loaded.appearance
+		portable.document.loaded.cosmetics = doc.loaded.appearance
+		error = portable.document.commit(portable.document.loaded)
+		if error != OK:
+			return error
 	return doc.commit(doc.loaded)
 
 func preview_appearance(player: Dictionary) -> Dictionary:
 	var config: Dictionary = player.appearance.duplicate(true)
-	var doc := AtomicDocument.new(player_directory(player).path_join("profile.json"),1,{"player_id":player.player_id})
-	if doc.read() == OK and not doc.loaded.is_empty():
+	var portable := PortablePlayerStore.new(player_directory(player),player)
+	var doc := portable.document
+	if portable.load_player() == OK and not doc.loaded.is_empty():
 		var inventory := InventoryState.new()
 		if inventory.restore(doc.loaded.character.inventory) == OK:
 			var item := inventory.active_definition()

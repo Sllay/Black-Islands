@@ -14,9 +14,16 @@ var _hit := HitPayload.new()
 var mesh: MeshInstance3D
 var label: Label3D
 var collision: CollisionShape3D
+var brain: LimboMobBrain
+var locomotion := MobLocomotion.new()
 
 func _ready() -> void:
 	definition = SurfaceCatalog.data().mobs[system.domain.states[entity_id].definition]
+	brain = LimboMobBrain.new()
+	brain.name = "Brain"
+	add_child(brain)
+	brain.configure(definition,system.domain.states[entity_id])
+	locomotion.configure(self,system.runtime.terrain,float(definition.speed))
 	collision_layer = CollisionLayers.MOB
 	collision_mask = CollisionLayers.MOB_MASK
 	floor_snap_length = .5
@@ -72,15 +79,15 @@ func _physics_process(delta: float) -> void:
 	var direction := player.global_position-global_position
 	direction.y = 0
 	var desired := Vector3.ZERO
+	intent = str(brain.command.kind)
 	if intent == "FLEE":
 		desired = -direction.normalized()
-	elif intent == "ATTACK":
+	elif intent == "CHASE":
 		desired = direction.normalized()
 	elif intent == "WANDER":
 		var angle := float(posmod(entity_id.hash()+int(system.runtime.ledger.clock/5),628))/100.0
 		desired = Vector3(sin(angle),0,cos(angle))*.35
 	if _attack_time >= 0:
-		desired = Vector3.ZERO
 		_attack_time += delta
 		if not _attack_hit and _attack_time >= .4:
 			_query.transform = Transform3D(Basis.looking_at(_facing),global_position+Vector3.UP*.7+_facing*.8)
@@ -99,13 +106,7 @@ func _physics_process(delta: float) -> void:
 		_facing = direction.normalized() if not direction.is_zero_approx() else Vector3.FORWARD
 	if not desired.is_zero_approx():
 		_facing = desired.normalized()
-	velocity.x = move_toward(velocity.x,desired.x*float(definition.speed),12*delta)
-	velocity.z = move_toward(velocity.z,desired.z*float(definition.speed),12*delta)
-	velocity.y = -.2 if is_on_floor() else velocity.y-18*delta
-	if not system.runtime.terrain.collision_data_ready(global_position+velocity*delta):
-		velocity.x = 0
-		velocity.z = 0
-	move_and_slide()
+	locomotion.tick(delta,desired,_attack_time >= 0)
 
 func receive_hit(hit: HitPayload) -> float:
 	system.domain.states[entity_id].position = [global_position.x,global_position.y,global_position.z]

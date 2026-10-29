@@ -91,7 +91,9 @@ func _create_surface() -> void:
 	surface = SurfaceRuntime.new()
 	surface.name = "Surface"
 	add_child(surface)
-	surface.configure(self,frontend_save.world_document.loaded.get("surface",{}) if frontend_save != null else player_store.loaded.get("surface",{}))
+	surface.configure(self,frontend_save.restored_surface if frontend_save != null else player_store.loaded.get("surface",{}))
+	if frontend_save != null:
+		frontend_save.bind_surface(surface)
 	if frontend_save != null and DisplayServer.get_name() != "headless":
 		preview = WorldPreview.new()
 		preview.session = self

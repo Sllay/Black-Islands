@@ -8,6 +8,24 @@ var loaded: Dictionary = {}
 var revision := 0
 var recovered := false
 
+static func same_value(a: Variant, b: Variant) -> bool:
+	# JSON parses integers as floats; compare values recursively, not Variant types.
+	if a is Dictionary and b is Dictionary:
+		if a.size() != b.size():
+			return false
+		for key: Variant in a:
+			if not b.has(key) or not same_value(a[key],b[key]):
+				return false
+		return true
+	if a is Array and b is Array:
+		if a.size() != b.size():
+			return false
+		for index: int in a.size():
+			if not same_value(a[index],b[index]):
+				return false
+		return true
+	return a == b
+
 func _init(file_path: String, version: int, owner: Dictionary) -> void:
 	path = file_path
 	schema = version

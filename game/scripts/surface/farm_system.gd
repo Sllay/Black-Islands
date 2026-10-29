@@ -1,5 +1,6 @@
 class_name FarmSystem
 extends RefCounted
+signal changed(id: String)
 ## Dedicated world-cell crop state, evaluated by the session scheduler.
 var plots: Dictionary = {}
 var ledger: SurfaceLedger
@@ -19,6 +20,7 @@ func till(point: Vector3, supported: bool, material: int) -> Error:
 		"dry_decay_deadline":ledger.active_seconds+1800,"unsupported":false,
 		"last_clock":ledger.clock,"last_active":ledger.active_seconds,"revision":0}
 	ledger.suppress(point,"farm:"+key)
+	changed.emit(key)
 	return OK
 
 func plant(key: String, inventory: InventoryState) -> Error:
@@ -31,6 +33,7 @@ func plant(key: String, inventory: InventoryState) -> Error:
 	plot.crop_id = crop.crop_id
 	plot.growth_progress = 0.0
 	plot.revision += 1
+	changed.emit(key)
 	return OK
 
 func water(key: String, days: float = 1.0) -> Error:
@@ -43,6 +46,7 @@ func water(key: String, days: float = 1.0) -> Error:
 	plot.dry_decay_deadline = ledger.active_seconds+1800
 	plot.soil_state = "TILLED_WET" if plot.seed_id.is_empty() else "GROWING"
 	plot.revision += 1
+	changed.emit(key)
 	return OK
 
 func rain(area: AABB, heavy: bool) -> void:
@@ -66,6 +70,7 @@ func evaluate() -> Array[String]:
 			plot.moisture = clampf((float(plot.moisture_deadline)-ledger.clock)/SurfaceLedger.DAY,0,3)
 		plot.last_clock = ledger.clock
 		plot.last_active = ledger.active_seconds
+		changed.emit(key)
 		if float(plot.growth_progress) >= 1:
 			plot.soil_state = "HARVEST_READY"
 		if float(plot.dry_elapsed) >= 1800:
@@ -82,6 +87,7 @@ func harvest(key: String) -> Dictionary:
 	plot.growth_progress = 0.0
 	plot.growth_stage = 0
 	plot.revision += 1
+	changed.emit(key)
 	return {crop.harvest_item:int(crop.harvest_amount),crop.seed_item_id:int(crop.seed_return)}
 
 func remove(key: String, unsupported: bool = false) -> Dictionary:
@@ -94,5 +100,6 @@ func remove(key: String, unsupported: bool = false) -> Dictionary:
 		outputs[crop.seed_item_id] = 1
 	plot.unsupported = unsupported
 	plots.erase(key)
+	changed.emit(key)
 	ledger.release(point,"farm:"+key)
 	return outputs

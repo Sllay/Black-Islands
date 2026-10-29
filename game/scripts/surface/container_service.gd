@@ -1,5 +1,6 @@
 class_name ContainerService
 extends RefCounted
+signal changed(id: String)
 var inventories: Dictionary = {}
 var records: Dictionary = {}
 
@@ -12,6 +13,8 @@ func create(id: String, point: Vector3, kind: String = "Chest") -> InventoryStat
 	inventories[id] = inventory
 	records[id] = {"id":id,"position":[point.x,point.y,point.z],"kind":kind,"deadline":-1,"policy":"persistent"}
 	_index_record(id,point)
+	inventory.changed.connect(_inventory_changed.bind(id))
+	changed.emit(id)
 	return inventory
 
 func snapshot() -> Dictionary:
@@ -33,6 +36,7 @@ func restore(data: Dictionary) -> Error:
 		inventories[id] = inventory
 		records[id] = row.duplicate(true)
 		_index_record(id,Vector3(row.position[0],row.position[1],row.position[2]))
+		inventory.changed.connect(_inventory_changed.bind(id))
 	return OK
 
 var _regions: Dictionary = {}
@@ -69,7 +73,11 @@ func break_chest(id: String) -> Error:
 		return error
 	records.erase(id)
 	inventories.erase(id)
+	changed.emit(id)
 	return OK
+
+func _inventory_changed(_revision: int, id: String) -> void:
+	changed.emit(id)
 
 func transfer_all(source: InventoryState, destination: InventoryState) -> Error:
 	var from := InventoryTransactions.clone(source)

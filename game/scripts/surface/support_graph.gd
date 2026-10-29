@@ -1,5 +1,6 @@
 class_name SupportGraph
 extends RefCounted
+signal changed(id: String)
 ## Indexed topology + independent root candidates. Materials never change reach.
 var pieces: Dictionary = {}
 var occupancy: Dictionary = {}
@@ -56,6 +57,7 @@ func _insert(row: Dictionary) -> void:
 	if not _index.has(point):
 		_index[point] = []
 	_index[point].append(row.id)
+	changed.emit(row.id)
 
 func _erase(id: String) -> void:
 	if not pieces.has(id):
@@ -67,6 +69,7 @@ func _erase(id: String) -> void:
 		_index.erase(cell(row))
 	pieces.erase(id)
 	candidates.erase(id)
+	changed.emit(id)
 
 func adjacent(id: String) -> Array[String]:
 	var result: Array[String] = []

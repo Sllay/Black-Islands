@@ -171,6 +171,7 @@ func _regrow() -> void:
 		if terrain.material_at(hit.position) == 2 and session.edits.apply(hit.position,.55,true,1) != OK:
 			continue
 		ledger.suppression.erase(key)
+		ledger.changed.emit("suppression",key)
 		refresh(point)
 
 func _process(delta: float) -> void:
@@ -231,6 +232,8 @@ func harvest_prop(id: String, actor: PlayerActor) -> Dictionary:
 	if output.error != OK:
 		return output
 	ledger.props[id] = result.state
+	ledger.props[id].position = [location.x,location.y,location.z]
+	ledger.changed.emit("props",id)
 	if not output.overflow.is_empty():
 		create_bag(location,output.overflow)
 	actor.visual.play_semantic(LPCActionResolver.MELEE_SLASH,.4)

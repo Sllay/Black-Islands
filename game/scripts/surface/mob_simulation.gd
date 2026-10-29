@@ -41,7 +41,10 @@ func sync_positions() -> void:
 	for id: String in actors:
 		if domain.states[id].life == "ALIVE":
 			var point: Vector3 = actors[id].global_position
-			domain.states[id].position = [point.x,point.y,point.z]
+			var previous: Array = domain.states[id].position
+			if Vector3(previous[0],previous[1],previous[2]).distance_squared_to(point) > .0025:
+				domain.states[id].position = [point.x,point.y,point.z]
+				domain.changed.emit(id)
 
 func reconcile() -> void:
 	sync_positions()
@@ -63,6 +66,7 @@ func reconcile() -> void:
 		var tier := MobBrain.tier(distance) if state.life != "REMOVED" else "STASIS"
 		tiers[id] = tier
 		if tier != "ACTIVE" and actors.has(id):
+			actors[id].brain.deactivate()
 			actors[id].collision_layer = 0
 			actors[id].set_physics_process(false)
 			actors[id].visible = false
@@ -79,21 +83,15 @@ func reconcile() -> void:
 				add_child(actor)
 				actors[id] = actor
 			var definition: Dictionary = SurfaceCatalog.data().mobs[state.definition]
-			var context := {"attacked":runtime.ledger.clock < state.attacked_until,"player_in_range":distance < 12,
+			var context := {"clock":runtime.ledger.clock,"distance":distance,"attacked":runtime.ledger.clock < state.attacked_until,"player_in_range":distance < 12,
 				"territory_violation":distance < float(definition.territory),"time_of_day":"NIGHT" if fmod(runtime.ledger.clock/SurfaceLedger.DAY,1) >= .5 else "DAY",
 				"pack_count":_pack_count(state,point),"health":state.health,"health_ratio":float(state.health)/float(definition.health)}
 			if not runtime.player.targeter.has_line_of_sight(point):
 				context.player_in_range = false
-			var intent := MobBrain.choose(definition,context)
-			if intent == "WARN_ATTACK":
-				if state.warning_since < 0:
-					state.warning_since = runtime.ledger.clock
-				if runtime.ledger.clock-float(state.warning_since) >= float(definition.warning):
-					intent = "ATTACK"
+			if state.life == "ALIVE":
+				actors[id].brain.tick(context,runtime.player.global_position)
 			else:
-				state.warning_since = -1.0
-			state.intent = intent
-			actors[id].intent = intent
+				actors[id].brain.deactivate()
 			actors[id].sync_life()
 		elif tier == "NEAR_PROXY":
 			if _proxy_clock >= 1 and state.life == "ALIVE":
@@ -127,6 +125,7 @@ func _logical_step(state: Dictionary, distance: float) -> void:
 	var height := runtime.terrain.field.top_surface(point.x,point.z)
 	if is_finite(height) and height > 1:
 		state.position = [point.x,height+.05,point.z]
+		domain.changed.emit(state.id)
 
 func _update_proxies(groups: Dictionary) -> void:
 	for id: String in SurfaceCatalog.data().mobs:

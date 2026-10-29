@@ -8,14 +8,18 @@ func _init(storage_directory: String, owner: Dictionary) -> void:
 	super(storage_directory,{"save_id":owner.player_id,"world_seed":0,"world_generation_version":1,
 		"world_profile":"portable_player","created_at":owner.created_at})
 	profile = owner
-	document = AtomicDocument.new(directory.path_join("profile.json"),1,{"player_id":owner.player_id})
+	identity = {"player_id":owner.player_id}
+	document = AtomicDocument.new(directory.path_join("profile.json"),2,identity)
 
 func load_player() -> Error:
-	var error := document.read()
+	var error := SchemaMigrations.read(document,{1:SchemaMigrations.player_1_to_2})
 	if error != OK:
 		return error
 	revision = document.revision
 	loaded = bridge(document.loaded)
+	if not document.loaded.is_empty():
+		if document.loaded.get("player_id") != profile.player_id or PlayerSaveStore.validate_snapshot(loaded) != OK:
+			return ERR_INVALID_DATA
 	return OK
 
 func bridge(data: Dictionary) -> Dictionary:
@@ -32,8 +36,10 @@ func payload(snapshot: Dictionary, played: float) -> Dictionary:
 	character.erase("spawn")
 	character.erase("surface")
 	character.erase("schema_version")
+	character.stats.merge({"mana":100.0,"max_mana":100.0},false)
 	return {"player_id":profile.player_id,"name":profile.name,"level":profile.level,
-		"played_seconds":played,"character":character}
+		"played_seconds":played,"character":character,"cosmetics":character.appearance.duplicate(true),
+		"unlocks":document.loaded.get("unlocks",{"skills":[],"recipes":[]})}
 
 func commit(snapshot: Dictionary) -> Error:
 	var error := document.commit(payload(snapshot,float(document.loaded.get("played_seconds",0))))

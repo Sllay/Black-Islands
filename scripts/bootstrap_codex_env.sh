@@ -244,6 +244,8 @@ if [[ ! -f "$VOXEL_STAMP" ]]; then
   printf '%s\n' "$VOXEL_TOOLS_SHA256" > "$VOXEL_STAMP"
 fi
 
+bash "$ROOT/scripts/install_limboai.sh"
+
 # ---- Basic validation -------------------------------------------------------
 if [[ ! -f "$ROOT/game/project.godot" ]]; then
   echo "game/project.godot is missing." >&2

@@ -1,5 +1,6 @@
 class_name MobDomain
 extends RefCounted
+signal changed(id: String)
 ## Shared living/corpse authority. Views/AI paths are never serialized.
 var states: Dictionary = {}
 var ledger: SurfaceLedger
@@ -17,6 +18,7 @@ func spawn(id: String, definition: String, point: Vector3) -> Error:
 	states[id] = {"id":id,"definition":definition,"position":[point.x,point.y,point.z],"health":data.health,
 		"life":"ALIVE","attacked_until":0.0,"death_until":0.0,"decompose_at":0.0,
 		"harvest":{},"corpse_inventory":"","converted_bag":"","warning_since":-1.0,"intent":"WANDER"}
+	changed.emit(id)
 	return OK
 
 func hit(id: String, payload: HitPayload) -> float:
@@ -30,6 +32,7 @@ func hit(id: String, payload: HitPayload) -> float:
 	if state.health <= 0:
 		state.life = "DEATH"
 		state.death_until = ledger.clock+.3
+	changed.emit(id)
 	return damage
 
 func evaluate() -> void:
@@ -45,6 +48,7 @@ func evaluate() -> void:
 			state.harvest = HarvestService.create(definition.harvest)
 			state.decompose_at = ledger.clock+float(definition.decomposition)
 			state.life = "CORPSE"
+			changed.emit(id)
 		if state.life == "CORPSE" and (ledger.clock >= state.decompose_at or float(state.harvest.health) <= 0):
 			decompose(id)
 
@@ -59,6 +63,7 @@ func harvest(id: String, tool: String, command: String, revision: int, player_in
 	if output.error != OK:
 		return output
 	state.harvest = result.state
+	changed.emit(id)
 	result.overflow = output.overflow
 	return result
 
@@ -84,7 +89,9 @@ func decompose(id: String) -> Error:
 			return error # Defined passive delicate-loot loss, not a world item copy.
 	containers.records.erase(state.corpse_inventory)
 	containers.inventories.erase(state.corpse_inventory)
+	containers.changed.emit(state.corpse_inventory)
 	state.life = "REMOVED"
+	changed.emit(id)
 	return OK
 
 func pack_player_death(source: InventoryState, point: Vector3, id: String) -> Error:

@@ -170,3 +170,32 @@ func break_plot() -> void:
 	await get_tree().create_timer(1.5).timeout
 	result = {"edit_error":error,"unsupported_plot_removed":not runtime.farms.plots.has(key),"key":key}
 	print("P04_QA_SUPPORT_BREAK ",result)
+
+func rc0_save_probe() -> void:
+	if not runtime.ledger.flags.get("rc0_owner_probe",false):
+		runtime.deliver({"bi.resource.wood":9},runtime.player.global_position)
+		for index: int in InventoryState.CAPACITY:
+			if runtime.player.inventory.state.slot_at(index).get("item_id","") == "bi.armor.fiber_hat":
+				runtime.player.inventory.state.equip("helmet",index)
+				break
+		runtime.player.state.set_health(73)
+		runtime.ledger.flags.rc0_owner_probe = true
+	var error := runtime.session.player_save.flush()
+	result = {"save":error,"report":rc0_report()}
+
+func rc0_report() -> Dictionary:
+	var inventory := runtime.player.inventory.state
+	var wood := 0
+	for index: int in InventoryState.CAPACITY:
+		var row := inventory.slot_at(index)
+		if row.get("item_id","") == "bi.resource.wood":
+			wood += int(row.quantity)
+	var brains: Dictionary = {}
+	for id: String in runtime.mobs.actors:
+		brains[id] = runtime.mobs.actors[id].brain.report()
+	return {"world_id":runtime.session.store.identity.save_id,"player_id":Profiles.active_player().get("player_id","legacy"),
+		"seed":runtime.terrain.field.world_seed,"appearance":runtime.player.visual.configuration,
+		"wood":wood,"helmet":inventory.equipment_at("helmet").get("item_id",""),"health":runtime.player.state.current_health,
+		"structures":runtime.building.pieces.size(),"farms":runtime.farms.plots.size(),"delta":runtime.session.store.metrics(),
+		"world_marker":runtime.ledger.flags.get("rc0_owner_probe",false),"brains":brains,
+		"save_io":runtime.session.frontend_save.last_write_report if runtime.session.frontend_save != null else {}}
