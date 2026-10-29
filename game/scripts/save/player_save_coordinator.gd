@@ -47,11 +47,15 @@ func snapshot() -> Dictionary:
 	var feet := actor.global_position if actor.is_on_floor() else _safe_feet
 	var config := actor.visual.configuration.duplicate(true)
 	config.equipment_visuals = []
-	return {"schema_version":1, "spawn":{"context":"surface", "feet":[feet.x,feet.y,feet.z],
+	var data := {"schema_version":1,"spawn":{"context":"surface","feet":[feet.x,feet.y,feet.z],
 		"facing":[actor.motor.facing.x,actor.motor.facing.y,actor.motor.facing.z]},
-		"appearance":config, "inventory":actor.inventory.state.snapshot(),
+		"appearance":config,"inventory":actor.inventory.state.snapshot(),
 		"stats":{"health":actor.state.current_health,"max_health":actor.state.max_health,
 			"stamina":actor.state.current_stamina,"max_stamina":actor.state.max_stamina,"defense":actor.state.defense}}
+	var surface := get_tree().get_first_node_in_group("surface_runtime")
+	if surface != null:
+		data.surface = surface.snapshot()
+	return data
 
 func flush() -> Error:
 	if actor == null or not actor.spawned:

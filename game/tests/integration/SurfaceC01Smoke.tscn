@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://7ov3bp7hopu1"]
+
+[ext_resource type="Script" path="res://tests/integration/surface_c01_smoke.gd" id="1_rvlwt"]
+
+[node name="SurfaceC01Smoke" type="Node" unique_id=893483203]
+script = ExtResource("1_rvlwt")

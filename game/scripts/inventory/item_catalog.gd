@@ -20,4 +20,7 @@ static func resolve(id: String) -> ItemDefinition:
 	if _definitions.is_empty():
 		for record: Dictionary in DEFINITIONS:
 			_definitions[record.id] = ItemDefinition.new(record)
+		var surface: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/surface/catalog.json"))
+		for record: Dictionary in surface.items:
+			_definitions[record.id] = ItemDefinition.new(record)
 	return _definitions.get(id)

@@ -76,6 +76,7 @@ func present_world() -> void:
 
 func bind_player(actor: PlayerActor) -> void:
 	_bind_health(actor)
+	_bind_surface()
 	var stamina_bar := find_child("Stamina", true, false) as HudResourceBar
 	var cluster := find_child("Actions", true, false) as MobileActionCluster
 	actor.state.stamina_changed.connect(stamina_bar.set_fraction)
@@ -95,6 +96,17 @@ func bind_player(actor: PlayerActor) -> void:
 	stamina_bar.get_parent().add_child(wallet)
 	actor.inventory.state.changed.connect(func(_revision: int) -> void: _refresh_inventory(actor, hotbar, wallet))
 	_refresh_inventory(actor, hotbar, wallet)
+
+func _bind_surface() -> void:
+	var surface := get_tree().get_first_node_in_group("surface_runtime")
+	if surface == null:
+		return
+	var hint := ShellUI.label_text("Machado: árvores • Picareta: rochas\nToque em Bolsa para organizar suas ferramentas.",16,ShellUI.GOLD)
+	hint.name = "SurfaceHint"
+	hint.custom_minimum_size.x = 260
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	find_child("ReturnToSaves",true,false).get_parent().add_child(hint)
+	surface.message.connect(func(text: String) -> void: hint.text = text)
 
 func _bind_health(actor: PlayerActor) -> void:
 	var bar := find_child("Health",true,false) as HudResourceBar

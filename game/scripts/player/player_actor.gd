@@ -48,11 +48,20 @@ func _physics_process(delta: float) -> void:
 	if Vector2(velocity.x,velocity.z).length_squared() > 0.04:
 		locomotion = LPCActionResolver.RUN if motor.running else LPCActionResolver.MOVE
 	visual.tick(0.0 if combat.hitstopped() else delta,motor.facing,deg_to_rad(camera_rig.heading_degrees),locomotion)
+	_surface_action()
 	if not inventory.is_open and not combat.movement_locked():
 		if Input.is_action_just_pressed("build_mode") or Input.is_action_just_pressed("context_action"):
 			camera_rig.toggle_build()
 		if Input.is_action_just_pressed("interact"):
 			targeter.interact()
+
+func _surface_action() -> void:
+	if inventory.is_open or not spawned or not Input.is_action_just_released("attack_primary"):
+		return
+	var surface := get_tree().get_first_node_in_group("surface_runtime")
+	var item := inventory.state.active_definition()
+	if surface != null and item != null and item.category != "WEAPON":
+		surface.primary_action()
 
 func _refresh_appearance() -> void:
 	var config := visual.configuration.duplicate(true) if not visual.configuration.is_empty() else LPCCatalog.default_appearance()

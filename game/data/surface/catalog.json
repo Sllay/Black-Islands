@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "bi.tool.axe",
+      "title": "Machado",
+      "category": "TOOL",
+      "icon": "\u265c"
+    },
+    {
+      "id": "bi.tool.knife",
+      "title": "Faca",
+      "category": "TOOL",
+      "icon": "\u2020"
+    },
+    {
+      "id": "bi.tool.hoe",
+      "title": "Enxada",
+      "category": "TOOL",
+      "icon": "\u2301"
+    },
+    {
+      "id": "bi.tool.watering_can",
+      "title": "Regador",
+      "category": "TOOL",
+      "icon": "\u2652"
+    },
+    {
+      "id": "bi.tool.shovel",
+      "title": "P\u00e1 / caminho",
+      "category": "TOOL",
+      "icon": "\u2660"
+    },
+    {
+      "id": "bi.resource.wood",
+      "title": "Madeira",
+      "category": "RESOURCE",
+      "icon": "\u25a5"
+    },
+    {
+      "id": "bi.resource.fiber",
+      "title": "Fibra",
+      "category": "RESOURCE",
+      "icon": "\u2248"
+    },
+    {
+      "id": "bi.resource.sap",
+      "title": "Seiva",
+      "category": "RESOURCE",
+      "icon": "\u25cf"
+    },
+    {
+      "id": "bi.resource.metal",
+      "title": "Min\u00e9rio",
+      "category": "RESOURCE",
+      "icon": "\u25c8"
+    },
+    {
+      "id": "bi.seed.turnip",
+      "title": "Semente de nabo",
+      "category": "CONSUMABLE",
+      "icon": "\u22c6"
+    },
+    {
+      "id": "bi.food.turnip",
+      "title": "Nabo",
+      "category": "CONSUMABLE",
+      "icon": "\u25c9"
+    },
+    {
+      "id": "bi.resource.meat",
+      "title": "Carne",
+      "category": "RESOURCE",
+      "icon": "\u25b0"
+    },
+    {
+      "id": "bi.resource.light_hide",
+      "title": "Couro leve",
+      "category": "RESOURCE",
+      "icon": "\u25c7"
+    },
+    {
+      "id": "bi.resource.heavy_hide",
+      "title": "Couro pesado",
+      "category": "RESOURCE",
+      "icon": "\u25c6"
+    },
+    {
+      "id": "bi.resource.feather",
+      "title": "Pena",
+      "category": "RESOURCE",
+      "icon": "\u2301"
+    },
+    {
+      "id": "bi.resource.rotten_flesh",
+      "title": "Carne p\u00fatrida",
+      "category": "RESOURCE",
+      "icon": "\u25b0"
+    }
+  ],
+  "props": [
+    {
+      "id": "palm",
+      "biomes": [
+        "BEACH"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 2,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": true,
+      "harvest": "tree",
+      "visual": "palm"
+    },
+    {
+      "id": "tropical_tree",
+      "biomes": [
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 2,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": true,
+      "harvest": "tree",
+      "visual": "tree"
+    },
+    {
+      "id": "forest_tree",
+      "biomes": [
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 4,
+      "cluster_radius": 2,
+      "cluster_count": 3,
+      "rarity": 1,
+      "persistent": true,
+      "harvest": "tree",
+      "visual": "forest"
+    },
+    {
+      "id": "small_rock",
+      "biomes": [
+        "BEACH",
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 3,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": false,
+      "harvest": "",
+      "visual": "pebble"
+    },
+    {
+      "id": "large_rock",
+      "biomes": [
+        "BEACH",
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 1,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": true,
+      "harvest": "rock",
+      "visual": "rock"
+    },
+    {
+      "id": "resource_rock",
+      "biomes": [
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 1,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": true,
+      "harvest": "ore",
+      "visual": "ore"
+    },
+    {
+      "id": "bush",
+      "biomes": [
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 4,
+      "cluster_radius": 2,
+      "cluster_count": 3,
+      "rarity": 1,
+      "persistent": false,
+      "harvest": "",
+      "visual": "bush"
+    },
+    {
+      "id": "plant",
+      "biomes": [
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 7,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": false,
+      "harvest": "",
+      "visual": "plant"
+    },
+    {
+      "id": "grass",
+      "biomes": [
+        "TROPICAL_PLAINS",
+        "TROPICAL_HILLS",
+        "CENTRAL_FOREST"
+      ],
+      "materials": [
+        1,
+        2
+      ],
+      "min_height": 0.3,
+      "max_height": 40,
+      "max_slope": 35,
+      "distance_to_water": [
+        0,
+        500
+      ],
+      "density": 160,
+      "cluster_radius": 2,
+      "cluster_count": 1,
+      "rarity": 1,
+      "persistent": false,
+      "harvest": "",
+      "visual": "grass"
+    }
+  ],
+  "harvestables": {
+    "tree": {
+      "health": 100,
+      "tag": "TREE",
+      "reserves": {
+        "bi.resource.wood": 120,
+        "bi.resource.fiber": 35,
+        "bi.resource.sap": 2
+      }
+    },
+    "rock": {
+      "health": 100,
+      "tag": "ROCK",
+      "reserves": {
+        "bi.resource.stone": 100
+      }
+    },
+    "ore": {
+      "health": 120,
+      "tag": "ROCK",
+      "reserves": {
+        "bi.resource.stone": 60,
+        "bi.resource.metal": 45
+      }
+    },
+    "animal": {
+      "health": 60,
+      "tag": "CORPSE",
+      "reserves": {
+        "bi.resource.meat": 20,
+        "bi.resource.light_hide": 10
+      }
+    },
+    "large_animal": {
+      "health": 100,
+      "tag": "CORPSE",
+      "reserves": {
+        "bi.resource.meat": 35,
+        "bi.resource.heavy_hide": 16
+      }
+    },
+    "undead": {
+      "health": 80,
+      "tag": "CORPSE",
+      "reserves": {
+        "bi.resource.rotten_flesh": 25
+      }
+    }
+  },
+  "tools": {
+    "bi.tool.axe": {
+      "power": 28,
+      "quality_power": 1,
+      "quality_yield": 1,
+      "efficiency": 1,
+      "targets": {
+        "TREE": 1,
+        "CORPSE": 0.7
+      },
+      "resources": {
+        "bi.resource.wood": 1,
+        "bi.resource.fiber": 0.5,
+        "bi.resource.sap": 1,
+        "bi.resource.meat": 1,
+        "bi.resource.light_hide": 0.2,
+        "bi.resource.heavy_hide": 0.2
+      },
+      "stamina": 5
+    },
+    "bi.tool.stone_pick": {
+      "power": 32,
+      "quality_power": 1,
+      "quality_yield": 1,
+      "efficiency": 1,
+      "targets": {
+        "ROCK": 1
+      },
+      "resources": {
+        "bi.resource.stone": 1,
+        "bi.resource.metal": 1
+      },
+      "stamina": 5
+    },
+    "bi.tool.knife": {
+      "power": 20,
+      "quality_power": 1,
+      "quality_yield": 1,
+      "efficiency": 1,
+      "targets": {
+        "CORPSE": 1
+      },
+      "resources": {
+        "bi.resource.light_hide": 1,
+        "bi.resource.heavy_hide": 1,
+        "bi.resource.meat": 0.3,
+        "bi.resource.rotten_flesh": 1
+      },
+      "stamina": 5
+    }
+  },
+  "hide_points": {
+    "bi.resource.light_hide": 1,
+    "bi.resource.heavy_hide": 2
+  }
+}

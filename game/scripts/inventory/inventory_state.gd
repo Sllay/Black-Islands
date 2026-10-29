@@ -15,6 +15,8 @@ var _slots: Array[ItemStack] = []
 var _hotbar: Array[String] = []
 var _equipment: Dictionary = {}
 
+var owner_scope := "PLAYER"
+
 func _init() -> void:
 	_slots.resize(CAPACITY)
 	_hotbar.resize(HOTBAR_SIZE)
@@ -31,6 +33,18 @@ func hotbar_at(index: int) -> Dictionary:
 func equipment_at(slot: String) -> Dictionary:
 	var stack := _by_uid(_equipment.get(slot, ""))
 	return stack.record() if stack != null else {}
+
+func record_by_uid(uid: String) -> Dictionary:
+	var stack := _by_uid(uid)
+	return stack.record() if stack != null else {}
+
+func adopt_committed(plan: InventoryState) -> void:
+	_slots = plan._slots
+	_hotbar = plan._hotbar
+	_equipment = plan._equipment
+	selected = plan.selected
+	wallet = plan.wallet
+	revision += 1
 
 func _by_uid(uid: String) -> ItemStack:
 	if uid.is_empty():
@@ -135,7 +149,7 @@ func snapshot() -> Dictionary:
 		else:
 			slots.append(null)
 	return {"schema_version":1, "catalog_version":ItemCatalog.VERSION, "inventory_id":inventory_id,
-		"owner_scope":"PLAYER", "revision":revision, "slots":slots, "hotbar":_hotbar.duplicate(),
+		"owner_scope":owner_scope, "revision":revision, "slots":slots, "hotbar":_hotbar.duplicate(),
 		"equipment":_equipment.duplicate(), "selected":selected, "wallet":wallet.duplicate()}
 
 func restore(data: Dictionary) -> Error:

@@ -26,6 +26,8 @@ var player_save: PlayerSaveCoordinator
 var qa_dummy: CombatDummy
 var player_metrics: Label
 
+var surface: SurfaceRuntime
+
 func _ready() -> void:
 	if get_tree().has_meta("ui_only_smoke"):
 		return
@@ -67,12 +69,19 @@ func _ready() -> void:
 	streamer.field = terrain.field
 	streamer.viewer = pawn
 	add_child(streamer)
+	_create_surface()
 	var lake := terrain.field.lake_body()
 	$Lake.position = Vector3(lake.center.x,lake.level,lake.center.y)
 	if OS.is_debug_build():
 		_create_tools()
 		_create_player_qa()
 	print("WORLD seed=",profile.world_seed," generation=",profile.world_generation_version," profile=",profile.world_profile," deltas=",store.metrics())
+
+func _create_surface() -> void:
+	surface = SurfaceRuntime.new()
+	surface.name = "Surface"
+	add_child(surface)
+	surface.configure(self,player_store.loaded.get("surface",{}))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if pawn == null:
@@ -196,11 +205,11 @@ func spawn_combat_qa() -> void:
 	if is_instance_valid(qa_dummy):
 		qa_dummy.queue_free()
 	var point := pawn.global_position+pawn.motor.facing*1.7
-	var surface := terrain.surface_hit(point.x,point.z)
-	if surface.is_empty():
+	var hit := terrain.surface_hit(point.x,point.z)
+	if hit.is_empty():
 		return
 	qa_dummy = load("res://scenes/debug/CombatDummy.tscn").instantiate()
-	qa_dummy.position = surface.position+Vector3.UP*0.04
+	qa_dummy.position = hit.position+Vector3.UP*0.04
 	add_child(qa_dummy)
 
 func pulse_combat_qa() -> void:

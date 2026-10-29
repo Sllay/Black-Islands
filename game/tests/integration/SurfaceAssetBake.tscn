@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://8xf5vjhxhpas"]
+
+[ext_resource type="Script" path="res://tests/integration/surface_asset_bake.gd" id="1_orahi"]
+
+[node name="SurfaceAssetBake" type="Node" unique_id=924152218]
+script = ExtResource("1_orahi")
