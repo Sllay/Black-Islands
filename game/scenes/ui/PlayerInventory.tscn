@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cvdk1i57y4mw0"]
+
+[ext_resource type="Script" uid="uid://dtnh1u060gx3k" path="res://scripts/ui/player_inventory_panel.gd" id="1_tksgx"]
+
+[node name="InventoryPanel" type="Control" unique_id=2007106980]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_tksgx")

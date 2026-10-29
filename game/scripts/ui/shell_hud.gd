@@ -82,6 +82,28 @@ func bind_player(actor: PlayerActor) -> void:
 	actor.targeter.target_changed.connect(func(result: TargetResult) -> void:
 		cluster.set_context_available(result.kind != TargetResult.Kind.NONE))
 	cluster.set_context_available(actor.targeter.current.kind != TargetResult.Kind.NONE)
+	var panel: PlayerInventoryPanel = load("res://scenes/ui/PlayerInventory.tscn").instantiate()
+	panel.configure(actor.inventory)
+	add_child(panel)
+	var hotbar := find_child("Hotbar", true, false) as HBoxContainer
+	for index: int in range(8):
+		var button: Button = hotbar.get_child(index)
+		button.pressed.connect(actor.inventory.state.select_hotbar.bind(index))
+	var wallet := ShellUI.label_text("◈ 0", 18, ShellUI.GOLD)
+	wallet.name = "Wallet"
+	stamina_bar.get_parent().add_child(wallet)
+	actor.inventory.state.changed.connect(func(_revision: int) -> void: _refresh_inventory(actor, hotbar, wallet))
+	_refresh_inventory(actor, hotbar, wallet)
+
+func _refresh_inventory(actor: PlayerActor, hotbar: HBoxContainer, wallet: Label) -> void:
+	for index: int in range(8):
+		var button: Button = hotbar.get_child(index)
+		var stack := actor.inventory.state.hotbar_at(index)
+		button.text = str(index + 1)
+		if not stack.is_empty():
+			button.text += "\n" + ItemCatalog.resolve(stack.item_id).icon
+		button.button_pressed = actor.inventory.state.selected == index
+	wallet.text = "◈ %d" % actor.inventory.state.wallet.get("bi.currency.coins", 0)
 
 func _action(title: String, action: String, minimum := Vector2(56, 56)) -> Button:
 	var button := ShellUI.button(title, action.to_pascal_case(), minimum)

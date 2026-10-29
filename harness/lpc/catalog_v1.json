@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "catalog_version": "bi.lpc.1",
+  "source": "https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator",
+  "source_commit": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+  "selected_license": "CC-BY-SA-3.0",
+  "source_hashes": {
+    "CREDITS.csv": "5dccae7f859d6ca53a6daaf5a772272202c21cfd77fa21bd154473ab3ea3d93e",
+    "cc-by-sa-3_0.txt": "f199af7e90e29e197a4be87b9a6d585a29ff5eae2b977503e590c4bd8fe6e8b3",
+    "palettes/ulpc-body-palettes.json": "38faf3e63510c8055ddb31114eb0a55e46eb361dd2689a1634efdbec80a8fa10",
+    "palettes/ulpc-cloth-palettes.json": "9020ebd8fc2be7e3e114050f3989a454c0c6588d67f3ef293c29c3351b5a3de4",
+    "palettes/ulpc-hair-palettes.json": "4e269a7c3f0ca7d50dbe7a6b34ece9e9baf4077c69d98abf514ad685ff356a67",
+    "sheet_definitions/body.json": "2d6d0d5b6dea8ab7da6af8a5a3a376534e26c5dcb67142cffd83066f35cc6922",
+    "sheet_definitions/hair_plain.json": "1d0f280b9b9ee41e2ae3ebe1f4323d9aca90bc29fddc2452500976dd3fc0be35",
+    "sheet_definitions/heads_human_male.json": "30776208a362e277fe221cea704ce0a4d560a131ea63508b68fe1b6e0086a0da",
+    "sheet_definitions/legs_pants.json": "5a63512cf99296c2b41cff7bca1fd2c83ab192b47bfa8a9c702cdb27ec156615",
+    "sheet_definitions/torso_clothes_longsleeve.json": "8016da212a5e8d803a7f8cecec7fe5394a2735bb9105841f2edae394d96dc033",
+    "sheet_definitions/weapon_sword_longsword.json": "ec8d19dc54c0d4d97213b27c8be418ad57dadc5f61e8db18865701f159922f02",
+    "sources/custom-animations.js": "0f97efdfad9fee36883fded80057406b69a977c9d959bd494d99152e74429993",
+    "spritesheets/body/bodies/male/light.png": "e8c9ccc5bd2d49474c6f2c8cc280f5049084d0d7eead02a5d807ccd00f436209",
+    "spritesheets/hair/plain/male/chestnut.png": "311c5b5f293c3e866a6bcf18bcf3b2ef969542dee659a54f0985462345525afb",
+    "spritesheets/head/heads/human/male/light.png": "5f653cf98e7ebef66ddfc4433eb54c1780a793f563e68d047aa72dc4ffc10e06",
+    "spritesheets/legs/pants/male/brown.png": "68c21d23177315d07e95ed3b088beff1cd783432f805ce5e45d7b5a4690a5ec1",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/male/bluegray.png": "cb6f2be409f0ab0e76b63f279f5a0769f5346b04e78613d4f13db13d9b09bea2",
+    "spritesheets/weapon/sword/longsword/attack_slash/behind/longsword.png": "a6a738ecf97a667feac2e5854a3b8030d22e0a9ff8e8034037d80aa8fd49ac47",
+    "spritesheets/weapon/sword/longsword/attack_slash/longsword.png": "8029f684fa9275bd459cafe5427a6d06a63bed4aa43d643537d75ca56db88fcd",
+    "spritesheets/weapon/sword/longsword/longsword.png": "b330ab46267534342e494373d9154309b50496759919240c92f8623c78f09c95",
+    "spritesheets/weapon/sword/longsword/universal_behind/longsword.png": "dddb1886273f79f73747d548b12cc561283e60362bb8c104dccb4fbf7cde4eac"
+  },
+  "png_sources": [
+    "spritesheets/body/bodies/male/light.png",
+    "spritesheets/head/heads/human/male/light.png",
+    "spritesheets/hair/plain/male/chestnut.png",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/male/bluegray.png",
+    "spritesheets/legs/pants/male/brown.png",
+    "spritesheets/weapon/sword/longsword/longsword.png",
+    "spritesheets/weapon/sword/longsword/universal_behind/longsword.png",
+    "spritesheets/weapon/sword/longsword/attack_slash/behind/longsword.png",
+    "spritesheets/weapon/sword/longsword/attack_slash/longsword.png"
+  ],
+  "credits": [
+    {
+      "filename": "body/bodies/male",
+      "notes": "see details at https://opengameart.org/content/lpc-character-bases; 'Thick' Male Revised Run/Climb by JaidynReiman (based on ElizaWy's LPC Revised)",
+      "authors": "bluecarrot16, Benjamin K. Smith (BenCreating), Evert, Eliza Wyatt (ElizaWy), TheraHedwig, MuffinElZangano, Durrani, Johannes Sj?lund (wulax), Stephen Challener (Redshrike)",
+      "licenses": "CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "url3": "https://opengameart.org/content/lpc-male-jumping-animation-by-durrani",
+      "url4": "https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle",
+      "url5": "https://opengameart.org/content/lpc-revised-character-basics",
+      "url6": "https://opengameart.org/content/lpc-be-seated",
+      "url7": "https://opengameart.org/content/lpc-runcycle-for-male-muscular-and-pregnant-character-bases-with-modular-heads",
+      "url8": "https://opengameart.org/content/lpc-jump-expanded",
+      "url9": "https://opengameart.org/content/lpc-character-bases",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "head/heads/human/male",
+      "notes": "original head by Redshrike, tweaks by BenCreating, modular version by bluecarrot16",
+      "authors": "bluecarrot16, Benjamin K. Smith (BenCreating), Stephen Challener (Redshrike)",
+      "licenses": "OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/lpc-character-bases",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "hair/plain",
+      "notes": "",
+      "authors": "Manuel Riecke (MrBeast), Joe White",
+      "licenses": "CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/ponytail-and-plain-hairstyles",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "torso/clothes/longsleeve/longsleeve/male",
+      "notes": "original by wulax, recolors and cleanup by JaidynReiman, further recolors by bluecarrot16",
+      "authors": "JaidynReiman, Johannes Sjölund (wulax)",
+      "licenses": "CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "url2": "http://opengameart.org/content/lpc-clothing-updates",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "legs/pants/male",
+      "notes": "original male pants by wulax, recolors and edits to v3 base by bluecarrot16, climb/jump/run/sit/emotes/revised combat by JaidynReiman based on ElizaWy's LPC Revised",
+      "authors": "bluecarrot16, JaidynReiman, ElizaWy, Matthew Krohn (makrohn), Johannes Sjölund (wulax)",
+      "licenses": "OGA-BY 3.0, GPL 3.0, CC-BY-SA 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "url3": "https://opengameart.org/content/lpc-expanded-pants",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "weapon/sword/longsword",
+      "notes": "",
+      "authors": "Johannes Sjölund (wulax), bluecarrot16",
+      "licenses": "OGA-BY 3.0, CC-BY-SA 3.0",
+      "url1": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "url2": "https://opengameart.org/content/lpc-extended-weapon-animations",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    }
+  ],
+  "palettes": {
+    "skin.light": {
+      "id": "skin.light",
+      "upstream_variant": "light",
+      "colors": [
+        "#271920",
+        "#271920",
+        "#99423c",
+        "#cc8665",
+        "#E4A47C",
+        "#F9D5BA",
+        "#FAECE7",
+        "#f8f3eb"
+      ]
+    },
+    "hair.chestnut": {
+      "id": "hair.chestnut",
+      "upstream_variant": "chestnut",
+      "colors": [
+        "#200C0D",
+        "#3A130E",
+        "#63200BD9",
+        "#63200B9C",
+        "#63200B",
+        "#81310A",
+        "#B6550E",
+        "#D28102"
+      ]
+    },
+    "cloth.bluegray": {
+      "id": "cloth.bluegray",
+      "upstream_variant": "bluegray",
+      "colors": [
+        "#11150b9C",
+        "#11150b",
+        "#0B2B28",
+        "#2E403A",
+        "#315B49",
+        "#557E85",
+        "#79979D"
+      ]
+    },
+    "cloth.brown": {
+      "id": "cloth.brown",
+      "upstream_variant": "brown",
+      "colors": [
+        "#1d131e9C",
+        "#1d131e",
+        "#411E05",
+        "#4B2B13",
+        "#62351C",
+        "#744B30",
+        "#996B4A"
+      ]
+    }
+  },
+  "assets": [
+    {
+      "id": "lpc.body.human_male",
+      "role": "body",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true,
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/body.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 10,
+          "source_index": 0,
+          "source_path": "spritesheets/body/bodies/male/light.png",
+          "sha256": "e8c9ccc5bd2d49474c6f2c8cc280f5049084d0d7eead02a5d807ccd00f436209",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "body/bodies/male"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.head.human_male",
+      "role": "head",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true,
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/heads_human_male.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 100,
+          "source_index": 1,
+          "source_path": "spritesheets/head/heads/human/male/light.png",
+          "sha256": "5f653cf98e7ebef66ddfc4433eb54c1780a793f563e68d047aa72dc4ffc10e06",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/heads/human/male"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.plain",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_plain.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 2,
+          "source_path": "spritesheets/hair/plain/male/chestnut.png",
+          "sha256": "311c5b5f293c3e866a6bcf18bcf3b2ef969542dee659a54f0985462345525afb",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/plain"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.clothes.longsleeve",
+      "role": "torso",
+      "variant": "bluegray",
+      "palette": "cloth.bluegray",
+      "required": true,
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/torso_clothes_longsleeve.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 35,
+          "source_index": 3,
+          "source_path": "spritesheets/torso/clothes/longsleeve/longsleeve/male/bluegray.png",
+          "sha256": "cb6f2be409f0ab0e76b63f279f5a0769f5346b04e78613d4f13db13d9b09bea2",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "torso/clothes/longsleeve/longsleeve/male"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.legs.pants",
+      "role": "legs",
+      "variant": "brown",
+      "palette": "cloth.brown",
+      "required": true,
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/legs_pants.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 20,
+          "source_index": 4,
+          "source_path": "spritesheets/legs/pants/male/brown.png",
+          "sha256": "68c21d23177315d07e95ed3b088beff1cd783432f805ce5e45d7b5a4690a5ec1",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "legs/pants/male"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.weapon.sword",
+      "role": "weapon",
+      "variant": "longsword",
+      "palette": "",
+      "required": false,
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/weapon_sword_longsword.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 140,
+          "source_index": 5,
+          "source_path": "spritesheets/weapon/sword/longsword/longsword.png",
+          "sha256": "b330ab46267534342e494373d9154309b50496759919240c92f8623c78f09c95",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "weapon/sword/longsword"
+        },
+        {
+          "z": 9,
+          "source_index": 6,
+          "source_path": "spritesheets/weapon/sword/longsword/universal_behind/longsword.png",
+          "sha256": "dddb1886273f79f73747d548b12cc561283e60362bb8c104dccb4fbf7cde4eac",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "weapon/sword/longsword"
+        },
+        {
+          "z": -1,
+          "source_index": 7,
+          "source_path": "spritesheets/weapon/sword/longsword/attack_slash/behind/longsword.png",
+          "sha256": "a6a738ecf97a667feac2e5854a3b8030d22e0a9ff8e8034037d80aa8fd49ac47",
+          "source_size": [
+            1152,
+            768
+          ],
+          "frame_size": 192,
+          "custom_action": "MELEE_SLASH",
+          "credit": "weapon/sword/longsword"
+        },
+        {
+          "z": 150,
+          "source_index": 8,
+          "source_path": "spritesheets/weapon/sword/longsword/attack_slash/longsword.png",
+          "sha256": "8029f684fa9275bd459cafe5427a6d06a63bed4aa43d643537d75ca56db88fcd",
+          "source_size": [
+            1152,
+            768
+          ],
+          "frame_size": 192,
+          "custom_action": "MELEE_SLASH",
+          "credit": "weapon/sword/longsword"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    }
+  ],
+  "directions": [
+    "UP",
+    "LEFT",
+    "DOWN",
+    "RIGHT"
+  ],
+  "universal_frame_size": 64,
+  "base_foot_pivot": [
+    32,
+    60
+  ],
+  "clip_rows": {
+    "MOVE": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "MELEE_SLASH": [
+      12,
+      13,
+      14,
+      15
+    ]
+  },
+  "clips": {
+    "MOVE": {
+      "frames": 9,
+      "fps": 10,
+      "loop": true
+    },
+    "MELEE_SLASH": {
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    }
+  },
+  "semantic_fallbacks": {
+    "IDLE": "MOVE_POSE",
+    "RUN": "MOVE",
+    "DODGE": "MOVE",
+    "HURT": "IDLE"
+  },
+  "frame_sizes": [
+    64,
+    128,
+    192
+  ]
+}

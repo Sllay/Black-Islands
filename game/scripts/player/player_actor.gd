@@ -14,23 +14,46 @@ var distance_travelled: float:
 @onready var camera_rig: PlayerCameraRig = $PlayerCameraRig
 @onready var targeter: InteractionTargeter = $InteractionTargeter
 
+@onready var inventory: InventoryComponent = $InventoryComponent
+
+@onready var visual: LPCVisual3D = $LPCVisual3D
+
 func _ready() -> void:
 	add_to_group("local_player")
 	motor.terrain = terrain
 	motor.water = water
 	motor.configure(self, state, camera_rig)
 	targeter.configure(self, camera_rig)
+	inventory.state.changed.connect(func(_revision: int) -> void: _refresh_appearance())
+	_refresh_appearance()
 
 func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed("inventory"):
+		inventory.toggle()
+	motor.movement_locked = inventory.is_open
 	var axis := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	motor.tick(delta, axis, Input.is_action_pressed("run"))
 	camera_rig.tick(delta)
 	if spawned:
 		targeter.tick(delta, motor.facing)
-	if Input.is_action_just_pressed("build_mode") or Input.is_action_just_pressed("context_action"):
-		camera_rig.toggle_build()
-	if Input.is_action_just_pressed("interact"):
-		targeter.interact()
+	var locomotion := LPCActionResolver.IDLE
+	if Vector2(velocity.x, velocity.z).length_squared() > 0.04:
+		locomotion = LPCActionResolver.RUN if motor.running else LPCActionResolver.MOVE
+	visual.tick(delta, motor.facing, deg_to_rad(camera_rig.heading_degrees), locomotion)
+	if not inventory.is_open:
+		if Input.is_action_just_pressed("build_mode") or Input.is_action_just_pressed("context_action"):
+			camera_rig.toggle_build()
+		if Input.is_action_just_pressed("interact"):
+			targeter.interact()
+	for index: int in range(8):
+		if Input.is_action_just_pressed("hotbar_%d" % (index+1)):
+			inventory.state.select_hotbar(index)
+
+func _refresh_appearance() -> void:
+	var config := visual.configuration.duplicate(true) if not visual.configuration.is_empty() else LPCCatalog.default_appearance()
+	var definition := inventory.state.active_definition()
+	config.equipment_visuals = [definition.visual_id] if definition != null and not definition.visual_id.is_empty() else []
+	visual.set_appearance(config)
 
 func inspect_at(point: Vector3) -> void:
 	motor.request_spawn(point)

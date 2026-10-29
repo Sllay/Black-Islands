@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bjrm8iuhatrba" path="res://scripts/player/player_actor.gd" id="1_pn6s4"]
 [ext_resource type="Shape3D" uid="uid://dsmcc51svembe" path="res://resources/player/PlayerShape.tres" id="2_7oing"]
-[ext_resource type="Material" uid="uid://dkrifnk2lff64" path="res://resources/player/PlayerMarkerMaterial.tres" id="3_5stf6"]
-[ext_resource type="CapsuleMesh" uid="uid://c4t1qymcyykql" path="res://resources/player/PlayerMarkerMesh.tres" id="4_180ig"]
 [ext_resource type="Script" uid="uid://x43t1j76lj1i" path="res://scripts/player/player_state.gd" id="5_20koh"]
 [ext_resource type="Script" uid="uid://cxfp4f3perfju" path="res://scripts/player/player_motor.gd" id="6_ov1oi"]
 [ext_resource type="Resource" uid="uid://w7h0bicgyu6u" path="res://resources/player/PlayerTuning.tres" id="7_rn7t0"]
 [ext_resource type="Script" uid="uid://b6nn32n4fj3lk" path="res://scripts/player/player_camera_rig.gd" id="8_8qjgm"]
 [ext_resource type="Script" uid="uid://bkwwjanf1oau" path="res://scripts/player/interaction_targeter.gd" id="9_ejd4k"]
+[ext_resource type="Script" uid="uid://dj2pd18cd7uam" path="res://scripts/lpc/lpc_visual_3d.gd" id="9_pn6s4"]
+[ext_resource type="Script" uid="uid://0gg7qfhp01p3" path="res://scripts/inventory/inventory_component.gd" id="10_7oing"]
 
 [node name="Player" type="CharacterBody3D" unique_id=382088037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
@@ -19,11 +19,6 @@ script = ExtResource("1_pn6s4")
 [node name="Collision" type="CollisionShape3D" parent="." unique_id=387379881]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = ExtResource("2_7oing")
-
-[node name="Marker" type="MeshInstance3D" parent="." unique_id=1741766092]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-material_override = ExtResource("3_5stf6")
-mesh = ExtResource("4_180ig")
 
 [node name="PlayerState" type="Node" parent="." unique_id=1332370739]
 script = ExtResource("5_20koh")
@@ -45,3 +40,15 @@ script = ExtResource("9_ejd4k")
 
 [node name="Viewer" type="VoxelViewer" parent="." unique_id=1901024423]
 view_distance = 192
+
+[node name="InventoryComponent" type="Node" parent="." unique_id=1876837053]
+script = ExtResource("10_7oing")
+
+[node name="LPCVisual3D" type="Node3D" parent="." unique_id=1164666070]
+script = ExtResource("9_pn6s4")
+
+[node name="Sprite3D" type="Sprite3D" parent="LPCVisual3D" unique_id=1591895067]
+pixel_size = 0.03125
+billboard = 1
+alpha_cut = 1
+texture_filter = 0

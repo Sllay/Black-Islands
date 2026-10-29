@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://vs3vh3rkcn8t"]
+
+[ext_resource type="Script" uid="uid://b7g2xd0inoo7t" path="res://tests/integration/player_c02_smoke.gd" id="1_at2pj"]
+
+[node name="PlayerC02Smoke" type="Node" unique_id=1674096072]
+script = ExtResource("1_at2pj")

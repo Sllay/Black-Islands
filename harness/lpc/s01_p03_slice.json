@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "catalog_version": "bi.lpc.1",
+  "source": "https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator",
+  "commit": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+  "selected_license": "CC-BY-SA-3.0",
+  "body_type": "male",
+  "assets": [
+    {"id":"lpc.body.human_male", "definition":"body", "role":"body", "variant":"light", "palette":"skin.light", "required":true},
+    {"id":"lpc.head.human_male", "definition":"heads_human_male", "role":"head", "variant":"light", "palette":"skin.light", "required":true},
+    {"id":"lpc.hair.plain", "definition":"hair_plain", "role":"hair", "variant":"chestnut", "palette":"hair.chestnut", "required":false},
+    {"id":"lpc.clothes.longsleeve", "definition":"torso_clothes_longsleeve", "role":"torso", "variant":"bluegray", "palette":"cloth.bluegray", "required":true},
+    {"id":"lpc.legs.pants", "definition":"legs_pants", "role":"legs", "variant":"brown", "palette":"cloth.brown", "required":true},
+    {"id":"lpc.weapon.sword", "definition":"weapon_sword_longsword", "role":"weapon", "variant":"longsword", "palette":"", "required":false}
+  ]
+}
