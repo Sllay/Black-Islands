@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cqsddf6wo5ukv"]
+
+[ext_resource type="Script" path="res://scripts/ui/worlds_screen.gd" id="1_vff06"]
+
+[node name="Worlds" type="Control" unique_id=283775782]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_vff06")

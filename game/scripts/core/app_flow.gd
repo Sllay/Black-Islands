@@ -20,8 +20,40 @@ func request_quit() -> void:
 		get_tree().quit()
 
 func show_saves() -> void:
-	if _flush_players() == OK:
+	if Profiles.world_slot > 0:
+		show_worlds()
+	elif _flush_players() == OK:
 		_navigate(SAVE_SELECT)
+
+var edit_slot := 0
+var edit_existing := false
+
+func show_menu() -> void:
+	if _flush_players() == OK:
+		_navigate("res://scenes/ui/MainMenu.tscn")
+
+func show_options() -> void:
+	_navigate("res://scenes/ui/Options.tscn")
+
+func show_worlds() -> void:
+	if _flush_players() == OK:
+		_navigate("res://scenes/ui/Worlds.tscn")
+
+func show_players() -> void:
+	if Profiles.world_slot <= 0:
+		show_worlds()
+	else:
+		_navigate("res://scenes/ui/PlayerProfiles.tscn")
+
+func edit_world(slot: int, existing: bool) -> void:
+	edit_slot = slot
+	edit_existing = existing
+	_navigate("res://scenes/ui/WorldEditor.tscn")
+
+func edit_player(slot: int, existing: bool) -> void:
+	edit_slot = slot
+	edit_existing = existing
+	_navigate("res://scenes/ui/CharacterEditor.tscn")
 
 func enter_main() -> void:
 	if Profiles.current_profile().is_empty():

@@ -5,6 +5,13 @@ signal selection_changed(slot_id: String)
 var store := SlotStore.new()
 var selected_slot_id := ""
 
+var library := FrontendLibrary.new()
+var world_slot := 0
+var player_slot := 0
+
+func active_player() -> Dictionary:
+	return library.read("player",player_slot)
+
 func summaries() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for slot_id: String in SlotStore.SLOT_IDS:
@@ -37,6 +44,8 @@ func select_slot(slot_id: String) -> Error:
 	return error
 
 func current_profile() -> Dictionary:
+	if world_slot > 0:
+		return library.read("world",world_slot)
 	if selected_slot_id.is_empty():
 		return {}
 	return store.read_slot(selected_slot_id).metadata.duplicate(true)

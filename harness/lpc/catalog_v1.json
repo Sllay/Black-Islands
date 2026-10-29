@@ -11,17 +11,56 @@
     "palettes/ulpc-cloth-palettes.json": "9020ebd8fc2be7e3e114050f3989a454c0c6588d67f3ef293c29c3351b5a3de4",
     "palettes/ulpc-hair-palettes.json": "4e269a7c3f0ca7d50dbe7a6b34ece9e9baf4077c69d98abf514ad685ff356a67",
     "sheet_definitions/body.json": "2d6d0d5b6dea8ab7da6af8a5a3a376534e26c5dcb67142cffd83066f35cc6922",
+    "sheet_definitions/eyes.json": "492333ae1b8a3cd35c27703247e16c38331f820dc7b0b9c9a9686d2243bd1577",
+    "sheet_definitions/facial_earrings_stud.json": "1560557e4fff00767199c87ae5e3022a66218251a3e3e9c77833607528b06c33",
     "sheet_definitions/hair_plain.json": "1d0f280b9b9ee41e2ae3ebe1f4323d9aca90bc29fddc2452500976dd3fc0be35",
+    "sheet_definitions/hair_ponytail.json": "0f006d991b30421bb2d23a199de2261636af7024e8e605a1c4c756b7e398f2ea",
+    "sheet_definitions/head_ears_big.json": "06efdfbe94a11ccfbbdd8bee146a1b77534e106bdf601debbaed9cfb3023029b",
+    "sheet_definitions/head_ears_elven.json": "26590108dabf125d58c6008e15e37514e59c601644cad3fd888196ad71d95d48",
+    "sheet_definitions/heads_human_female.json": "8310d1a623073e2da83aed39d03399e2d9eae6965c1489fde2db949a03c2f067",
     "sheet_definitions/heads_human_male.json": "30776208a362e277fe221cea704ce0a4d560a131ea63508b68fe1b6e0086a0da",
     "sheet_definitions/legs_pants.json": "5a63512cf99296c2b41cff7bca1fd2c83ab192b47bfa8a9c702cdb27ec156615",
     "sheet_definitions/torso_clothes_longsleeve.json": "8016da212a5e8d803a7f8cecec7fe5394a2735bb9105841f2edae394d96dc033",
     "sheet_definitions/weapon_sword_longsword.json": "ec8d19dc54c0d4d97213b27c8be418ad57dadc5f61e8db18865701f159922f02",
     "sources/custom-animations.js": "0f97efdfad9fee36883fded80057406b69a977c9d959bd494d99152e74429993",
+    "spritesheets/body/bodies/female/brown.png": "d8e5f2cb0d14f984c1ffd950d8142a711201b345c5f5354268b392c87b232e98",
+    "spritesheets/body/bodies/female/light.png": "17e6eb189f3753fd90d0e80973def3043f42e0d95e9dfdbb618a2a9a489d0774",
+    "spritesheets/body/bodies/female/olive.png": "9d666c29297fefc7fc88c418e2a47d02f9a762ff16b2809dbeb3423769ea09a7",
+    "spritesheets/body/bodies/male/brown.png": "49711d7c1722a2bb8dec88868169284727ed34452f431bc2d894e9520c6786d1",
     "spritesheets/body/bodies/male/light.png": "e8c9ccc5bd2d49474c6f2c8cc280f5049084d0d7eead02a5d807ccd00f436209",
+    "spritesheets/body/bodies/male/olive.png": "bc31abcb842ad3e094d7764286243f98bf5ed06e3a091ea4f23124087de4d74d",
+    "spritesheets/eyes/human/adult/blue.png": "8fc26f03db793873ff15a0b3103421875c561d1ea1ad4400ba575627afb9eefd",
+    "spritesheets/eyes/human/adult/brown.png": "bdce0c8d967c84723bfb1d8c7bb737a5fe3d3b1cedd16b4b23aeeeba8c57a604",
+    "spritesheets/facial/earrings/stud/female/silver.png": "c9d8adb0e7de653006c9d90beb7e847b26dcae52489cd0889c848b9fe313e83a",
+    "spritesheets/facial/earrings/stud/male/silver.png": "63515d35c8316eae020d953a0218a7de8aae18611c54b98ca993e33eafb84fe2",
+    "spritesheets/hair/plain/female/blonde.png": "15986bf7ab1e80182a4e67bef12839bca4c42d6d227fa8b357a7043e1e0217e4",
+    "spritesheets/hair/plain/female/chestnut.png": "311c5b5f293c3e866a6bcf18bcf3b2ef969542dee659a54f0985462345525afb",
+    "spritesheets/hair/plain/male/blonde.png": "15986bf7ab1e80182a4e67bef12839bca4c42d6d227fa8b357a7043e1e0217e4",
     "spritesheets/hair/plain/male/chestnut.png": "311c5b5f293c3e866a6bcf18bcf3b2ef969542dee659a54f0985462345525afb",
+    "spritesheets/hair/ponytail/female/blonde.png": "5a7b489d454f08ddfafde3f67254bc18c53abcd2c5576642888d758542de0e6a",
+    "spritesheets/hair/ponytail/female/chestnut.png": "13b5a42b5c63928d2d8e991b923503f15629403058f702de731f77c3d90af511",
+    "spritesheets/hair/ponytail/male/blonde.png": "a95fc705832558073b2e0929d064c41ddd8eaca7e4f4e7171bbcc384a7b77fda",
+    "spritesheets/hair/ponytail/male/chestnut.png": "b5b3aef73b84cb72f2f3f99fed10bab492a90c1bfccd18cb273285ac02b29cdb",
+    "spritesheets/head/ears/big/adult/brown.png": "7975a8c1aa310b857c844d1e7e38b4390fd965be6eea9f5d4e1f5660af637a14",
+    "spritesheets/head/ears/big/adult/light.png": "f360cd570b1d035a8017bce2fa1d75363f023611e36e714fdabea61b538f135c",
+    "spritesheets/head/ears/big/adult/olive.png": "7cf2d6f8317202a96868a4af0d645aea0f0175673efef704db4f5b2b95b6b03a",
+    "spritesheets/head/ears/elven/adult/brown.png": "b34283160bd35fb7d9847da40aaf6f0756b18fb283589851c48f609e51a62336",
+    "spritesheets/head/ears/elven/adult/light.png": "24d4dff349ae3d63200cc8e95d3ad059f6b376551d2dd581ccb1bd0842554df9",
+    "spritesheets/head/ears/elven/adult/olive.png": "776ea6915628e8eefebf4317f036abb7e23e20ab9acf883eb609025b4ce45f8c",
+    "spritesheets/head/heads/human/female/brown.png": "7676a20da78f00853408fc9af62083755b97bedd0696895736fb6f9fa0d560c3",
+    "spritesheets/head/heads/human/female/light.png": "16fc68773fa8cde7e783d1d278ac947337ea03e8650df244b403c3e80bb05edd",
+    "spritesheets/head/heads/human/female/olive.png": "f17df677a7c1859b75d0874beaadd75e786509ff4558e2034ae3dd73c37fcac7",
+    "spritesheets/head/heads/human/male/brown.png": "a01f8c746d889bd36214d1cfe12af5de0d371689a1d0fdb951cfc72fafd62a63",
     "spritesheets/head/heads/human/male/light.png": "5f653cf98e7ebef66ddfc4433eb54c1780a793f563e68d047aa72dc4ffc10e06",
+    "spritesheets/head/heads/human/male/olive.png": "977375877081ff2d38bfdf1173856e8e7ed0a985941c56f04077f9fa49930635",
+    "spritesheets/legs/pants/male/black.png": "ac96376b075d587b3b6657ec2c4aa3460cd5db0a93172a8e08ad8f1e965ef4b9",
     "spritesheets/legs/pants/male/brown.png": "68c21d23177315d07e95ed3b088beff1cd783432f805ce5e45d7b5a4690a5ec1",
+    "spritesheets/legs/pants/thin/black.png": "0ea0dc8051ef84aba205c07f3235abbde70e1dd7b290daef115ad350d58ec4df",
+    "spritesheets/legs/pants/thin/brown.png": "7f28778e9c07fbbccaef8b0bf43bbff2df9aeeab6df9d68e06036b0fae144a79",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/female/bluegray.png": "9fb0735c81b1430992bda4a7acd05a5aa922276abcf60a38b33f15923b22d862",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/female/forest.png": "83d4c6d44eff46c29facbd196272bdb2f7053c78ad6ea082d01cdc8e41b2b863",
     "spritesheets/torso/clothes/longsleeve/longsleeve/male/bluegray.png": "cb6f2be409f0ab0e76b63f279f5a0769f5346b04e78613d4f13db13d9b09bea2",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/male/forest.png": "6aa164baf332d5591c56deaec5623ac61bf3385e66ee6642ac5df3259eb600f5",
     "spritesheets/weapon/sword/longsword/attack_slash/behind/longsword.png": "a6a738ecf97a667feac2e5854a3b8030d22e0a9ff8e8034037d80aa8fd49ac47",
     "spritesheets/weapon/sword/longsword/attack_slash/longsword.png": "8029f684fa9275bd459cafe5427a6d06a63bed4aa43d643537d75ca56db88fcd",
     "spritesheets/weapon/sword/longsword/longsword.png": "b330ab46267534342e494373d9154309b50496759919240c92f8623c78f09c95",
@@ -36,7 +75,40 @@
     "spritesheets/weapon/sword/longsword/longsword.png",
     "spritesheets/weapon/sword/longsword/universal_behind/longsword.png",
     "spritesheets/weapon/sword/longsword/attack_slash/behind/longsword.png",
-    "spritesheets/weapon/sword/longsword/attack_slash/longsword.png"
+    "spritesheets/weapon/sword/longsword/attack_slash/longsword.png",
+    "spritesheets/head/ears/big/adult/light.png",
+    "spritesheets/head/ears/elven/adult/light.png",
+    "spritesheets/body/bodies/male/brown.png",
+    "spritesheets/head/heads/human/male/brown.png",
+    "spritesheets/head/ears/big/adult/brown.png",
+    "spritesheets/head/ears/elven/adult/brown.png",
+    "spritesheets/body/bodies/male/olive.png",
+    "spritesheets/head/heads/human/male/olive.png",
+    "spritesheets/head/ears/big/adult/olive.png",
+    "spritesheets/head/ears/elven/adult/olive.png",
+    "spritesheets/hair/plain/male/blonde.png",
+    "spritesheets/hair/ponytail/male/chestnut.png",
+    "spritesheets/hair/ponytail/male/blonde.png",
+    "spritesheets/eyes/human/adult/blue.png",
+    "spritesheets/eyes/human/adult/brown.png",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/male/forest.png",
+    "spritesheets/legs/pants/male/black.png",
+    "spritesheets/facial/earrings/stud/male/silver.png",
+    "spritesheets/body/bodies/female/light.png",
+    "spritesheets/head/heads/human/female/light.png",
+    "spritesheets/body/bodies/female/brown.png",
+    "spritesheets/head/heads/human/female/brown.png",
+    "spritesheets/body/bodies/female/olive.png",
+    "spritesheets/head/heads/human/female/olive.png",
+    "spritesheets/hair/plain/female/chestnut.png",
+    "spritesheets/hair/plain/female/blonde.png",
+    "spritesheets/hair/ponytail/female/chestnut.png",
+    "spritesheets/hair/ponytail/female/blonde.png",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/female/bluegray.png",
+    "spritesheets/torso/clothes/longsleeve/longsleeve/female/forest.png",
+    "spritesheets/legs/pants/thin/brown.png",
+    "spritesheets/legs/pants/thin/black.png",
+    "spritesheets/facial/earrings/stud/female/silver.png"
   ],
   "credits": [
     {
@@ -170,6 +242,204 @@
       "url14": "",
       "url15": "",
       "status": "OK"
+    },
+    {
+      "filename": "head/ears/big",
+      "notes": "adapted to v3 base by bluecarrot16; expanded to other animations and child by JaidynReiman",
+      "authors": "JaidynReiman, bluecarrot16, Thane Brimhall (pennomi), Matthew Krohn (makrohn)",
+      "licenses": "GPL 3.0, CC-BY-SA 3.0",
+      "url1": "https://opengameart.org/content/lpc-base-character-expressions",
+      "url2": "http://opengameart.org/content/lpc-clothing-updates",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "head/ears/elven",
+      "notes": "adapted to v3 base by bluecarrot16; expanded to other animations and child by JaidynReiman",
+      "authors": "JaidynReiman, bluecarrot16, Thane Brimhall (pennomi), Matthew Krohn (makrohn), JaidynReiman",
+      "licenses": "GPL 3.0, CC-BY-SA 3.0",
+      "url1": "https://opengameart.org/content/lpc-base-character-expressions",
+      "url2": "http://opengameart.org/content/lpc-clothing-updates",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "hair/ponytail",
+      "notes": "",
+      "authors": "Manuel Riecke (MrBeast)",
+      "licenses": "CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "eyes/human",
+      "notes": "original by Redshrike, mapped to all frames by Matthew Krohn & JaidynReiman",
+      "authors": "JaidynReiman, Matthew Krohn (makrohn), Stephen Challener (Redshrike)",
+      "licenses": "OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "facial/earrings/stud",
+      "notes": "",
+      "authors": "bluecarrot16",
+      "licenses": "CC0",
+      "url1": "https://opengameart.org/content/lpc-jewelry",
+      "url2": "",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "body/bodies/female",
+      "notes": "see details at https://opengameart.org/content/lpc-character-bases",
+      "authors": "Benjamin K. Smith (BenCreating), bluecarrot16, TheraHedwig, Evert, MuffinElZangano, Durrani, Pierre Vigier (pvigier), ElizaWy, Matthew Krohn (makrohn), Johannes Sjölund (wulax), Stephen Challener (Redshrike)",
+      "licenses": "OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "url3": "https://opengameart.org/content/lpc-ladies",
+      "url4": "https://opengameart.org/content/lpc-7-womens-shirts",
+      "url5": "https://opengameart.org/content/lpc-jump-expanded",
+      "url6": "https://opengameart.org/content/lpc-be-seated",
+      "url7": "https://opengameart.org/content/lpc-revised-character-basics",
+      "url8": "https://gitlab.com/vagabondgame/lpc-characters",
+      "url9": "https://opengameart.org/content/lpc-male-jumping-animation-by-durrani",
+      "url10": "https://opengameart.org/content/lpc-runcycle-and-diagonal-walkcycle",
+      "url11": "https://opengameart.org/content/lpc-runcycle-for-male-muscular-and-pregnant-character-bases-with-modular-heads",
+      "url12": "https://opengameart.org/content/lpc-jump-expanded",
+      "url13": "https://opengameart.org/content/lpc-character-bases",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "head/heads/human/female",
+      "notes": "original head by Redshrike, tweaks by BenCreating, modular version by bluecarrot16",
+      "authors": "bluecarrot16, Benjamin K. Smith (BenCreating), Stephen Challener (Redshrike)",
+      "licenses": "OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/",
+      "url2": "https://opengameart.org/content/lpc-character-bases",
+      "url3": "",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "torso/clothes/longsleeve/longsleeve/female",
+      "notes": "original by ElizaWy, edited to v3 bases by bluecarrot16",
+      "authors": "bluecarrot16, ElizaWy, Stephen Challener (Redshrike)",
+      "licenses": "OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/lpc-7-womens-shirts",
+      "url3": "http://opengameart.org/content/lpc-clothing-updates",
+      "url4": "",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
+    },
+    {
+      "filename": "legs/pants/thin",
+      "notes": "original male pants by wulax, edited for female by Joe White, recolors and edits to v3 base by bluecarrot16, teen legs by ElizaWy derived from base, climb/jump/run/sit/emotes/revised combat by JaidynReiman based on ElizaWy's LPC Revised",
+      "authors": "bluecarrot16, JaidynReiman, ElizaWy, Joe White, Matthew Krohn (makrohn), Johannes Sjölund (wulax)",
+      "licenses": "OGA-BY 3.0, GPL 3.0, CC-BY-SA 3.0",
+      "url1": "https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles",
+      "url2": "https://opengameart.org/content/lpc-medieval-fantasy-character-sprites",
+      "url3": "http://opengameart.org/content/lpc-clothing-updates",
+      "url4": "https://opengameart.org/content/lpc-expanded-pants",
+      "url5": "",
+      "url6": "",
+      "url7": "",
+      "url8": "",
+      "url9": "",
+      "url10": "",
+      "url11": "",
+      "url12": "",
+      "url13": "",
+      "url14": "",
+      "url15": "",
+      "status": "OK"
     }
   ],
   "palettes": {
@@ -187,6 +457,34 @@
         "#f8f3eb"
       ]
     },
+    "skin.brown": {
+      "id": "skin.brown",
+      "upstream_variant": "brown",
+      "colors": [
+        "#120E10",
+        "#120E10",
+        "#412B29",
+        "#5F4539",
+        "#76513A",
+        "#9C663E",
+        "#B8773F",
+        "#b8773f"
+      ]
+    },
+    "skin.olive": {
+      "id": "skin.olive",
+      "upstream_variant": "olive",
+      "colors": [
+        "#271920",
+        "#271920",
+        "#442725",
+        "#7F4C31",
+        "#AE6B3F",
+        "#D38B59",
+        "#E4A47C",
+        "#E4A47C"
+      ]
+    },
     "hair.chestnut": {
       "id": "hair.chestnut",
       "upstream_variant": "chestnut",
@@ -199,6 +497,20 @@
         "#81310A",
         "#B6550E",
         "#D28102"
+      ]
+    },
+    "hair.blonde": {
+      "id": "hair.blonde",
+      "upstream_variant": "blonde",
+      "colors": [
+        "#331313",
+        "#552B15",
+        "#AC5D1FD9",
+        "#AC5D1F9C",
+        "#AC5D1F",
+        "#E09E2B",
+        "#FCCF56",
+        "#FFE67D"
       ]
     },
     "cloth.bluegray": {
@@ -225,6 +537,32 @@
         "#62351C",
         "#744B30",
         "#996B4A"
+      ]
+    },
+    "cloth.forest": {
+      "id": "cloth.forest",
+      "upstream_variant": "forest",
+      "colors": [
+        "#09131d9C",
+        "#09131d",
+        "#07391D",
+        "#0B1F25",
+        "#0B2B28",
+        "#134507",
+        "#1B5502"
+      ]
+    },
+    "cloth.black": {
+      "id": "cloth.black",
+      "upstream_variant": "black",
+      "colors": [
+        "#0000009C",
+        "#000000",
+        "#101414",
+        "#1C2222",
+        "#22282A",
+        "#2A3034",
+        "#4A5057"
       ]
     }
   },
@@ -485,6 +823,1646 @@
           "frame_size": 192,
           "custom_action": "MELEE_SLASH",
           "credit": "weapon/sword/longsword"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.male_head_ears_big_light",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Big • light",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_big.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 9,
+          "source_path": "spritesheets/head/ears/big/adult/light.png",
+          "sha256": "f360cd570b1d035a8017bce2fa1d75363f023611e36e714fdabea61b538f135c",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/big"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.male_head_ears_elven_light",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Elven • light",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_elven.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 130,
+          "source_index": 10,
+          "source_path": "spritesheets/head/ears/elven/adult/light.png",
+          "sha256": "24d4dff349ae3d63200cc8e95d3ad059f6b376551d2dd581ccb1bd0842554df9",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/elven"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.body.male_body_brown",
+      "role": "body",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "male",
+      "title": "Body • brown",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/body.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 10,
+          "source_index": 11,
+          "source_path": "spritesheets/body/bodies/male/brown.png",
+          "sha256": "49711d7c1722a2bb8dec88868169284727ed34452f431bc2d894e9520c6786d1",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "body/bodies/male"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.head.male_heads_human_male_brown",
+      "role": "head",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "male",
+      "title": "Heads Human Male • brown",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/heads_human_male.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 100,
+          "source_index": 12,
+          "source_path": "spritesheets/head/heads/human/male/brown.png",
+          "sha256": "a01f8c746d889bd36214d1cfe12af5de0d371689a1d0fdb951cfc72fafd62a63",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/heads/human/male"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.male_head_ears_big_brown",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Big • brown",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_big.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 13,
+          "source_path": "spritesheets/head/ears/big/adult/brown.png",
+          "sha256": "7975a8c1aa310b857c844d1e7e38b4390fd965be6eea9f5d4e1f5660af637a14",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/big"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.male_head_ears_elven_brown",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Elven • brown",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_elven.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 130,
+          "source_index": 14,
+          "source_path": "spritesheets/head/ears/elven/adult/brown.png",
+          "sha256": "b34283160bd35fb7d9847da40aaf6f0756b18fb283589851c48f609e51a62336",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/elven"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.body.male_body_olive",
+      "role": "body",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "male",
+      "title": "Body • olive",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/body.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 10,
+          "source_index": 15,
+          "source_path": "spritesheets/body/bodies/male/olive.png",
+          "sha256": "bc31abcb842ad3e094d7764286243f98bf5ed06e3a091ea4f23124087de4d74d",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "body/bodies/male"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.head.male_heads_human_male_olive",
+      "role": "head",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "male",
+      "title": "Heads Human Male • olive",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/heads_human_male.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 100,
+          "source_index": 16,
+          "source_path": "spritesheets/head/heads/human/male/olive.png",
+          "sha256": "977375877081ff2d38bfdf1173856e8e7ed0a985941c56f04077f9fa49930635",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/heads/human/male"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.male_head_ears_big_olive",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Big • olive",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_big.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 17,
+          "source_path": "spritesheets/head/ears/big/adult/olive.png",
+          "sha256": "7cf2d6f8317202a96868a4af0d645aea0f0175673efef704db4f5b2b95b6b03a",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/big"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.male_head_ears_elven_olive",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Elven • olive",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_elven.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 130,
+          "source_index": 18,
+          "source_path": "spritesheets/head/ears/elven/adult/olive.png",
+          "sha256": "776ea6915628e8eefebf4317f036abb7e23e20ab9acf883eb609025b4ce45f8c",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/elven"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.male_hair_plain_blonde",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "male",
+      "title": "Hair Plain • blonde",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_plain.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 19,
+          "source_path": "spritesheets/hair/plain/male/blonde.png",
+          "sha256": "15986bf7ab1e80182a4e67bef12839bca4c42d6d227fa8b357a7043e1e0217e4",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/plain"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.male_hair_ponytail_chestnut",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_type": "male",
+      "title": "Hair Ponytail • chestnut",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_ponytail.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 20,
+          "source_path": "spritesheets/hair/ponytail/male/chestnut.png",
+          "sha256": "b5b3aef73b84cb72f2f3f99fed10bab492a90c1bfccd18cb273285ac02b29cdb",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/ponytail"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.male_hair_ponytail_blonde",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "male",
+      "title": "Hair Ponytail • blonde",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_ponytail.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 21,
+          "source_path": "spritesheets/hair/ponytail/male/blonde.png",
+          "sha256": "a95fc705832558073b2e0929d064c41ddd8eaca7e4f4e7171bbcc384a7b77fda",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/ponytail"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.eyes.male_eyes_blue",
+      "role": "eyes",
+      "variant": "blue",
+      "palette": "eyes.blue",
+      "required": false,
+      "body_type": "male",
+      "title": "Eyes • blue",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/eyes.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 22,
+          "source_path": "spritesheets/eyes/human/adult/blue.png",
+          "sha256": "8fc26f03db793873ff15a0b3103421875c561d1ea1ad4400ba575627afb9eefd",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "eyes/human"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.eyes.male_eyes_brown",
+      "role": "eyes",
+      "variant": "brown",
+      "palette": "eyes.brown",
+      "required": false,
+      "body_type": "male",
+      "title": "Eyes • brown",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/eyes.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 23,
+          "source_path": "spritesheets/eyes/human/adult/brown.png",
+          "sha256": "bdce0c8d967c84723bfb1d8c7bb737a5fe3d3b1cedd16b4b23aeeeba8c57a604",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "eyes/human"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.torso.male_torso_clothes_longsleeve_forest",
+      "role": "torso",
+      "variant": "forest",
+      "palette": "cloth.forest",
+      "required": true,
+      "body_type": "male",
+      "title": "Torso Clothes Longsleeve • forest",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/torso_clothes_longsleeve.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 35,
+          "source_index": 24,
+          "source_path": "spritesheets/torso/clothes/longsleeve/longsleeve/male/forest.png",
+          "sha256": "6aa164baf332d5591c56deaec5623ac61bf3385e66ee6642ac5df3259eb600f5",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "torso/clothes/longsleeve/longsleeve/male"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.legs.male_legs_pants_black",
+      "role": "legs",
+      "variant": "black",
+      "palette": "cloth.black",
+      "required": true,
+      "body_type": "male",
+      "title": "Legs Pants • black",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/legs_pants.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 20,
+          "source_index": 25,
+          "source_path": "spritesheets/legs/pants/male/black.png",
+          "sha256": "ac96376b075d587b3b6657ec2c4aa3460cd5db0a93172a8e08ad8f1e965ef4b9",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "legs/pants/male"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.accessory.male_facial_earrings_stud_silver",
+      "role": "accessory",
+      "variant": "silver",
+      "palette": "metal.silver",
+      "required": false,
+      "body_type": "male",
+      "title": "Facial Earrings Stud • silver",
+      "body_types": [
+        "male"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/facial_earrings_stud.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 115,
+          "source_index": 26,
+          "source_path": "spritesheets/facial/earrings/stud/male/silver.png",
+          "sha256": "63515d35c8316eae020d953a0218a7de8aae18611c54b98ca993e33eafb84fe2",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "facial/earrings/stud"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.body.female_body_light",
+      "role": "body",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true,
+      "body_type": "female",
+      "title": "Body • light",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/body.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 10,
+          "source_index": 27,
+          "source_path": "spritesheets/body/bodies/female/light.png",
+          "sha256": "17e6eb189f3753fd90d0e80973def3043f42e0d95e9dfdbb618a2a9a489d0774",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "body/bodies/female"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.head.female_heads_human_female_light",
+      "role": "head",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true,
+      "body_type": "female",
+      "title": "Heads Human Female • light",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/heads_human_female.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 100,
+          "source_index": 28,
+          "source_path": "spritesheets/head/heads/human/female/light.png",
+          "sha256": "16fc68773fa8cde7e783d1d278ac947337ea03e8650df244b403c3e80bb05edd",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/heads/human/female"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.female_head_ears_big_light",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Big • light",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_big.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 9,
+          "source_path": "spritesheets/head/ears/big/adult/light.png",
+          "sha256": "f360cd570b1d035a8017bce2fa1d75363f023611e36e714fdabea61b538f135c",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/big"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.female_head_ears_elven_light",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Elven • light",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_elven.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 130,
+          "source_index": 10,
+          "source_path": "spritesheets/head/ears/elven/adult/light.png",
+          "sha256": "24d4dff349ae3d63200cc8e95d3ad059f6b376551d2dd581ccb1bd0842554df9",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/elven"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.body.female_body_brown",
+      "role": "body",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "female",
+      "title": "Body • brown",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/body.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 10,
+          "source_index": 29,
+          "source_path": "spritesheets/body/bodies/female/brown.png",
+          "sha256": "d8e5f2cb0d14f984c1ffd950d8142a711201b345c5f5354268b392c87b232e98",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "body/bodies/female"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.head.female_heads_human_female_brown",
+      "role": "head",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "female",
+      "title": "Heads Human Female • brown",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/heads_human_female.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 100,
+          "source_index": 30,
+          "source_path": "spritesheets/head/heads/human/female/brown.png",
+          "sha256": "7676a20da78f00853408fc9af62083755b97bedd0696895736fb6f9fa0d560c3",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/heads/human/female"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.female_head_ears_big_brown",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Big • brown",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_big.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 13,
+          "source_path": "spritesheets/head/ears/big/adult/brown.png",
+          "sha256": "7975a8c1aa310b857c844d1e7e38b4390fd965be6eea9f5d4e1f5660af637a14",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/big"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.female_head_ears_elven_brown",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Elven • brown",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_elven.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 130,
+          "source_index": 14,
+          "source_path": "spritesheets/head/ears/elven/adult/brown.png",
+          "sha256": "b34283160bd35fb7d9847da40aaf6f0756b18fb283589851c48f609e51a62336",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/elven"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.body.female_body_olive",
+      "role": "body",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "female",
+      "title": "Body • olive",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/body.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 10,
+          "source_index": 31,
+          "source_path": "spritesheets/body/bodies/female/olive.png",
+          "sha256": "9d666c29297fefc7fc88c418e2a47d02f9a762ff16b2809dbeb3423769ea09a7",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "body/bodies/female"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.head.female_heads_human_female_olive",
+      "role": "head",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "female",
+      "title": "Heads Human Female • olive",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/heads_human_female.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 100,
+          "source_index": 32,
+          "source_path": "spritesheets/head/heads/human/female/olive.png",
+          "sha256": "f17df677a7c1859b75d0874beaadd75e786509ff4558e2034ae3dd73c37fcac7",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/heads/human/female"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.female_head_ears_big_olive",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Big • olive",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_big.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 17,
+          "source_path": "spritesheets/head/ears/big/adult/olive.png",
+          "sha256": "7cf2d6f8317202a96868a4af0d645aea0f0175673efef704db4f5b2b95b6b03a",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/big"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.ears.female_head_ears_elven_olive",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Elven • olive",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/head_ears_elven.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 130,
+          "source_index": 18,
+          "source_path": "spritesheets/head/ears/elven/adult/olive.png",
+          "sha256": "776ea6915628e8eefebf4317f036abb7e23e20ab9acf883eb609025b4ce45f8c",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "head/ears/elven"
+        }
+      ],
+      "match_body_color": true,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.female_hair_plain_chestnut",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Plain • chestnut",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_plain.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 33,
+          "source_path": "spritesheets/hair/plain/female/chestnut.png",
+          "sha256": "311c5b5f293c3e866a6bcf18bcf3b2ef969542dee659a54f0985462345525afb",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/plain"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.female_hair_plain_blonde",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Plain • blonde",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_plain.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 34,
+          "source_path": "spritesheets/hair/plain/female/blonde.png",
+          "sha256": "15986bf7ab1e80182a4e67bef12839bca4c42d6d227fa8b357a7043e1e0217e4",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/plain"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.female_hair_ponytail_chestnut",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Ponytail • chestnut",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_ponytail.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 35,
+          "source_path": "spritesheets/hair/ponytail/female/chestnut.png",
+          "sha256": "13b5a42b5c63928d2d8e991b923503f15629403058f702de731f77c3d90af511",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/ponytail"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.hair.female_hair_ponytail_blonde",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Ponytail • blonde",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/hair_ponytail.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 120,
+          "source_index": 36,
+          "source_path": "spritesheets/hair/ponytail/female/blonde.png",
+          "sha256": "5a7b489d454f08ddfafde3f67254bc18c53abcd2c5576642888d758542de0e6a",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "hair/ponytail"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.eyes.female_eyes_blue",
+      "role": "eyes",
+      "variant": "blue",
+      "palette": "eyes.blue",
+      "required": false,
+      "body_type": "female",
+      "title": "Eyes • blue",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/eyes.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 22,
+          "source_path": "spritesheets/eyes/human/adult/blue.png",
+          "sha256": "8fc26f03db793873ff15a0b3103421875c561d1ea1ad4400ba575627afb9eefd",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "eyes/human"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.eyes.female_eyes_brown",
+      "role": "eyes",
+      "variant": "brown",
+      "palette": "eyes.brown",
+      "required": false,
+      "body_type": "female",
+      "title": "Eyes • brown",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/eyes.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 105,
+          "source_index": 23,
+          "source_path": "spritesheets/eyes/human/adult/brown.png",
+          "sha256": "bdce0c8d967c84723bfb1d8c7bb737a5fe3d3b1cedd16b4b23aeeeba8c57a604",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "eyes/human"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.torso.female_torso_clothes_longsleeve_bluegray",
+      "role": "torso",
+      "variant": "bluegray",
+      "palette": "cloth.bluegray",
+      "required": true,
+      "body_type": "female",
+      "title": "Torso Clothes Longsleeve • bluegray",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/torso_clothes_longsleeve.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 35,
+          "source_index": 37,
+          "source_path": "spritesheets/torso/clothes/longsleeve/longsleeve/female/bluegray.png",
+          "sha256": "9fb0735c81b1430992bda4a7acd05a5aa922276abcf60a38b33f15923b22d862",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "torso/clothes/longsleeve/longsleeve/female"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.torso.female_torso_clothes_longsleeve_forest",
+      "role": "torso",
+      "variant": "forest",
+      "palette": "cloth.forest",
+      "required": true,
+      "body_type": "female",
+      "title": "Torso Clothes Longsleeve • forest",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/torso_clothes_longsleeve.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 35,
+          "source_index": 38,
+          "source_path": "spritesheets/torso/clothes/longsleeve/longsleeve/female/forest.png",
+          "sha256": "83d4c6d44eff46c29facbd196272bdb2f7053c78ad6ea082d01cdc8e41b2b863",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "torso/clothes/longsleeve/longsleeve/female"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.legs.female_legs_pants_brown",
+      "role": "legs",
+      "variant": "brown",
+      "palette": "cloth.brown",
+      "required": true,
+      "body_type": "female",
+      "title": "Legs Pants • brown",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/legs_pants.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 20,
+          "source_index": 39,
+          "source_path": "spritesheets/legs/pants/thin/brown.png",
+          "sha256": "7f28778e9c07fbbccaef8b0bf43bbff2df9aeeab6df9d68e06036b0fae144a79",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "legs/pants/thin"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.legs.female_legs_pants_black",
+      "role": "legs",
+      "variant": "black",
+      "palette": "cloth.black",
+      "required": true,
+      "body_type": "female",
+      "title": "Legs Pants • black",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/legs_pants.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 20,
+          "source_index": 40,
+          "source_path": "spritesheets/legs/pants/thin/black.png",
+          "sha256": "0ea0dc8051ef84aba205c07f3235abbde70e1dd7b290daef115ad350d58ec4df",
+          "source_size": [
+            832,
+            2944
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "legs/pants/thin"
+        }
+      ],
+      "match_body_color": false,
+      "first_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "last_seen": "675e21e04aaff8486a3a24e09573b3d5af9d28b9",
+      "supported_actions": [
+        "IDLE",
+        "MOVE",
+        "MELEE_SLASH"
+      ]
+    },
+    {
+      "id": "lpc.accessory.female_facial_earrings_stud_silver",
+      "role": "accessory",
+      "variant": "silver",
+      "palette": "metal.silver",
+      "required": false,
+      "body_type": "female",
+      "title": "Facial Earrings Stud • silver",
+      "body_types": [
+        "female"
+      ],
+      "technical_status": "verified_slice",
+      "legal_status": "accepted",
+      "license": "CC-BY-SA-3.0",
+      "source_definition": "sheet_definitions/facial_earrings_stud.json",
+      "aliases": [],
+      "layers": [
+        {
+          "z": 115,
+          "source_index": 41,
+          "source_path": "spritesheets/facial/earrings/stud/female/silver.png",
+          "sha256": "c9d8adb0e7de653006c9d90beb7e847b26dcae52489cd0889c848b9fe313e83a",
+          "source_size": [
+            832,
+            1344
+          ],
+          "frame_size": 64,
+          "custom_action": "",
+          "credit": "facial/earrings/stud"
         }
       ],
       "match_body_color": false,

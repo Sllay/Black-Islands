@@ -88,26 +88,28 @@ def compile_catalog(source, fetch=False):
                                                "colors":data[variant]}
     assets = []
     for spec in manifest["assets"]:
+        # Each accepted catalog entry declares its compatible presentation explicitly.
+        body_type = spec.get("body_type", manifest["body_type"])
         definition_path = "sheet_definitions/" + spec["definition"] + ".json"
         definition = json.loads(blob(definition_path))
         assert spec["variant"] in definition["variants"], spec["id"]
         asset = {k:v for k,v in spec.items() if k != "definition"}
-        asset.update(body_types=[manifest["body_type"]], technical_status="verified_slice",
+        asset.update(body_types=[body_type], technical_status="verified_slice",
                      legal_status="accepted", license=manifest["selected_license"],
                      source_definition=definition_path, aliases=[], layers=[],
                      match_body_color=bool(definition.get("match_body_color", False)),
                      first_seen=commit, last_seen=commit, supported_actions=["IDLE","MOVE","MELEE_SLASH"])
         if asset["match_body_color"]:
-            assert spec["palette"] == "skin.light"
+            assert spec["palette"].startswith("skin.")
         for key in sorted(k for k in definition if re.fullmatch(r"layer_\d+", k)):
             layer = definition[key]
             animation = layer.get("custom_animation", "")
             if animation and animation != "slash_oversize":
                 continue  # Unsupported actions remain explicit, never optimistic.
-            folder = layer.get(manifest["body_type"], "")
+            folder = layer.get(body_type, "")
             if not folder:
                 continue
-            path = "spritesheets/" + folder + spec["variant"] + ".png"
+            path = "spritesheets/" + folder.rstrip("/") + "/" + spec["variant"] + ".png"
             png = blob(path)
             assert png[:8] == b"\x89PNG\r\n\x1a\n", path
             width, height = struct.unpack(">II", png[16:24])
@@ -118,7 +120,7 @@ def compile_catalog(source, fetch=False):
                          folder.startswith(r["filename"].rstrip("/") + "/"))]
             assert matching, "No credits: " + folder
             credit = max(matching, key=lambda r:len(r["filename"]))
-            assert "CC-BY-SA 3.0" in credit["licenses"] or "CC-BY-SA-3.0" in credit["licenses"], credit
+            assert any(license_id in credit["licenses"] for license_id in ["CC-BY-SA 3.0", "CC-BY-SA-3.0", "CC0"]), credit
             used_credits[credit["filename"]] = credit
             source_size = int(custom[animation]["frameSize"]) if animation else 64
             frames = 6 if animation else 9

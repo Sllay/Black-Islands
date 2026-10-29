@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "backends": {"desktop_forward_plus":"forward_plus","mobile":"mobile","compatibility":"gl_compatibility"},
+  "presets": {
+    "Low":{"shadows":false,"shadow_distance":24,"foliage_budget_scale":0.65},
+    "Medium":{"shadows":true,"shadow_distance":48,"foliage_budget_scale":1.0},
+    "High":{"shadows":true,"shadow_distance":72,"foliage_budget_scale":1.25}
+  },
+  "distance_levels": {
+    "2":{"near_ring":1,"viewer_metres":128,"prop_metres":32},
+    "3":{"near_ring":1,"viewer_metres":144,"prop_metres":36},
+    "4":{"near_ring":1,"viewer_metres":160,"prop_metres":40},
+    "5":{"near_ring":1,"viewer_metres":176,"prop_metres":44},
+    "6":{"near_ring":1,"viewer_metres":192,"prop_metres":48},
+    "7":{"near_ring":2,"viewer_metres":224,"prop_metres":56},
+    "8":{"near_ring":2,"viewer_metres":256,"prop_metres":64},
+    "9":{"near_ring":2,"viewer_metres":288,"prop_metres":72},
+    "10":{"near_ring":3,"viewer_metres":320,"prop_metres":80}
+  }
+}

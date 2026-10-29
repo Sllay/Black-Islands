@@ -6,11 +6,463 @@
   "selected_license": "CC-BY-SA-3.0",
   "body_type": "male",
   "assets": [
-    {"id":"lpc.body.human_male", "definition":"body", "role":"body", "variant":"light", "palette":"skin.light", "required":true},
-    {"id":"lpc.head.human_male", "definition":"heads_human_male", "role":"head", "variant":"light", "palette":"skin.light", "required":true},
-    {"id":"lpc.hair.plain", "definition":"hair_plain", "role":"hair", "variant":"chestnut", "palette":"hair.chestnut", "required":false},
-    {"id":"lpc.clothes.longsleeve", "definition":"torso_clothes_longsleeve", "role":"torso", "variant":"bluegray", "palette":"cloth.bluegray", "required":true},
-    {"id":"lpc.legs.pants", "definition":"legs_pants", "role":"legs", "variant":"brown", "palette":"cloth.brown", "required":true},
-    {"id":"lpc.weapon.sword", "definition":"weapon_sword_longsword", "role":"weapon", "variant":"longsword", "palette":"", "required":false}
+    {
+      "id": "lpc.body.human_male",
+      "definition": "body",
+      "role": "body",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true
+    },
+    {
+      "id": "lpc.head.human_male",
+      "definition": "heads_human_male",
+      "role": "head",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true
+    },
+    {
+      "id": "lpc.hair.plain",
+      "definition": "hair_plain",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false
+    },
+    {
+      "id": "lpc.clothes.longsleeve",
+      "definition": "torso_clothes_longsleeve",
+      "role": "torso",
+      "variant": "bluegray",
+      "palette": "cloth.bluegray",
+      "required": true
+    },
+    {
+      "id": "lpc.legs.pants",
+      "definition": "legs_pants",
+      "role": "legs",
+      "variant": "brown",
+      "palette": "cloth.brown",
+      "required": true
+    },
+    {
+      "id": "lpc.weapon.sword",
+      "definition": "weapon_sword_longsword",
+      "role": "weapon",
+      "variant": "longsword",
+      "palette": "",
+      "required": false
+    },
+    {
+      "id": "lpc.ears.male_head_ears_big_light",
+      "definition": "head_ears_big",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Big \u2022 light"
+    },
+    {
+      "id": "lpc.ears.male_head_ears_elven_light",
+      "definition": "head_ears_elven",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Elven \u2022 light"
+    },
+    {
+      "id": "lpc.body.male_body_brown",
+      "definition": "body",
+      "role": "body",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "male",
+      "title": "Body \u2022 brown"
+    },
+    {
+      "id": "lpc.head.male_heads_human_male_brown",
+      "definition": "heads_human_male",
+      "role": "head",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "male",
+      "title": "Heads Human Male \u2022 brown"
+    },
+    {
+      "id": "lpc.ears.male_head_ears_big_brown",
+      "definition": "head_ears_big",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Big \u2022 brown"
+    },
+    {
+      "id": "lpc.ears.male_head_ears_elven_brown",
+      "definition": "head_ears_elven",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Elven \u2022 brown"
+    },
+    {
+      "id": "lpc.body.male_body_olive",
+      "definition": "body",
+      "role": "body",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "male",
+      "title": "Body \u2022 olive"
+    },
+    {
+      "id": "lpc.head.male_heads_human_male_olive",
+      "definition": "heads_human_male",
+      "role": "head",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "male",
+      "title": "Heads Human Male \u2022 olive"
+    },
+    {
+      "id": "lpc.ears.male_head_ears_big_olive",
+      "definition": "head_ears_big",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Big \u2022 olive"
+    },
+    {
+      "id": "lpc.ears.male_head_ears_elven_olive",
+      "definition": "head_ears_elven",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "male",
+      "title": "Head Ears Elven \u2022 olive"
+    },
+    {
+      "id": "lpc.hair.male_hair_plain_blonde",
+      "definition": "hair_plain",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "male",
+      "title": "Hair Plain \u2022 blonde"
+    },
+    {
+      "id": "lpc.hair.male_hair_ponytail_chestnut",
+      "definition": "hair_ponytail",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_type": "male",
+      "title": "Hair Ponytail \u2022 chestnut"
+    },
+    {
+      "id": "lpc.hair.male_hair_ponytail_blonde",
+      "definition": "hair_ponytail",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "male",
+      "title": "Hair Ponytail \u2022 blonde"
+    },
+    {
+      "id": "lpc.eyes.male_eyes_blue",
+      "definition": "eyes",
+      "role": "eyes",
+      "variant": "blue",
+      "palette": "eyes.blue",
+      "required": false,
+      "body_type": "male",
+      "title": "Eyes \u2022 blue"
+    },
+    {
+      "id": "lpc.eyes.male_eyes_brown",
+      "definition": "eyes",
+      "role": "eyes",
+      "variant": "brown",
+      "palette": "eyes.brown",
+      "required": false,
+      "body_type": "male",
+      "title": "Eyes \u2022 brown"
+    },
+    {
+      "id": "lpc.torso.male_torso_clothes_longsleeve_forest",
+      "definition": "torso_clothes_longsleeve",
+      "role": "torso",
+      "variant": "forest",
+      "palette": "cloth.forest",
+      "required": true,
+      "body_type": "male",
+      "title": "Torso Clothes Longsleeve \u2022 forest"
+    },
+    {
+      "id": "lpc.legs.male_legs_pants_black",
+      "definition": "legs_pants",
+      "role": "legs",
+      "variant": "black",
+      "palette": "cloth.black",
+      "required": true,
+      "body_type": "male",
+      "title": "Legs Pants \u2022 black"
+    },
+    {
+      "id": "lpc.accessory.male_facial_earrings_stud_silver",
+      "definition": "facial_earrings_stud",
+      "role": "accessory",
+      "variant": "silver",
+      "palette": "metal.silver",
+      "required": false,
+      "body_type": "male",
+      "title": "Facial Earrings Stud \u2022 silver"
+    },
+    {
+      "id": "lpc.body.female_body_light",
+      "definition": "body",
+      "role": "body",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true,
+      "body_type": "female",
+      "title": "Body \u2022 light"
+    },
+    {
+      "id": "lpc.head.female_heads_human_female_light",
+      "definition": "heads_human_female",
+      "role": "head",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": true,
+      "body_type": "female",
+      "title": "Heads Human Female \u2022 light"
+    },
+    {
+      "id": "lpc.ears.female_head_ears_big_light",
+      "definition": "head_ears_big",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Big \u2022 light"
+    },
+    {
+      "id": "lpc.ears.female_head_ears_elven_light",
+      "definition": "head_ears_elven",
+      "role": "ears",
+      "variant": "light",
+      "palette": "skin.light",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Elven \u2022 light"
+    },
+    {
+      "id": "lpc.body.female_body_brown",
+      "definition": "body",
+      "role": "body",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "female",
+      "title": "Body \u2022 brown"
+    },
+    {
+      "id": "lpc.head.female_heads_human_female_brown",
+      "definition": "heads_human_female",
+      "role": "head",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": true,
+      "body_type": "female",
+      "title": "Heads Human Female \u2022 brown"
+    },
+    {
+      "id": "lpc.ears.female_head_ears_big_brown",
+      "definition": "head_ears_big",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Big \u2022 brown"
+    },
+    {
+      "id": "lpc.ears.female_head_ears_elven_brown",
+      "definition": "head_ears_elven",
+      "role": "ears",
+      "variant": "brown",
+      "palette": "skin.brown",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Elven \u2022 brown"
+    },
+    {
+      "id": "lpc.body.female_body_olive",
+      "definition": "body",
+      "role": "body",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "female",
+      "title": "Body \u2022 olive"
+    },
+    {
+      "id": "lpc.head.female_heads_human_female_olive",
+      "definition": "heads_human_female",
+      "role": "head",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": true,
+      "body_type": "female",
+      "title": "Heads Human Female \u2022 olive"
+    },
+    {
+      "id": "lpc.ears.female_head_ears_big_olive",
+      "definition": "head_ears_big",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Big \u2022 olive"
+    },
+    {
+      "id": "lpc.ears.female_head_ears_elven_olive",
+      "definition": "head_ears_elven",
+      "role": "ears",
+      "variant": "olive",
+      "palette": "skin.olive",
+      "required": false,
+      "body_type": "female",
+      "title": "Head Ears Elven \u2022 olive"
+    },
+    {
+      "id": "lpc.hair.female_hair_plain_chestnut",
+      "definition": "hair_plain",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Plain \u2022 chestnut"
+    },
+    {
+      "id": "lpc.hair.female_hair_plain_blonde",
+      "definition": "hair_plain",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Plain \u2022 blonde"
+    },
+    {
+      "id": "lpc.hair.female_hair_ponytail_chestnut",
+      "definition": "hair_ponytail",
+      "role": "hair",
+      "variant": "chestnut",
+      "palette": "hair.chestnut",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Ponytail \u2022 chestnut"
+    },
+    {
+      "id": "lpc.hair.female_hair_ponytail_blonde",
+      "definition": "hair_ponytail",
+      "role": "hair",
+      "variant": "blonde",
+      "palette": "hair.blonde",
+      "required": false,
+      "body_type": "female",
+      "title": "Hair Ponytail \u2022 blonde"
+    },
+    {
+      "id": "lpc.eyes.female_eyes_blue",
+      "definition": "eyes",
+      "role": "eyes",
+      "variant": "blue",
+      "palette": "eyes.blue",
+      "required": false,
+      "body_type": "female",
+      "title": "Eyes \u2022 blue"
+    },
+    {
+      "id": "lpc.eyes.female_eyes_brown",
+      "definition": "eyes",
+      "role": "eyes",
+      "variant": "brown",
+      "palette": "eyes.brown",
+      "required": false,
+      "body_type": "female",
+      "title": "Eyes \u2022 brown"
+    },
+    {
+      "id": "lpc.torso.female_torso_clothes_longsleeve_bluegray",
+      "definition": "torso_clothes_longsleeve",
+      "role": "torso",
+      "variant": "bluegray",
+      "palette": "cloth.bluegray",
+      "required": true,
+      "body_type": "female",
+      "title": "Torso Clothes Longsleeve \u2022 bluegray"
+    },
+    {
+      "id": "lpc.torso.female_torso_clothes_longsleeve_forest",
+      "definition": "torso_clothes_longsleeve",
+      "role": "torso",
+      "variant": "forest",
+      "palette": "cloth.forest",
+      "required": true,
+      "body_type": "female",
+      "title": "Torso Clothes Longsleeve \u2022 forest"
+    },
+    {
+      "id": "lpc.legs.female_legs_pants_brown",
+      "definition": "legs_pants",
+      "role": "legs",
+      "variant": "brown",
+      "palette": "cloth.brown",
+      "required": true,
+      "body_type": "female",
+      "title": "Legs Pants \u2022 brown"
+    },
+    {
+      "id": "lpc.legs.female_legs_pants_black",
+      "definition": "legs_pants",
+      "role": "legs",
+      "variant": "black",
+      "palette": "cloth.black",
+      "required": true,
+      "body_type": "female",
+      "title": "Legs Pants \u2022 black"
+    },
+    {
+      "id": "lpc.accessory.female_facial_earrings_stud_silver",
+      "definition": "facial_earrings_stud",
+      "role": "accessory",
+      "variant": "silver",
+      "palette": "metal.silver",
+      "required": false,
+      "body_type": "female",
+      "title": "Facial Earrings Stud \u2022 silver"
+    }
   ]
 }

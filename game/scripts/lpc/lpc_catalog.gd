@@ -34,22 +34,26 @@ static func default_appearance() -> Dictionary:
 			"torso":"cloth.bluegray", "legs":"cloth.brown"}, "equipment_visuals":[]}
 
 static func normalize(config: Dictionary) -> Dictionary:
-	if config.get("schema_version") != 1 or config.get("catalog_version") != data().catalog_version or config.get("body_type") != "male":
+	if config.get("schema_version") != 1 or config.get("catalog_version") != data().catalog_version or config.get("body_type") not in ["male","female"]:
 		return {}
-	if not config.get("selections") is Dictionary or not config.get("palettes") is Dictionary or not config.get("equipment_visuals", []) is Array:
+	if not config.get("selections") is Dictionary or not config.get("palettes") is Dictionary or not config.get("equipment_visuals",[]) is Array:
 		return {}
-	var result := {"schema_version":1, "catalog_version":data().catalog_version,
-		"body_type":"male", "selections":{}, "palettes":{}, "equipment_visuals":[]}
-	for role: String in ["body", "head", "hair", "torso", "legs"]:
-		var id: String = str(config.selections.get(role, ""))
+	var result := {"schema_version":1,"catalog_version":data().catalog_version,"body_type":config.body_type,"selections":{},"palettes":{},"equipment_visuals":[]}
+	for role: String in ["body","head","torso","legs"]:
+		if not config.selections.has(role):
+			return {}
+	for role: String in config.selections:
+		var id := str(config.selections[role])
 		var entry := asset(id)
-		if entry.is_empty() or entry.role != role or "male" not in entry.body_types or entry.legal_status != "accepted":
+		if entry.is_empty() or entry.role != role or config.body_type not in entry.body_types or entry.legal_status != "accepted":
 			return {}
 		if config.palettes.get(role) != entry.palette:
-			return {} # Only verified variants are accepted; no optimistic palette claim.
+			return {}
+		if entry.get("match_body_color",false) and config.palettes.get("body") != entry.palette:
+			return {}
 		result.selections[role] = id
 		result.palettes[role] = entry.palette
-	for id: Variant in config.get("equipment_visuals", []):
+	for id: Variant in config.get("equipment_visuals",[]):
 		if not id is String or asset(id).get("role") != "weapon":
 			return {}
 		if id not in result.equipment_visuals:

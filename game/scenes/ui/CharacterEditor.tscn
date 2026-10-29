@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b6q41ic5rupsu"]
+
+[ext_resource type="Script" path="res://scripts/ui/character_editor.gd" id="1_f3yu2"]
+
+[node name="CharacterEditor" type="Control" unique_id=143982329]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_f3yu2")

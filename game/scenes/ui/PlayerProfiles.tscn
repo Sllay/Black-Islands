@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dw8bc3v86gnfy"]
+
+[ext_resource type="Script" path="res://scripts/ui/player_profiles_screen.gd" id="1_8vcx2"]
+
+[node name="PlayerProfiles" type="Control" unique_id=2035341784]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_8vcx2")

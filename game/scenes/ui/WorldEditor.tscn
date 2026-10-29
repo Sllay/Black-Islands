@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cyhw0vbvy54e7"]
+
+[ext_resource type="Script" path="res://scripts/ui/world_editor.gd" id="1_30wky"]
+
+[node name="WorldEditor" type="Control" unique_id=1453765399]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_30wky")
