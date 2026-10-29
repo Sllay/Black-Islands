@@ -28,7 +28,8 @@ func density(position: Vector3) -> float:
 	return maxf(body, position.y - surface_height(position.x, position.z))
 
 func material_at(world_point: Vector3) -> int:
-	return material_for(world_point.y, surface_height(world_point.x, world_point.z))
+	var top := top_surface(world_point.x, world_point.z)
+	return material_for(world_point.y, top) if is_finite(top) else 3
 
 func forest_weight(world_point: Vector3) -> float:
 	var distance := Vector2(world_point.x, world_point.z).length()

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://se27q4xct1gv"]
+
+[ext_resource type="Script" path="res://tests/integration/world_persistence_smoke.gd" id="1_o6l64"]
+
+[node name="WorldPersistenceSmoke" type="Node" unique_id=57469874]
+script = ExtResource("1_o6l64")

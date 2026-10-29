@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bqriy1r753w6s"]
+
+[ext_resource type="Shader" uid="uid://d2txdkib41d17" path="res://shaders/ocean.gdshader" id="1_708ch"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_708ch")
+shader_parameter/deep_color = null
+shader_parameter/light_color = null

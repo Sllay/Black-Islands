@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bvu7bcr7wfcu6"]
+
+[ext_resource type="Script" path="res://tests/integration/world_state_smoke.gd" id="1_khe1c"]
+
+[node name="WorldStateSmoke" type="Node" unique_id=636146555]
+script = ExtResource("1_khe1c")

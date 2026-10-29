@@ -4,13 +4,30 @@ extends VoxelGeneratorScript
 
 var field := IslandField.new()
 
+var deltas: WorldDeltaStore
+
 func _get_used_channels_mask() -> int:
 	return (1 << VoxelBuffer.CHANNEL_SDF) | (1 << VoxelBuffer.CHANNEL_INDICES) | (1 << VoxelBuffer.CHANNEL_WEIGHTS)
 
 func _generate_block(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
-	# Keep the native terrain's channel format (SDF16). Changing a callback buffer
-	# to SDF32 would mismatch the native streaming data map when it copies blocks.
+	# Preserve the native SDF16 format; no SceneTree access from worker jobs.
 	_fill_base(buffer, origin, lod)
+	if deltas != null:
+		var step := 1 << lod
+		var patches := deltas.snapshot_box(origin, buffer.get_size() * step)
+		for voxel: Vector3i in patches:
+			var relative := voxel - origin
+			if relative % step != Vector3i.ZERO:
+				continue
+			@warning_ignore("integer_division") # Aligned nearest-neighbor native LOD sample.
+			var cell := relative / step
+			var sample: Dictionary = patches[voxel]
+			buffer.set_voxel(int(sample.density) & 0xffff, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_SDF)
+			buffer.set_voxel(0x3210, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_INDICES)
+			var weights := 0
+			for index: int in range(4):
+				weights |= int(sample.materials[index]) << (index * 4)
+			buffer.set_voxel(weights, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_WEIGHTS)
 	buffer.compress_uniform_channels()
 
 func _fill_base(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
@@ -28,7 +45,7 @@ func _fill_base(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 		buffer.fill_f(8.0, VoxelBuffer.CHANNEL_SDF)
 		buffer.fill(0xf000, VoxelBuffer.CHANNEL_WEIGHTS)
 		return
-	if high.y < -14.5 and farthest.length() < 0.92:
+	if high.y < -22.0 and farthest.length() < 0.92:
 		buffer.fill_f(-8.0, VoxelBuffer.CHANNEL_SDF)
 		buffer.fill(0xf000, VoxelBuffer.CHANNEL_WEIGHTS)
 		return
@@ -38,10 +55,11 @@ func _fill_base(buffer: VoxelBuffer, origin: Vector3i, lod: int) -> void:
 			var wz := float(origin.z + z * step) * WorldCoordinates.VOXEL_SIZE
 			var height := field.surface_height(wx, wz)
 			var horizontal := wx * wx / (field.radius.x * field.radius.x) + wz * wz / (field.radius.y * field.radius.y)
+			var surface := minf(height, -35.0 + 65.0 * sqrt(1.0 - horizontal)) if horizontal <= 1.0 else height
 			for y: int in range(size.y):
 				var wy := float(origin.y + y * step) * WorldCoordinates.VOXEL_SIZE
 				var vertical := (wy + 35.0) / 65.0
 				var sdf := maxf((sqrt(horizontal + vertical * vertical) - 1.0) * 50.0, wy - height)
 				buffer.set_voxel_f(clampf(sdf / WorldCoordinates.VOXEL_SIZE, -8.0, 8.0), x, y, z, VoxelBuffer.CHANNEL_SDF)
-				var material := field.material_for(wy, height)
+				var material := field.material_for(wy, surface)
 				buffer.set_voxel(15 << (material * 4), x, y, z, VoxelBuffer.CHANNEL_WEIGHTS)

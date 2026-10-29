@@ -8,6 +8,8 @@ var native: VoxelLodTerrain
 var generator: VoxelIslandGenerator
 var edit_requests: int = 0
 
+var deltas: WorldDeltaStore
+
 func _ready() -> void:
 	native = $Terrain
 	native.scale = Vector3.ONE * WorldCoordinates.VOXEL_SIZE
@@ -28,10 +30,11 @@ func _ready() -> void:
 	native.material = load("res://resources/world/TerrainMaterial.tres")
 	generator = VoxelIslandGenerator.new()
 	generator.field = field
+	generator.deltas = deltas
 	native.generator = generator
 
 func is_editable(center: Vector3, radius: float) -> bool:
-	if radius <= 0.0 or not center.is_finite():
+	if not is_finite(radius) or radius <= 0.0 or not center.is_finite():
 		return false
 	var point := native.to_local(center)
 	var extent := Vector3.ONE * (radius / WorldCoordinates.VOXEL_SIZE + 2.0)
@@ -85,13 +88,48 @@ func material_at(world_point: Vector3) -> int:
 	return selected
 
 func surface_hit(x: float, z: float) -> Dictionary:
-	var query := PhysicsRayQueryParameters3D.create(Vector3(x, 100, z), Vector3(x, -120, z))
+	var query := PhysicsRayQueryParameters3D.create(Vector3(x, 100, z), Vector3(x, -120, z), 1)
 	return get_world_3d().direct_space_state.intersect_ray(query)
 
 func density_at(world_position: Vector3) -> float:
 	var tool := native.get_voxel_tool()
 	tool.channel = VoxelBuffer.CHANNEL_SDF
 	return tool.get_voxel_f(Vector3i(native.to_local(world_position).floor()))
+
+func capture_samples(origin: Vector3i, extent: Vector3i) -> Dictionary:
+	var buffer := VoxelBuffer.new()
+	buffer.create(extent.x, extent.y, extent.z)
+	native.get_voxel_tool().copy(origin, buffer, generator._get_used_channels_mask())
+	var result: Dictionary = {}
+	for z: int in range(extent.z):
+		for x: int in range(extent.x):
+			for y: int in range(extent.y):
+				var indices := buffer.get_voxel(x, y, z, VoxelBuffer.CHANNEL_INDICES)
+				var packed := buffer.get_voxel(x, y, z, VoxelBuffer.CHANNEL_WEIGHTS)
+				var weights := [0, 0, 0, 0]
+				for index: int in range(4):
+					var logical := (indices >> (index * 4)) & 15
+					if logical < 4:
+						weights[logical] += (packed >> (index * 4)) & 15
+				var code := buffer.get_voxel(x, y, z, VoxelBuffer.CHANNEL_SDF)
+				if code >= 32768:
+					code -= 65536
+				result[origin + Vector3i(x, y, z)] = {"density": code, "materials": weights}
+	return result
+
+func restore_samples(origin: Vector3i, extent: Vector3i, samples: Dictionary) -> void:
+	var buffer := VoxelBuffer.new()
+	buffer.create(extent.x, extent.y, extent.z)
+	buffer.fill(0x3210, VoxelBuffer.CHANNEL_INDICES)
+	for voxel: Vector3i in samples:
+		var cell := voxel - origin
+		var sample: Dictionary = samples[voxel]
+		buffer.set_voxel(int(sample.density) & 0xffff, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_SDF)
+		var weights := 0
+		for index: int in range(4):
+			weights |= int(sample.materials[index]) << (index * 4)
+		buffer.set_voxel(weights, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_WEIGHTS)
+	native.get_voxel_tool().paste(origin, buffer, generator._get_used_channels_mask())
 
 func statistics() -> Dictionary:
 	return {"native": native.get_statistics(), "engine": Engine.get_singleton("VoxelEngine").call("get_stats"), "data_blocks": native.debug_get_data_block_count(), "mesh_blocks": native.debug_get_mesh_block_count(), "edit_requests": edit_requests}
