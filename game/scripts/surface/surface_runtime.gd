@@ -70,9 +70,20 @@ var qa: SurfaceQA
 func _attach_qa() -> void:
 	if not OS.is_debug_build() or session.tools == null:
 		return
-	var button := ShellUI.button("P04 • cultivo / construção QA","SurfaceQA",Vector2(330,44))
-	button.pressed.connect(qa.c02)
-	session.tools.add_child(button)
+	var entries := [["P04 • cultivo / construção",qa.c02],["P04 • fauna",qa.c03],["P04 • combate / corpo",qa.combat_sample],["P04 • offscreen",qa.offscreen_sample],
+		["+1 dia (QA)",func() -> void: qa_advance(1)],["+6 dias / regrowth (QA)",func() -> void: qa_advance(6)]]
+	for entry: Array in entries:
+		var button := ShellUI.button(entry[0],"SurfaceQA",Vector2(330,44))
+		button.pressed.connect(entry[1])
+		session.tools.add_child(button)
+
+var mobs: MobSimulation
+
+func _configure_mobs(restored: Dictionary) -> void:
+	mobs = MobSimulation.new()
+	mobs.name = "Mobs"
+	add_child(mobs)
+	mobs.configure(self,restored.get("mobs",{}))
 
 func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	session = world_session
@@ -107,6 +118,7 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	objects = SurfaceObjects.new()
 	objects.runtime = self
 	add_child(objects)
+	_configure_mobs(restored)
 	var ui: SurfaceUI = load("res://scenes/ui/SurfaceGameplayUI.tscn").instantiate()
 	ui.runtime = self
 	add_child(ui)
@@ -142,6 +154,21 @@ func definition(id: String) -> Dictionary:
 func destroyed(id: String) -> bool:
 	return ledger.props.has(id) and float(ledger.props[id].health) <= 0
 
+func _regrow() -> void:
+	for key: String in ledger.suppression.keys():
+		var row: Dictionary = ledger.suppression[key]
+		if not row.reasons.is_empty() or ledger.clock < float(row.regrow_at):
+			continue
+		var parts := key.split(",")
+		var point := Vector3(float(parts[0])+.5,float(parts[1])+.04,float(parts[2])+.5)
+		var hit := terrain.surface_hit(point.x,point.z)
+		if hit.is_empty() or absf(float(hit.position.y)-point.y) > .6:
+			continue
+		if terrain.material_at(hit.position) == 2 and session.edits.apply(hit.position,.55,true,1) != OK:
+			continue
+		ledger.suppression.erase(key)
+		refresh(point)
+
 func _process(delta: float) -> void:
 	if player == null or not player.spawned or player.inventory.is_open:
 		return
@@ -151,32 +178,34 @@ func _process(delta: float) -> void:
 	if _elapsed >= 1:
 		_elapsed = 0
 		_tick_domains()
-		for key: String in ledger.suppression.keys():
-			var row: Dictionary = ledger.suppression[key]
-			if row.reasons.is_empty() and ledger.clock >= float(row.regrow_at):
-				var parts := key.split(",")
-				ledger.suppression.erase(key)
-				refresh(Vector3(float(parts[0]),float(parts[1]),float(parts[2])))
+		_regrow()
 
 func primary_action() -> void:
 	actions.primary()
 
 func qa_resource(kind: String, tool_id: String) -> Dictionary:
-	# Explicit QA uses the same validation/output path as production intent.
+	# QA relocation uses the same range/revision/output path as production.
+	var chosen := ""
+	var nearest := INF
 	for id: String in candidates:
-		var row: Dictionary = candidates[id]
-		if definition(row.definition).harvest != kind or destroyed(id):
+		var candidate: Dictionary = candidates[id]
+		if definition(candidate.definition).harvest != kind or destroyed(id):
 			continue
-		var point := Vector3(row.point[0],row.point[1],row.point[2])
-		if point.distance_to(player.global_position) > 8:
-			continue
-		player.motor.request_spawn(point+Vector3(0,2,2))
-		for slot: int in InventoryState.CAPACITY:
-			if player.inventory.state.slot_at(slot).get("item_id") == tool_id:
-				player.inventory.state.assign_hotbar(4,slot)
-				player.inventory.state.select_hotbar(4)
-		return {"id":id,"result":harvest_prop(id,player)}
-	return {"error":ERR_DOES_NOT_EXIST}
+		var candidate_point := Vector3(candidate.point[0],candidate.point[1],candidate.point[2])
+		var distance := candidate_point.distance_squared_to(player.global_position)
+		if distance < nearest:
+			nearest = distance
+			chosen = id
+	if chosen.is_empty():
+		return {"error":ERR_DOES_NOT_EXIST}
+	var row: Dictionary = candidates[chosen]
+	var point := Vector3(row.point[0],row.point[1],row.point[2])
+	player.motor.request_spawn(point+Vector3(0,2,2))
+	for slot: int in InventoryState.CAPACITY:
+		if player.inventory.state.slot_at(slot).get("item_id") == tool_id:
+			player.inventory.state.assign_hotbar(4,slot)
+			player.inventory.state.select_hotbar(4)
+	return {"id":chosen,"result":harvest_prop(chosen,player)}
 
 func harvest_prop(id: String, actor: PlayerActor) -> Dictionary:
 	var item := actor.inventory.state.active_definition()
@@ -231,8 +260,8 @@ func terrain_changed(area: AABB) -> void:
 		var point := Vector3(row.position[0],row.position[1],row.position[2])
 		if not area.grow(1).has_point(point):
 			continue
-		var hit := terrain.surface_hit(point.x,point.z)
-		if _density(point-Vector3.UP*.3) > 0 or hit.is_empty() or absf(float(hit.position.y)-point.y) > .5:
+		# A streamed-out collider is not missing support. Read persisted SDF.
+		if _density(point-Vector3.UP*.3) > 0 or _density(point+Vector3.UP*.5) < 0:
 			create_bag(point,farms.remove(key,true))
 			refresh(point)
 	for row: Dictionary in building.terrain_changed(area):
@@ -243,17 +272,29 @@ func terrain_changed(area: AABB) -> void:
 	objects.reconcile()
 
 func snapshot() -> Dictionary:
+	mobs.sync_positions()
 	var data := ledger.snapshot()
+	data.content_version = SurfaceCatalog.VERSION
 	data.farms = farms.plots.duplicate(true)
 	data.structures = building.pieces.duplicate(true)
 	data.containers = containers.snapshot()
+	data.mobs = mobs.domain.states.duplicate(true)
 	return data
 
 func report() -> Dictionary:
 	var exhausted := 0
+	var bags := 0
+	var batches := 0
 	for id: String in ledger.props:
 		if destroyed(id):
 			exhausted += 1
+	for row: Dictionary in containers.records.values():
+		bags += int(row.kind in ["WorldDropBag","DeathBagInventory"])
+	for patch: Node3D in foliage.patches.values():
+		batches += patch.get_child_count()
 	return {"biome":field.biome(player.global_position),"instances":foliage.instances,
-		"grass":foliage.grass_instances,"patches":foliage.patches.size(),"colliders":foliage.actors.size(),
-		"patch_updates":foliage.patch_updates,"prop_deltas":ledger.props.size(),"destroyed":exhausted,"bags":ledger.bags.size()}
+		"grass":foliage.grass_instances,"visible_props":foliage.instances-foliage.grass_instances,
+		"multimeshes":batches,"patches":foliage.patches.size(),"colliders":foliage.actors.size(),
+		"patch_updates":foliage.patch_updates,"prop_deltas":ledger.props.size(),"destroyed":exhausted,
+		"bags":bags,"farms":farms.plots.size(),"structures":building.pieces.size(),
+		"support":building.last_benchmark,"containers":containers.records.size(),"mobs":mobs.report()}

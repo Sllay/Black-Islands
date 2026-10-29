@@ -20,6 +20,8 @@ func primary() -> void:
 	if item.id in SurfaceCatalog.data().tools:
 		if target.entity is PropActor:
 			runtime.harvest_prop(target.entity.spawn_id,runtime.player)
+		elif is_instance_valid(target.entity) and target.entity.has_method("harvest"):
+			target.entity.harvest()
 		return
 	var point := target.world_position
 	var key := SurfaceLedger.cell_key(point)
@@ -46,9 +48,14 @@ func primary() -> void:
 			runtime.farms.till(anchor,true,material)
 			runtime.refresh(anchor)
 	elif item.id == "bi.tool.shovel":
-		if target.kind in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID] and runtime.session.edits.apply(point,.7,true,2) == OK:
-			runtime.ledger.suppress(point,"path")
-			runtime.refresh(point)
+		if target.kind in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID]:
+			var path_exists: bool = "path" in runtime.ledger.suppression.get(key,{}).get("reasons",[])
+			if runtime.session.edits.apply(point,.7,true,1 if path_exists else 2) == OK:
+				if path_exists:
+					runtime.ledger.release(point,"path")
+				else:
+					runtime.ledger.suppress(point,"path")
+				runtime.refresh(point)
 	runtime.objects.reconcile()
 
 func snap_cell(target: TargetResult) -> Vector3i:

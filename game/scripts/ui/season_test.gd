@@ -13,13 +13,13 @@ func _ready() -> void:
 	safe.name = "SafeArea"
 	add_child(safe)
 	var body := ShellUI.column(safe, 16)
-	var toggle := ShellUI.button("SEASON TEST / P03  •  recolher / expandir", "ToggleQA")
+	var toggle := ShellUI.button("SEASON TEST / P04  •  recolher / expandir", "ToggleQA")
 	toggle.pressed.connect(func() -> void: controls.visible = not controls.visible)
 	body.add_child(toggle)
 	controls = ShellUI.column(body, 12)
 	information = ShellUI.label_text("", 20, ShellUI.GOLD)
 	controls.add_child(information)
-	controls.add_child(ShellUI.label_text("P03: entre na ilha • F2 abre QA do player, alvo, pulso e métricas.\nB: câmera Build • I: bolsa • Attack: toque / segure e solte • Dodge: esquiva.", 18))
+	controls.add_child(ShellUI.label_text("P04: entre na ilha • F2 abre QA integrado de cultivo, construção, fauna, corpos e offscreen.\nMachado/picareta coletam • Enxada prepara • E planta/colhe/abre • Regador molha.\nCultivar/Construir escolhe peças • Bolsa organiza • J/Attack: toque ou segure/solte • Space: esquiva.", 18))
 	controls.add_child(ShellUI.label_text("Perfis isolados de QA. Nenhum reset afeta suas jornadas reais.", 18))
 	var notch := CheckButton.new()
 	notch.name = "SimulateNotch"

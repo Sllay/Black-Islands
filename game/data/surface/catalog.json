@@ -583,5 +583,94 @@
       "cost_multiplier": 5,
       "visual": "iron"
     }
+  },
+  "mobs": {
+    "chicken": {
+      "id": "chicken",
+      "title": "Galinha",
+      "visual": "mob_chicken",
+      "health": 30,
+      "defense": 0,
+      "radius": 0.25,
+      "height": 0.8,
+      "speed": 2.8,
+      "damage": 0,
+      "territory": 0,
+      "warning": 1,
+      "rules": [
+        {
+          "all": {
+            "attacked": true
+          },
+          "intent": "FLEE"
+        }
+      ],
+      "delicate": {
+        "bi.resource.feather": 3
+      },
+      "harvest": "animal",
+      "decomposition": 120,
+      "protected_loot": false
+    },
+    "boar": {
+      "id": "boar",
+      "title": "Javali",
+      "visual": "mob_boar",
+      "health": 70,
+      "defense": 10,
+      "radius": 0.38,
+      "height": 1.2,
+      "speed": 2.5,
+      "damage": 12,
+      "territory": 5,
+      "warning": 1.5,
+      "rules": [
+        {
+          "all": {
+            "attacked": true
+          },
+          "intent": "ATTACK"
+        },
+        {
+          "all": {
+            "territory_violation": true
+          },
+          "intent": "WARN_ATTACK"
+        }
+      ],
+      "delicate": {
+        "bi.resource.fiber": 2
+      },
+      "harvest": "large_animal",
+      "decomposition": 180,
+      "protected_loot": false
+    },
+    "zombie": {
+      "id": "zombie",
+      "title": "Errante",
+      "visual": "mob_zombie",
+      "health": 65,
+      "defense": 5,
+      "radius": 0.3,
+      "height": 1.65,
+      "speed": 2,
+      "damage": 14,
+      "territory": 0,
+      "warning": 0.7,
+      "rules": [
+        {
+          "all": {
+            "player_in_range": true
+          },
+          "intent": "ATTACK"
+        }
+      ],
+      "delicate": {
+        "bi.resource.metal": 3
+      },
+      "harvest": "undead",
+      "decomposition": 180,
+      "protected_loot": true
+    }
   }
 }

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bbrlskjty1bmg"]
+
+[ext_resource type="Script" path="res://tests/integration/surface_benchmark.gd" id="1_874nx"]
+
+[node name="SurfaceBenchmark" type="Node3D" unique_id=394567928]
+script = ExtResource("1_874nx")

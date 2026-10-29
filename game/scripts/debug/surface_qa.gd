@@ -3,10 +3,72 @@ extends Node
 ## Explicit debug acceleration on the actual session/services, not a second game.
 var runtime: SurfaceRuntime
 var result: Dictionary = {}
+var spawned_ids: Array[String] = []
+var farm_offset := Vector3(3,0,3)
+
+func c03() -> void:
+	spawned_ids.clear()
+	var placements := [Vector3(-4,0,-4),Vector3(5,0,-3),Vector3(7,0,-7)]
+	var definitions := ["chicken","boar","zombie"]
+	for index: int in range(3):
+		var point: Vector3 = runtime.player.position+placements[index]
+		point.y = runtime.terrain.field.top_surface(point.x,point.z)+.05
+		var id := runtime.ledger.new_id("mob")
+		runtime.mobs.domain.spawn(id,definitions[index],point)
+		spawned_ids.append(id)
+	runtime.mobs.reconcile()
+	result = {"spawned":spawned_ids.duplicate(),"mobs":runtime.mobs.report()}
+
+func combat_sample() -> void:
+	runtime.player.state.set_health(100)
+	runtime.player.combat.cancel()
+	runtime.player.inventory.state.select_hotbar(0)
+	runtime.player.motor.facing = Vector3.FORWARD
+	var id := runtime.ledger.new_id("combat_mob")
+	var point := runtime.player.position+Vector3.FORWARD*1.4
+	var hit := runtime.terrain.surface_hit(point.x,point.z)
+	if not hit.is_empty():
+		point.y = hit.position.y+.05
+	runtime.mobs.domain.spawn(id,"chicken",point)
+	runtime.mobs.reconcile()
+	await get_tree().physics_frame
+	var before := runtime.player.combat.attacks_started
+	Input.action_press("attack_primary")
+	await get_tree().create_timer(.4).timeout
+	var held_count := runtime.player.combat.attacks_started-before
+	Input.action_release("attack_primary")
+	await get_tree().create_timer(1.2).timeout
+	runtime.mobs.domain.evaluate()
+	result = {"id":id,"hold_attacks":held_count,"released_attacks":runtime.player.combat.attacks_started-before,
+		"life":runtime.mobs.domain.states[id].life,"health":runtime.mobs.domain.states[id].health}
+	print("P04_NATIVE_COMBAT ",result)
+	if runtime.mobs.domain.states[id].life == "CORPSE":
+		runtime.container_opened.emit(runtime.mobs.domain.states[id].corpse_inventory)
+
+func offscreen_sample() -> void:
+	var id := runtime.ledger.new_id("offscreen_mob")
+	var point := runtime.player.position+Vector3(2,0,0)
+	runtime.mobs.domain.spawn(id,"chicken",point)
+	var hit := HitPayload.new()
+	hit.raw_damage = 5
+	runtime.mobs.domain.hit(id,hit)
+	runtime.mobs.reconcile()
+	runtime.player.inspect_at(Vector3(150,40,0))
+	await get_tree().create_timer(12).timeout
+	var removed := not runtime.mobs.actors.has(id)
+	var near := MobDomain._point(runtime.mobs.domain.states[id])+Vector3(0,5,3)
+	runtime.player.inspect_at(near)
+	await get_tree().create_timer(12).timeout
+	var count := 0
+	for child: Node in runtime.mobs.get_children():
+		if child is MobActor and child.entity_id == id:
+			count += 1
+	result = {"id":id,"removed_far":removed,"restored_instances":count,"health":runtime.mobs.domain.states[id].health}
+	print("P04_OFFSCREEN ",result)
 
 func c02() -> void:
 	result = {"running":true}
-	var point := runtime.player.global_position+Vector3(3,0,3)
+	var point := runtime.player.global_position+farm_offset
 	var hit := runtime.terrain.surface_hit(point.x,point.z)
 	if hit.is_empty():
 		result = {"error":"no terrain"}

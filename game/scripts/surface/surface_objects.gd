@@ -41,6 +41,8 @@ func reconcile() -> void:
 		rows[id] = {"position":point+Vector3(0,.035,0),"size":Vector3(.94,.07,.94),"color":Color("705442") if plot.moisture <= 0 else Color("4e4036"),"role":"farm","stage":int(plot.growth_stage),"seeded":not plot.seed_id.is_empty()}
 	for id: String in runtime.containers.records:
 		var row: Dictionary = runtime.containers.records[id]
+		if row.kind == "Corpse":
+			continue # The biological actor owns presentation, inventory is shared.
 		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*.22,"size":Vector3(.75,.44,.5),"color":Color("b49560") if row.kind == "Chest" else Color("bdb087"),"role":"container"}
 	for id: String in views.keys():
 		if not rows.has(id) or views[id].get_meta("row") != rows[id] or views[id].position.distance_to(runtime.player.position) > 64:

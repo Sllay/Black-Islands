@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://gdakxhu2kwl6"]
+
+[ext_resource type="Script" uid="uid://gam6wsh44t14" path="res://scripts/surface/mob_actor.gd" id="1_husel"]
+
+[node name="MobActor" type="CharacterBody3D" unique_id=894073825]
+script = ExtResource("1_husel")

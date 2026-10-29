@@ -36,6 +36,9 @@ static func commit(stores: Array[InventoryState], plans: Array[InventoryState], 
 static func transfer(source: InventoryState, target: InventoryState, uid: String, quantity: int, source_revision: int, target_revision: int) -> Error:
 	if source == target or quantity < 1:
 		return ERR_INVALID_PARAMETER
+	if source.revision != source_revision or target.revision != target_revision:
+		stale += 1
+		return ERR_ALREADY_IN_USE
 	var from := clone(source)
 	var to := clone(target)
 	var stack := from.record_by_uid(uid)

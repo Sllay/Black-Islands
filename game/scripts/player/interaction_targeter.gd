@@ -76,7 +76,7 @@ func _priority(kind: TargetResult.Kind) -> int:
 	return int(priorities.get(TargetResult.Kind.keys()[kind], 0))
 
 func has_line_of_sight(point: Vector3) -> bool:
-	var query := PhysicsRayQueryParameters3D.create(actor.global_position + Vector3.UP * 0.8, point + Vector3.UP * 0.8, 1)
+	var query := PhysicsRayQueryParameters3D.create(actor.global_position + Vector3.UP * 0.8, point + Vector3.UP * 0.8, 1|16)
 	return actor.get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 func _set_hit(entity: Node3D, point: Vector3, surface_normal: Vector3) -> void:

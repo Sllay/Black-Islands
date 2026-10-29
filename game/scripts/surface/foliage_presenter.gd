@@ -44,6 +44,12 @@ func _reconcile() -> void:
 			if runtime.definition(row.definition).harvest.is_empty() or runtime.destroyed(row.id):
 				continue
 			var location := Vector3(row.point[0],row.point[1],row.point[2])
+			if runtime.ledger.suppressed(location):
+				continue
+			if runtime.edited_patches.has(key):
+				var hit := runtime.terrain.surface_hit(location.x,location.z)
+				if hit.is_empty() or absf(float(hit.position.y)-location.y) > .55:
+					continue
 			if point.distance_to(location) > 9:
 				continue
 			near[row.id] = true

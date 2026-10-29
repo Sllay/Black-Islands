@@ -127,7 +127,14 @@ static func validate_snapshot(data: Dictionary) -> Error:
 	var defense: Variant = data.stats.get("defense")
 	if not (defense is float or defense is int) or not is_finite(float(defense)) or defense < 0 or defense > 10000:
 		return ERR_INVALID_DATA
-	return OK
+	return _validate_surface(data)
+
+static func _validate_surface(data: Dictionary) -> Error:
+	if not data.has("surface"):
+		return OK
+	if not data.surface is Dictionary:
+		return ERR_INVALID_DATA
+	return SurfaceSaveValidator.validate(data.surface,data.inventory)
 
 static func _vector(value: Variant) -> bool:
 	if not value is Array or value.size() != 3:
