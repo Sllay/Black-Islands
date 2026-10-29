@@ -17,13 +17,13 @@ var _near := PhysicsShapeQueryParameters3D.new()
 func configure(body: CharacterBody3D, camera_rig: PlayerCameraRig) -> void:
 	actor = body
 	rig = camera_rig
-	_ray.collision_mask = 1 | 4 | 8
+	_ray.collision_mask = 1 | 4 | 8 | 16
 	_ray.collide_with_areas = true
 	_ray.exclude = [actor.get_rid()]
 	var shape := SphereShape3D.new()
 	shape.radius = 2.5
 	_near.shape = shape
-	_near.collision_mask = 4 | 8
+	_near.collision_mask = 4 | 8 | 16
 	_near.collide_with_areas = true
 	_near.exclude = [actor.get_rid()]
 
@@ -66,6 +66,8 @@ func probe(facing: Vector3) -> TargetResult:
 func _kind(entity: Node3D) -> TargetResult.Kind:
 	if entity.is_in_group("combat_targets"):
 		return TargetResult.Kind.COMBAT_TARGET
+	if entity.is_in_group("build_surfaces"):
+		return TargetResult.Kind.BUILD_GRID
 	if entity.is_in_group("interactables"):
 		return TargetResult.Kind.INTERACTABLE
 	return TargetResult.Kind.BUILD_GRID if rig.build_mode else TargetResult.Kind.TERRAIN

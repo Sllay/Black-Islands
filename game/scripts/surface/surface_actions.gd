@@ -1,0 +1,127 @@
+class_name SurfaceActions
+extends RefCounted
+## Production intents compose domain operations; UI never edits inventories/state.
+var runtime: SurfaceRuntime
+var selected_structure := "foundation"
+var tier := "wood"
+var rotation := 0
+
+func _init(surface: SurfaceRuntime) -> void:
+	runtime = surface
+
+func primary() -> void:
+	var item := runtime.player.inventory.state.active_definition()
+	if item == null:
+		return
+	var target := runtime.player.targeter.current
+	if item.category == "BUILDING_PIECE":
+		build_at(snap_cell(target))
+		return
+	if item.id in SurfaceCatalog.data().tools:
+		if target.entity is PropActor:
+			runtime.harvest_prop(target.entity.spawn_id,runtime.player)
+		return
+	var point := target.world_position
+	var key := SurfaceLedger.cell_key(point)
+	if target.entity is SurfaceObject and target.entity.role == "farm":
+		key = target.entity.object_id
+	if item.id == "bi.tool.watering_can":
+		runtime.farms.water(key)
+	elif item.id == "bi.tool.hoe":
+		if runtime.farms.plots.has(key):
+			farm_interact(key)
+		else:
+			if target.kind not in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID] or target.normal.y < .8:
+				runtime.message.emit("Escolha solo plano e livre.")
+				return
+			var cell := WorldCoordinates.world_to_cell(point)
+			if runtime.building.occupancy.has(SupportGraph.slot("foundation",cell)) or runtime.ledger.suppressed(point):
+				runtime.message.emit("Este solo está ocupado.")
+				return
+			var material := runtime.terrain.material_at(point)
+			if material not in [1,2] or runtime.session.edits.apply(point,.55,true,2) != OK:
+				runtime.message.emit("O solo ainda não pode ser preparado.")
+				return
+			var anchor := Vector3(cell.x+.5,point.y+.02,cell.z+.5)
+			runtime.farms.till(anchor,true,material)
+			runtime.refresh(anchor)
+	elif item.id == "bi.tool.shovel":
+		if target.kind in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID] and runtime.session.edits.apply(point,.7,true,2) == OK:
+			runtime.ledger.suppress(point,"path")
+			runtime.refresh(point)
+	runtime.objects.reconcile()
+
+func snap_cell(target: TargetResult) -> Vector3i:
+	if not target.entity is SurfaceObject or target.entity.role != "structure":
+		var point := target.build_cell
+		if selected_structure in ["foundation","pillar","chest"]:
+			point.y = roundi(target.world_position.y)
+		return point
+	var source: Dictionary = runtime.building.pieces.get(target.entity.object_id,{})
+	if source.is_empty():
+		return target.build_cell
+	var base := SupportGraph.cell(source)
+	var relative := target.world_position-Vector3(base)-Vector3(.5,0,.5)
+	var direction := Vector3i.RIGHT if relative.x >= 0 else Vector3i.LEFT
+	if absf(relative.z) > absf(relative.x):
+		direction = Vector3i.BACK if relative.z >= 0 else Vector3i.FORWARD
+	if selected_structure == "wall":
+		if source.definition == "wall":
+			rotation = int(source.rotation)
+			return base+Vector3i.UP*2
+		rotation = [Vector3i.RIGHT,Vector3i.BACK,Vector3i.LEFT,Vector3i.FORWARD].find(direction)
+		return base
+	if source.definition in ["pillar","wall"]:
+		return base+Vector3i.UP*2
+	return base if selected_structure == "pillar" else base+direction
+
+func farm_interact(key: String) -> void:
+	if not runtime.farms.plots.has(key):
+		return
+	var plot: Dictionary = runtime.farms.plots[key]
+	if plot.seed_id.is_empty():
+		var error := runtime.farms.plant(key,runtime.player.inventory.state)
+		runtime.message.emit("Semente plantada. Use o regador." if error == OK else "Você precisa de sementes de nabo.")
+	elif plot.growth_progress >= 1:
+		runtime.deliver(runtime.farms.harvest(key),Vector3(plot.position[0],plot.position[1],plot.position[2]))
+		runtime.message.emit("Colheita recolhida.")
+	else:
+		runtime.message.emit("Nabo • crescimento %d%% • água %s" % [plot.growth_progress*100,"disponível" if plot.moisture_deadline > runtime.ledger.clock else "necessária"])
+	runtime.objects.reconcile()
+
+func build_at(cell: Vector3i) -> Error:
+	if selected_structure == "chest":
+		var point := Vector3(cell)+Vector3(.5,.05,.5)
+		if not runtime.ground_contact(cell) or InventoryTransactions.pay(runtime.player.inventory.state,{"bi.resource.wood":8}) != OK:
+			return ERR_UNAVAILABLE
+		var chest_id := runtime.ledger.new_id("chest")
+		runtime.containers.create(chest_id,point)
+		runtime.objects.reconcile()
+		return OK
+	var id := runtime.ledger.new_id("structure")
+	var error := runtime.building.place(id,selected_structure,cell,rotation,tier)
+	if error != OK:
+		runtime.message.emit("Sem suporte válido ou espaço livre.")
+		return error
+	var costs: Dictionary = SurfaceCatalog.data().structures[selected_structure].cost.duplicate()
+	for item: String in costs:
+		costs[item] = ceili(float(costs[item])*float(SurfaceCatalog.data().tiers[tier].cost_multiplier))
+	error = InventoryTransactions.pay(runtime.player.inventory.state,costs)
+	if error != OK:
+		runtime.building.remove(id)
+		runtime.message.emit("Faltam madeira/pedra.")
+		return error
+	if selected_structure == "foundation":
+		var position := Vector3(cell)+Vector3(.5,.05,.5)
+		runtime.ledger.suppress(position,"foundation:"+id)
+		runtime.refresh(position)
+	runtime.objects.reconcile()
+	return OK
+
+func demolish(id: String) -> void:
+	for row: Dictionary in runtime.building.remove(id):
+		if row.definition == "foundation":
+			var point := Vector3(SupportGraph.cell(row))+Vector3(.5,.05,.5)
+			runtime.ledger.release(point,"foundation:"+row.id)
+			runtime.refresh(point)
+	runtime.objects.reconcile()

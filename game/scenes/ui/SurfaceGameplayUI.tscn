@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bkbopsuup0xl"]
+
+[ext_resource type="Script" path="res://scripts/ui/surface_ui.gd" id="1_dphxt"]
+
+[node name="SurfaceGameplayUI" type="CanvasLayer" unique_id=691942266]
+script = ExtResource("1_dphxt")

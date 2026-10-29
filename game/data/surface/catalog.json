@@ -451,5 +451,137 @@
   "hide_points": {
     "bi.resource.light_hide": 1,
     "bi.resource.heavy_hide": 2
+  },
+  "crop": {
+    "crop_id": "bi.crop.turnip",
+    "seed_item_id": "bi.seed.turnip",
+    "growth_days": 2,
+    "growth_stages": 4,
+    "harvest_item": "bi.food.turnip",
+    "harvest_amount": 3,
+    "seed_return": 2,
+    "water_requirement": 1,
+    "fertilizer_response": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "return_seed_on_break": true
+  },
+  "structures": {
+    "foundation": {
+      "id": "foundation",
+      "domain": "CELL",
+      "cost": {
+        "bi.resource.wood": 8,
+        "bi.resource.stone": 2
+      },
+      "dimensions": [
+        1,
+        0.2,
+        1
+      ],
+      "sockets": [
+        "FLOOR_SIDE",
+        "WALL_BOTTOM",
+        "CENTER"
+      ]
+    },
+    "wall": {
+      "id": "wall",
+      "domain": "EDGE",
+      "cost": {
+        "bi.resource.wood": 6,
+        "bi.resource.stone": 0
+      },
+      "dimensions": [
+        0.12,
+        2,
+        1
+      ],
+      "sockets": [
+        "WALL_BOTTOM",
+        "WALL_TOP"
+      ]
+    },
+    "ceiling": {
+      "id": "ceiling",
+      "domain": "CELL",
+      "cost": {
+        "bi.resource.wood": 4,
+        "bi.resource.stone": 0
+      },
+      "dimensions": [
+        1,
+        0.15,
+        1
+      ],
+      "sockets": [
+        "FLOOR_SIDE",
+        "CENTER"
+      ]
+    },
+    "pillar": {
+      "id": "pillar",
+      "domain": "POINT",
+      "cost": {
+        "bi.resource.wood": 6,
+        "bi.resource.stone": 1
+      },
+      "dimensions": [
+        0.2,
+        2,
+        0.2
+      ],
+      "sockets": [
+        "PILLAR_BOTTOM",
+        "PILLAR_TOP"
+      ]
+    }
+  },
+  "tiers": {
+    "thatch": {
+      "hp": 80,
+      "durability": 80,
+      "resistance": 0,
+      "cost_multiplier": 0.5,
+      "visual": "thatch"
+    },
+    "wood": {
+      "hp": 200,
+      "durability": 200,
+      "resistance": 10,
+      "cost_multiplier": 1,
+      "visual": "wood"
+    },
+    "stone": {
+      "hp": 500,
+      "durability": 500,
+      "resistance": 30,
+      "cost_multiplier": 2,
+      "visual": "stone"
+    },
+    "darkstone": {
+      "hp": 800,
+      "durability": 800,
+      "resistance": 50,
+      "cost_multiplier": 3,
+      "visual": "darkstone"
+    },
+    "scrap": {
+      "hp": 900,
+      "durability": 900,
+      "resistance": 60,
+      "cost_multiplier": 4,
+      "visual": "scrap"
+    },
+    "iron": {
+      "hp": 1200,
+      "durability": 1200,
+      "resistance": 80,
+      "cost_multiplier": 5,
+      "visual": "iron"
+    }
   }
 }

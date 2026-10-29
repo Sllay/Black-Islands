@@ -18,7 +18,7 @@ var _ray := PhysicsRayQueryParameters3D.new()
 
 func _ready() -> void:
 	reset_anchor()
-	_ray.collision_mask = 1
+	_ray.collision_mask = 1 | 16
 	_ray.exclude = [actor.get_rid()]
 
 func reset_anchor() -> void:
