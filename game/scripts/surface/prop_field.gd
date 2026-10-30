@@ -14,9 +14,11 @@ func biome(point: Vector3) -> String:
 		return "CENTRAL_FOREST"
 	return "TROPICAL_HILLS" if point.y > 17.0 else "TROPICAL_PLAINS"
 
-func candidates(patch: Vector2i) -> Array[Dictionary]:
+func candidates(patch: Vector2i, include_decorative: bool = true) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for definition: Dictionary in SurfaceCatalog.data().props:
+		if not include_decorative and definition.harvest.is_empty():
+			continue
 		var rng := RandomNumberGenerator.new()
 		rng.seed = (str(field.world_seed)+":"+str(field.generation_version)+":"+str(patch)+":"+definition.id).hash()
 		var cluster := Vector2.ZERO

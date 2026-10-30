@@ -116,6 +116,7 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	foliage = FoliagePresenter.new()
 	foliage.runtime = self
 	add_child(foliage)
+	player.combat.attack_started.connect(func(_attack: String,_instance: int) -> void: foliage.cut(player.global_position+player.motor.facing*1.2,1.4))
 	objects = SurfaceObjects.new()
 	objects.runtime = self
 	add_child(objects)
@@ -271,9 +272,9 @@ func refresh(point: Vector3) -> void:
 	foliage.invalidate(AABB(point-Vector3(1,2,1),Vector3(3,4,3)))
 
 func terrain_changed(area: AABB) -> void:
-	for key: Vector2i in foliage.patches:
-		if AABB(Vector3(key.x*16,-128,key.y*16),Vector3(16,384,16)).intersects(area):
-			edited_patches[key] = true
+	for z: int in range(floori(area.position.z/16),floori(area.end.z/16)+1):
+		for x: int in range(floori(area.position.x/16),floori(area.end.x/16)+1):
+			edited_patches[Vector2i(x,z)] = true
 	await get_tree().create_timer(.5).timeout
 	foliage.invalidate(area)
 	for key: String in farms.plots.keys():
@@ -341,8 +342,8 @@ func report() -> Dictionary:
 		bags += int(row.kind in ["WorldDropBag","DeathBagInventory"])
 	for patch: Node3D in foliage.patches.values():
 		batches += patch.get_child_count()
-	return {"biome":field.biome(player.global_position),"instances":foliage.instances,
-		"grass":foliage.grass_instances,"visible_props":foliage.instances-foliage.grass_instances,
+	return {"biome":field.biome(player.global_position),"instances":foliage.instances+foliage.grass_instances,
+		"grass":foliage.grass_instances,"visible_props":foliage.instances,"native_foliage":foliage.report(),
 		"multimeshes":batches,"patches":foliage.patches.size(),"colliders":foliage.actors.size(),
 		"patch_updates":foliage.patch_updates,"prop_deltas":ledger.props.size(),"destroyed":exhausted,
 		"bags":bags,"farms":farms.plots.size(),"structures":building.pieces.size(),

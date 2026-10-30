@@ -1,0 +1,9 @@
+# Native foliage foundation
+
+VoxelInstancer is the direct child of VoxelLodTerrain; it receives native mesh block events and emits disposable grass/decorations. Grass uses terrain LOD0, native mesh LOD3/2/1 crossed cutout cards, material/slope/height/noise filters and native series SDF snapping. No blade scripts/colliders or generated transforms are saved. Meshes/alpha texture are cached once; the project had no standalone grass texture, so GrassGeometry authors a small cutout atlas, mipmaps and alpha-coverage correction. No external asset/license was added.
+
+World-space vertex wind and at most5near actors deform near foliage. A bounded128m R8 suppression window is updated on ledger changes or32m viewer movement. Native sphere removal responds immediately; the ledger mask prevents regrowth after stream reload. Cut-only records do not suppress resource props. Regrowth uses existing3–6day deadlines. RD renderers use native block fading; Compatibility uses stable screen-door distance fade without unsupported instance uniforms. Native mesh LOD uses camera distance, so both Overview and Shoulder need validation.
+
+Persistent resources retain original16m candidate strata, seed/definition/index IDs and harvest domain. Their presentation aggregates into at most9resident64m regions, built from worker-prepared candidates. Near9m adapters supply collision/interaction only. Edits recheck only touched logical patches; no repeated global terrain raycasts. Rendering and simulation are independent of persistence. Region/viewer hysteresis keeps nearby objects resident behind the camera. Quality data controls density, ranges, wind, interaction and prop envelope; no gameplay truth depends on quality.
+
+Instance counts report resident instances, not visible blades. Native blocks are bounded batches. Actual draw calls/node counts/memory and frame samples must come from runtime profiling; desktop software rendering is not physical mobile evidence.

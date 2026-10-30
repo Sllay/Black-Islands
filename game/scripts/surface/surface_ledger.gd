@@ -22,6 +22,8 @@ func suppress(point: Vector3, reason: String) -> void:
 	var key := cell_key(point)
 	if not suppression.has(key):
 		suppression[key] = {"reasons":[],"regrow_at":0.0}
+	if reason != "cut":
+		suppression[key].erase("foliage_only")
 	if reason not in suppression[key].reasons:
 		suppression[key].reasons.append(reason)
 		changed.emit("suppression",key)
@@ -33,8 +35,10 @@ func release(point: Vector3, reason: String) -> void:
 		suppression[key].regrow_at = clock+DAY*(3.0+float(posmod(key.hash(),3000))/1000.0)
 		changed.emit("suppression",key)
 
-func suppressed(point: Vector3) -> bool:
+func suppressed(point: Vector3, include_foliage_only: bool = true) -> bool:
 	var row: Dictionary = suppression.get(cell_key(point),{})
+	if not include_foliage_only and row.get("foliage_only",false):
+		return false
 	return not row.is_empty() and (not row.reasons.is_empty() or clock < float(row.regrow_at))
 
 func snapshot() -> Dictionary:

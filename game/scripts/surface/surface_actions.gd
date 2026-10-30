@@ -46,7 +46,7 @@ func primary() -> void:
 				runtime.message.emit("Escolha solo plano e livre.")
 				return
 			var cell := WorldCoordinates.world_to_cell(point)
-			if runtime.building.occupancy.has(SupportGraph.slot("foundation",cell)) or runtime.ledger.suppressed(point):
+			if runtime.building.occupancy.has(SupportGraph.slot("foundation",cell)) or runtime.ledger.suppressed(point,false):
 				runtime.message.emit("Este solo está ocupado.")
 				return
 			var material := runtime.terrain.material_at(point)

@@ -40,3 +40,10 @@ func strikes() -> void:
 	print("R2_STRIKES ",JSON.stringify(strike_result))
 func io_report() -> Dictionary:
 	return {"io":saver.store.io_report(),"queue":saver.edits.queue_report(),"strikes":strike_result}
+
+func quality(name_value: String, active: bool = true) -> void:
+	surface.foliage.apply_quality(name_value,active)
+
+func view(shoulder: bool) -> void:
+	baseline.pawn.camera_rig.benchmark_legacy = false
+	baseline.pawn.camera_rig.gameplay_mode = PlayerCameraRig.GameplayMode.SHOULDER if shoulder else PlayerCameraRig.GameplayMode.OVERVIEW
