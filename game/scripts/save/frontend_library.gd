@@ -32,7 +32,7 @@ func create_world(slot: int, title: String, seed_value: int) -> Error:
 		return ERR_ALREADY_IN_USE
 	var id := Crypto.new().generate_random_bytes(16).hex_encode()
 	return doc.commit({"world_id":id,"save_id":id,"display_name":title.strip_edges(),"world_seed":seed_value,
-		"world_generation_version":IslandField.VERSION,"world_profile":IslandField.PROFILE_ID,"difficulty":"Normal",
+		"world_generation_version":WorldGenerationProfile.VERSION,"world_profile":WorldGenerationProfile.ID,"difficulty":"Normal",
 		"created_at":Time.get_datetime_string_from_system(true)+"Z","played_seconds":0.0,"world_clock":0.0,"generated":false})
 
 func edit_world(slot: int, title: String, seed_value: int) -> Error:

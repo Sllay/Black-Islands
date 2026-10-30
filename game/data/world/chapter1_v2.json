@@ -1,0 +1,97 @@
+{
+  "profile_id": "chapter1_native_960m_v2",
+  "generation_version": 2,
+  "dimensions_m": [
+    960,
+    850
+  ],
+  "sea_level": 0,
+  "lowland_height": 8,
+  "elevation_step": 6,
+  "natural_levels": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "terraform_levels": [
+    -3,
+    6
+  ],
+  "coastline": {
+    "beach_start": 0.82,
+    "sea_radius": 1.0,
+    "deep_radius": 1.4,
+    "irregularity": 0.055
+  },
+  "lowland_ratio": 0.64,
+  "highland_ratio": 0.36,
+  "highland_radius": 0.7,
+  "plateau_blend": 0.065,
+  "domain_warp": {
+    "amplitude_m": 28,
+    "frequency": 0.0045,
+    "octaves": 2
+  },
+  "macro_frequency": 0.004,
+  "beach_width_m": 32,
+  "river": {
+    "probability": 0.65,
+    "width_m": [
+      6,
+      11
+    ],
+    "depth_levels": [
+      1,
+      2
+    ],
+    "trace_step_m": 24,
+    "max_segments": 32
+  },
+  "lakes": {
+    "count": [
+      1,
+      2
+    ],
+    "radius_m": [
+      24,
+      43
+    ],
+    "depth_levels": [
+      1,
+      3
+    ],
+    "bank_width_m": 14
+  },
+  "deep_ocean_level": -20,
+  "biomes": {
+    "beach_max_height": 3.5,
+    "hills_min_height": 17,
+    "forest_radius_ratio": 0.58
+  },
+  "props": {
+    "seed_version": 2,
+    "patch_m": 16
+  },
+  "village": {
+    "candidate_spacing_m": 48,
+    "footprint_m": 40,
+    "max_slope_degrees": 9,
+    "minimum_height_m": 4,
+    "minimum_water_distance_m": 12
+  },
+  "metadata_sample_m": 4,
+  "native": {
+    "mesh_block_voxels": 32,
+    "data_block_voxels": 16,
+    "lod_count": 4,
+    "lod_distance_voxels": 64
+  },
+  "boundary": {
+    "soft_start_m": 660,
+    "soft_end_m": 800,
+    "hard_limit_m": 920,
+    "floor_m": -160
+  }
+}

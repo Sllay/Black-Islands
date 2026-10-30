@@ -37,6 +37,9 @@ func _ready() -> void:
 	var profile := Profiles.current_profile()
 	if profile.is_empty():
 		return
+	if not WorldGenerationProfile.supported(int(profile.get("world_generation_version",0)),str(profile.get("world_profile",""))):
+		_show_load_error(ERR_UNAVAILABLE)
+		return
 	var storage_root := "user://worlds" if Profiles.store.directory == "user://profiles" else "user://qa_worlds"
 	if Profiles.world_slot > 0:
 		frontend_save = FrontendSessionSave.new()
@@ -65,7 +68,8 @@ func _ready() -> void:
 			_show_load_error(error)
 			return
 	terrain = load("res://scenes/world/WorldTerrain.tscn").instantiate()
-	terrain.field = IslandField.new(int(profile.world_seed))
+	terrain.field = WorldGenerationProfile.field(int(profile.world_seed),int(profile.world_generation_version),str(profile.world_profile))
+	WorldBoundary.configure_field(terrain.field)
 	terrain.deltas = store
 	add_child(terrain)
 	water = WorldWater.new()
@@ -89,8 +93,14 @@ func _ready() -> void:
 	add_child(streamer)
 	_create_surface()
 	GameSettings.apply_scene(self)
-	var lake := terrain.field.lake_body()
-	$Lake.position = Vector3(lake.center.x,lake.level,lake.center.y)
+	if terrain.field is WorldFieldV2:
+		$Lake.visible = false
+		var waters := GeneratedWaterView.new()
+		waters.field = terrain.field
+		add_child(waters)
+	else:
+		var lake := terrain.field.lake_body()
+		$Lake.position = Vector3(lake.center.x,lake.level,lake.center.y)
 	if OS.is_debug_build():
 		_create_tools()
 		_create_player_qa()
@@ -173,7 +183,7 @@ func _observe_edit(operation: Dictionary, before_y: float) -> void:
 func session_report() -> Dictionary:
 	if terrain == null:
 		return {"ready": false}
-	return {"seed": terrain.field.world_seed, "generation": IslandField.VERSION, "profile": IslandField.PROFILE_ID,
+	return {"seed": terrain.field.world_seed, "generation": terrain.field.generation_version, "profile": terrain.field.profile_id,
 		"ready_ms": ready_ms, "ring": streamer.metrics(), "terrain": terrain.statistics(), "delta": store.metrics(),
 		"remesh_confirmations": remesh_confirmations, "collision_confirmations": collision_confirmations,
 		"last_edit": last_edit, "water": water.sample(pawn.global_position), "water_dirty": water.dirty_notifications}

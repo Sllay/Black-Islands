@@ -5,6 +5,8 @@ extends RefCounted
 const VERSION := 1
 const PROFILE_ID := "chapter1_iteration_480m_v1"
 var world_seed: int
+var generation_version := VERSION
+var profile_id := PROFILE_ID
 var radius := Vector2(240.0, 210.0)
 var noise := FastNoiseLite.new()
 

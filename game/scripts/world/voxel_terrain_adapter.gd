@@ -5,15 +5,15 @@ extends Node3D
 signal region_changed(area: AABB)
 var field := IslandField.new()
 var native: VoxelLodTerrain
-var generator: VoxelIslandGenerator
+var generator: VoxelGeneratorGraph
 var edit_requests: int = 0
 
 var deltas: WorldDeltaStore
 
 func _ready() -> void:
 	native = $Terrain
-	native.scale = Vector3.ONE * WorldCoordinates.VOXEL_SIZE
-	native.voxel_bounds = AABB(Vector3(-512, -256, -512), Vector3(1024, 512, 1024))
+	native.scale = Vector3.ONE*WorldCoordinates.VOXEL_SIZE
+	native.voxel_bounds = AABB(Vector3(-2048,-512,-2048),Vector3(4096,1024,4096)) if field is WorldFieldV2 else AABB(Vector3(-512,-256,-512),Vector3(1024,512,1024))
 	native.mesh_block_size = 32
 	native.lod_count = 4
 	native.lod_distance = 64
@@ -21,16 +21,24 @@ func _ready() -> void:
 	native.streaming_system = VoxelLodTerrain.STREAMING_SYSTEM_CLIPBOX
 	native.collision_lod_count = 1
 	native.collision_update_delay = 16
-	native.collision_layer = 1
+	native.collision_layer = CollisionLayers.WORLD
 	native.cache_generated_blocks = true
 	var mesher := VoxelMesherTransvoxel.new()
 	mesher.texturing_mode = VoxelMesherTransvoxel.TEXTURES_MIXEL4_S4
 	mesher.textures_ignore_air_voxels = true
 	native.mesher = mesher
 	native.material = load("res://resources/world/TerrainMaterial.tres")
-	generator = VoxelIslandGenerator.new()
-	generator.field = field
-	generator.deltas = deltas
+	if field is WorldFieldV2:
+		generator = field.graph
+	else:
+		var builder := NativeTerrainGraph.new()
+		var result := builder.build_legacy(field)
+		assert(result.success,str(result))
+		generator = builder.generator
+	var stream := VoxelDeltaStream.new()
+	stream.base = generator
+	stream.deltas = deltas
+	native.stream = stream
 	native.generator = generator
 
 func is_editable(center: Vector3, radius: float) -> bool:
@@ -102,7 +110,7 @@ func density_at(world_position: Vector3) -> float:
 func capture_samples(origin: Vector3i, extent: Vector3i) -> Dictionary:
 	var buffer := VoxelBuffer.new()
 	buffer.create(extent.x, extent.y, extent.z)
-	native.get_voxel_tool().copy(origin, buffer, generator._get_used_channels_mask())
+	native.get_voxel_tool().copy(origin, buffer, NativeTerrainGraph.CHANNELS)
 	var result: Dictionary = {}
 	for z: int in range(extent.z):
 		for x: int in range(extent.x):
@@ -132,7 +140,7 @@ func restore_samples(origin: Vector3i, extent: Vector3i, samples: Dictionary) ->
 		for index: int in range(4):
 			weights |= int(sample.materials[index]) << (index * 4)
 		buffer.set_voxel(weights, cell.x, cell.y, cell.z, VoxelBuffer.CHANNEL_WEIGHTS)
-	native.get_voxel_tool().paste(origin, buffer, generator._get_used_channels_mask())
+	native.get_voxel_tool().paste(origin, buffer, NativeTerrainGraph.CHANNELS)
 
 func collision_data_ready(world_point: Vector3) -> bool:
 	var point := native.to_local(world_point)

@@ -64,7 +64,7 @@ func _prepare(target: Vector3i) -> void:
 				layers[0] = true
 			for y: int in layers:
 				var coord := Vector3i(x, y, z)
-				result.append({"coord": coord, "seed": field.world_seed, "generation": IslandField.VERSION,
+				result.append({"coord": coord, "seed": field.world_seed, "generation": field.generation_version,
 					"forest": field.forest_weight(Vector3(x * 64 + 32, 0, z * 64 + 32)), "implicit_volume": true})
 	_prepared = result
 

@@ -7,7 +7,8 @@ func _init(source: IslandField) -> void:
 	field = source
 
 func biome(point: Vector3) -> String:
-	if point.y < 5.0:
+	var beach_height: float = field.profile.biomes.beach_max_height if field is WorldFieldV2 else 5.0
+	if point.y < beach_height:
 		return "BEACH"
 	if field.forest_weight(point) > 0.32:
 		return "CENTRAL_FOREST"
@@ -17,7 +18,7 @@ func candidates(patch: Vector2i) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for definition: Dictionary in SurfaceCatalog.data().props:
 		var rng := RandomNumberGenerator.new()
-		rng.seed = (str(field.world_seed)+":1:"+str(patch)+":"+definition.id).hash()
+		rng.seed = (str(field.world_seed)+":"+str(field.generation_version)+":"+str(patch)+":"+definition.id).hash()
 		var cluster := Vector2.ZERO
 		for index: int in int(definition.density):
 			if index % int(definition.cluster_count) == 0:
@@ -32,7 +33,7 @@ func candidates(patch: Vector2i) -> Array[Dictionary]:
 				continue
 			var point := Vector3(x,y,z)
 			var coast_distance := maxf(0,(1.0-Vector2(x/field.radius.x,z/field.radius.y).length())*minf(field.radius.x,field.radius.y))
-			var water_distance := minf(coast_distance,absf(Vector2(x+72,z-48).length()-15.0))
+			var water_distance: float = field.water_distance(Vector2(x,z)) if field is WorldFieldV2 else minf(coast_distance,absf(Vector2(x+72,z-48).length()-15.0))
 			if water_distance < definition.distance_to_water[0] or water_distance > definition.distance_to_water[1]:
 				continue
 			var region := biome(point)
@@ -43,8 +44,9 @@ func candidates(patch: Vector2i) -> Array[Dictionary]:
 			var dz := field.top_surface(x,z+0.5)-field.top_surface(x,z-0.5)
 			if rad_to_deg(atan(Vector2(dx,dz).length())) > definition.max_slope or rng.randf() > definition.rarity:
 				continue
-			if Vector2(x+72,z-48).length() < 16 or Vector2(x,z).length() < 3:
+			var under_water: bool = y < float(field.water_at(Vector2(x,z)).level)+.1 if field is WorldFieldV2 else Vector2(x+72,z-48).length() < 16
+			if under_water or Vector2(x,z).length() < 3:
 				continue # Spawn corridor and sleeping lake exclusion.
-			result.append({"id":"p1:%d:%d:%d:%s:%d" % [field.world_seed,patch.x,patch.y,definition.id,index],
+			result.append({"id":"p%d:%d:%d:%d:%s:%d" % [field.generation_version,field.world_seed,patch.x,patch.y,definition.id,index],
 				"definition":definition.id,"point":[x,y,z],"yaw":rng.randf_range(-PI,PI),"scale":rng.randf_range(0.85,1.15),"biome":region})
 	return result

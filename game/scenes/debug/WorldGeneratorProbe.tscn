@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dn41wcnb0cr4k"]
+
+[ext_resource type="Script" uid="uid://didk1ioh0n83r" path="res://scripts/debug/world_generator_probe.gd" id="1_cvxlr"]
+
+[node name="WorldGeneratorProbe" type="Node3D" unique_id=805969859]
+script = ExtResource("1_cvxlr")
