@@ -1,0 +1,27 @@
+{
+  "classification": "EXTERNAL DEPENDENCY WARNING",
+  "dependency": "Voxel Tools 1.7/v1.7x",
+  "non_fatal": true,
+  "reproducible": true,
+  "not_introduced_by_water_foundation": true,
+  "message": "Tried to save instance block, but VoxelStreamScript does not support them.",
+  "native_source": "streams/save_block_data_task.cpp:118",
+  "pinned_archive_sha256": "600737572a5e25541ba6f503e842a3717ba19afafa5474510a6ceff995a1d2d8",
+  "repro": {
+    "scene": "res://tests/integration/Rc0R3WaterWorld.tscn",
+    "mcp_run": "43860b06",
+    "steps": [
+      "qa_river",
+      "qa_strike (OK)",
+      "qa_lake (stream-out edited region)",
+      "godot_run_output: errors=0 warnings=1"
+    ]
+  },
+  "unchanged_since_r2": [
+    "game/scripts/world/voxel_delta_stream.gd",
+    "game/scripts/surface/native_foliage.gd",
+    "game/scripts/world/terrain_edit_service.gd",
+    "game/scripts/world/voxel_terrain_adapter.gd"
+  ],
+  "disposition": "Open dependency issue. No pin change, global warning suppression, or global foliage rebuild. Formal zero-warning waiver remains with project owner."
+}

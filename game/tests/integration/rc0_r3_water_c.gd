@@ -232,6 +232,8 @@ func _fairness() -> void:
 	test_domain.grid.initial_water = func(_p: Vector3) -> Dictionary: return {"kind":"lake","level":1}
 	var a := test_domain.grid.ensure_tile(Vector2i.ZERO)
 	var b := test_domain.grid.ensure_tile(Vector2i.RIGHT)
+	b.depth[24] = 3.0
+	b.previous[24] = 1.0
 	add_child(test_domain)
 	test_domain.set_process(false)
 	var view := WaterRenderer.new()
@@ -243,5 +245,9 @@ func _fairness() -> void:
 		b.revision += 1
 		view._process(.016)
 	check(view.views.size() == 2 and view.views[Vector2i.ZERO].revision >= 7 and view.views[Vector2i.RIGHT].revision >= 7,"render budget cannot starve a later active tile")
+	var left: Image = view.views[Vector2i.ZERO].state.get_image()
+	var right: Image = view.views[Vector2i.RIGHT].state.get_image()
+	check(left.get_pixel(8,3) == right.get_pixel(0,3),"shared edge current/previous/depth state is identical")
+	check(view.views[Vector2i.ZERO].material.get_shader_parameter("blend") == view.views[Vector2i.RIGHT].material.get_shader_parameter("blend"),"shared interpolation phase is identical")
 	view.free()
 	test_domain.free()

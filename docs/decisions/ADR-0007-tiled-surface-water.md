@@ -1,6 +1,6 @@
 # ADR-0007 — Tiled surface water and reconstructible checkpoints
 
-Status: implemented for R3 C01; final acceptance remains blocked by the native warning described below.
+Status: C01 FUNCTIONALLY COMPLETE; formal zero-warning acceptance blocked only by the EXTERNAL DEPENDENCY WARNING below.
 
 Terrain remains the native voxel/SDF authority. Inland water is a separate heightfield, initialized from the saved generator version/seed/profile hydrology. `WaterGrid` and `WaterTile` are pure data; `WorldWater` is the gameplay facade. No structure becomes a hydraulic barrier. Caves/stacked aquifers and full fluid physics are out of scope.
 
@@ -12,7 +12,9 @@ Surface differences transfer depth using double-buffered changes. Four outgoing 
 
 Presentation is grouped by tile plus one waterfall mesh. Static tile geometry reads synchronized float state/flow textures (26,136bytes/tile), so adjacent edges update together and moving water does not rebuild geometry each step. It uses depth/flow data, fixed-state visual interpolation, displaced small waves, cutout shoreline foam and at most four shader interaction emitters. Low/Medium/High change wave/foam/emitter budgets only. No screen-space effect or Forward+-only feature is required. Far ocean rendering never allocates solver cells. Shared `WaterMotion` provides bounded buoyancy/current and speed scaling, separate from land combat/motor authority. Finite watering-can litres use the existing item instance/revision system; refill removes the equivalent small m³ volume from resident freshwater.
 
-## Pinned upstream warning / acceptance blocker
+## External pinned dependency warning / formal gate
+
+EXTERNAL DEPENDENCY WARNING — Voxel Tools1.7/v1.7x, non-fatal, reproducible, not introduced by Water Foundation.
 
 Voxel Tools v1.7x `VoxelInstancer::on_area_edited` marks instance blocks modified even when every library item is non-persistent. Stream-out schedules an empty instance save; `VoxelStreamScript` exposes no instance-block persistence API and emits `Tried to save instance block, but VoxelStreamScript does not support them.` The disposable instances are not save truth (project suppression/domain state remains durable). Public APIs offer no local modified-flag clear. Replacing the instancer/library after each edit would globally regenerate foliage and violates R2's local-update budget. Suppressing the warning would hide the issue. No dependency pin was changed.
 

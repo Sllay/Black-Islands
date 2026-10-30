@@ -1,239 +1,160 @@
 {
-  "label": "DESKTOP SOFTWARE PROXY ONLY; llvmpipe; final source backend smoke with renderer ON/OFF uncapped passes. Not GPU-only timings, not mobile targets.",
+  "label": "DESKTOP SOFTWARE PROXY ONLY; llvmpipe; final static mesh/state-texture backend smoke with renderer ON/OFF uncapped passes. Not GPU-only timings or physical mobile targets.",
   "backends": {
     "gl_compatibility": {
       "active_solver": {
         "active_tiles": 1,
-        "array_bytes": 25600,
+        "array_bytes": 29696,
         "cells": 1024,
         "inactive_tiles": 0,
-        "max_ms": 31.709,
-        "mean_ms": 3.02349166666667,
-        "p95_ms": 3.672,
+        "max_ms": 5.735,
+        "mean_ms": 2.82348333333333,
+        "p95_ms": 3.592,
         "resident_tiles": 1,
         "samples": 120,
         "sleeping_tiles": 0,
         "solver_cells": 1024,
-        "solver_ms": 3.447,
+        "solver_ms": 2.822,
         "sources": 0,
-        "worst_ms": 31.709
+        "worst_ms": 5.735
       },
       "renderer_off": {
         "draw_calls": 1,
-        "max_ms": 13.0274141414142,
-        "mean_ms": 5.92146666666667,
+        "max_ms": 16.2831111111111,
+        "mean_ms": 6.24061296296296,
         "method": "gl_compatibility",
-        "p95_ms": 8.51600000000002,
+        "p95_ms": 10.4007777777778,
         "samples": 60
       },
       "renderer_on": {
         "draw_calls": 2,
-        "max_ms": 21.0463333333333,
-        "mean_ms": 8.72587777777777,
+        "max_ms": 22.277,
+        "mean_ms": 10.0350074074074,
         "method": "gl_compatibility",
-        "p95_ms": 17.1989696969697,
+        "p95_ms": 18.7503333333333,
         "samples": 60
       },
       "rendering": {
         "draw_calls": 2.0,
         "max_ms": 16.6666666666667,
-        "mean_ms": 16.6658277153558,
+        "mean_ms": 16.666404494382,
         "nodes": 9,
         "p95_ms": 16.6666666666667,
         "presentation": {
-          "last_mesh_ms": 5.06,
+          "last_mesh_ms": 0.031,
+          "state_texture_bytes": 26136,
           "tile_meshes": 1,
           "water_cells": 1024,
           "water_nodes": 3,
-          "worst_mesh_ms": 5.06
+          "worst_mesh_ms": 2.041
         },
         "render_objects": 2.0,
         "render_primitives": 2050.0,
         "rendering_method": "gl_compatibility",
         "samples": 89,
-        "static_memory_bytes": 62062184.0,
+        "static_memory_bytes": 62100453.0,
         "water": {
           "active_tiles": 0,
-          "array_bytes": 25600,
+          "array_bytes": 29696,
           "inactive_tiles": 0,
-          "mean_ms": 0.0285151515151515,
+          "mean_ms": 0.0391515151515152,
           "resident_tiles": 1,
           "sleeping_tiles": 1,
           "solver_cells": 0,
-          "solver_ms": 0.025,
+          "solver_ms": 0.026,
           "sources": 0,
-          "worst_ms": 0.116
+          "worst_ms": 0.386
         }
       },
       "sleeping_solver": {
         "active_tiles": 0,
-        "array_bytes": 25600,
+        "array_bytes": 29696,
         "cells": 1024,
         "inactive_tiles": 0,
-        "max_ms": 0.006,
-        "mean_ms": 0.00134166666666667,
-        "p95_ms": 0.002,
-        "resident_tiles": 1,
-        "samples": 120,
-        "sleeping_tiles": 1,
-        "solver_cells": 0,
-        "solver_ms": 0.001,
-        "sources": 0,
-        "worst_ms": 0.006
-      }
-    },
-    "mobile": {
-      "active_solver": {
-        "active_tiles": 1,
-        "array_bytes": 25600,
-        "cells": 1024,
-        "inactive_tiles": 0,
-        "max_ms": 6.305,
-        "mean_ms": 2.87694166666667,
-        "p95_ms": 3.982,
-        "resident_tiles": 1,
-        "samples": 120,
-        "sleeping_tiles": 0,
-        "solver_cells": 1024,
-        "solver_ms": 2.638,
-        "sources": 0,
-        "worst_ms": 6.305
-      },
-      "renderer_off": {
-        "draw_calls": 1,
-        "max_ms": 42.2380000000001,
-        "mean_ms": 19.4504283950617,
-        "method": "mobile",
-        "p95_ms": 33.524,
-        "samples": 60
-      },
-      "renderer_on": {
-        "draw_calls": 2,
-        "max_ms": 57.2189999999998,
-        "mean_ms": 24.62105,
-        "method": "mobile",
-        "p95_ms": 35.54,
-        "samples": 60
-      },
-      "rendering": {
-        "draw_calls": 2.0,
-        "max_ms": 46.8093333333333,
-        "mean_ms": 25.2519172462993,
-        "nodes": 9,
-        "p95_ms": 33.3333333333333,
-        "presentation": {
-          "last_mesh_ms": 3.482,
-          "tile_meshes": 1,
-          "water_cells": 1024,
-          "water_nodes": 3,
-          "worst_mesh_ms": 3.482
-        },
-        "render_objects": 2.0,
-        "render_primitives": 2050.0,
-        "rendering_method": "mobile",
-        "samples": 89,
-        "static_memory_bytes": 68991694.0,
-        "water": {
-          "active_tiles": 0,
-          "array_bytes": 25600,
-          "inactive_tiles": 0,
-          "mean_ms": 0.0280208333333333,
-          "resident_tiles": 1,
-          "sleeping_tiles": 1,
-          "solver_cells": 0,
-          "solver_ms": 0.023,
-          "sources": 0,
-          "worst_ms": 0.131
-        }
-      },
-      "sleeping_solver": {
-        "active_tiles": 0,
-        "array_bytes": 25600,
-        "cells": 1024,
-        "inactive_tiles": 0,
-        "max_ms": 0.005,
-        "mean_ms": 0.001325,
-        "p95_ms": 0.002,
+        "max_ms": 0.048,
+        "mean_ms": 0.00189166666666667,
+        "p95_ms": 0.003,
         "resident_tiles": 1,
         "samples": 120,
         "sleeping_tiles": 1,
         "solver_cells": 0,
         "solver_ms": 0.002,
         "sources": 0,
-        "worst_ms": 0.005
+        "worst_ms": 0.048
       }
     },
-    "forward_plus": {
+    "mobile": {
       "active_solver": {
         "active_tiles": 1,
-        "array_bytes": 25600,
+        "array_bytes": 29696,
         "cells": 1024,
         "inactive_tiles": 0,
-        "max_ms": 3.541,
-        "mean_ms": 2.71080833333333,
-        "p95_ms": 3.087,
+        "max_ms": 4.925,
+        "mean_ms": 2.73883333333333,
+        "p95_ms": 3.339,
         "resident_tiles": 1,
         "samples": 120,
         "sleeping_tiles": 0,
         "solver_cells": 1024,
-        "solver_ms": 3.008,
+        "solver_ms": 3.253,
         "sources": 0,
-        "worst_ms": 3.541
+        "worst_ms": 4.925
       },
       "renderer_off": {
         "draw_calls": 1,
-        "max_ms": 48.311,
-        "mean_ms": 20.8436444444444,
-        "method": "forward_plus",
-        "p95_ms": 28.2006666666667,
+        "max_ms": 34.5113333333333,
+        "mean_ms": 18.4778383838384,
+        "method": "mobile",
+        "p95_ms": 29.214,
         "samples": 60
       },
       "renderer_on": {
         "draw_calls": 2,
-        "max_ms": 46.8489090909091,
-        "mean_ms": 28.0496672839506,
-        "method": "forward_plus",
-        "p95_ms": 40.243,
+        "max_ms": 42.455,
+        "mean_ms": 28.2717777777778,
+        "method": "mobile",
+        "p95_ms": 39.3970000000018,
         "samples": 60
       },
       "rendering": {
         "draw_calls": 2.0,
-        "max_ms": 48.4739090909091,
-        "mean_ms": 26.3461872659176,
+        "max_ms": 47.111333333335,
+        "mean_ms": 24.5720449438202,
         "nodes": 9,
-        "p95_ms": 33.3333333333333,
+        "p95_ms": 34.7546666666667,
         "presentation": {
-          "last_mesh_ms": 3.489,
+          "last_mesh_ms": 0.034,
+          "state_texture_bytes": 26136,
           "tile_meshes": 1,
           "water_cells": 1024,
           "water_nodes": 3,
-          "worst_mesh_ms": 3.489
+          "worst_mesh_ms": 1.492
         },
         "render_objects": 2.0,
         "render_primitives": 2050.0,
-        "rendering_method": "forward_plus",
+        "rendering_method": "mobile",
         "samples": 89,
-        "static_memory_bytes": 74445522.0,
+        "static_memory_bytes": 69095168.0,
         "water": {
           "active_tiles": 0,
-          "array_bytes": 25600,
+          "array_bytes": 29696,
           "inactive_tiles": 0,
-          "mean_ms": 0.02854,
+          "mean_ms": 0.0244042553191489,
           "resident_tiles": 1,
           "sleeping_tiles": 1,
           "solver_cells": 0,
           "solver_ms": 0.027,
           "sources": 0,
-          "worst_ms": 0.117
+          "worst_ms": 0.047
         }
       },
       "sleeping_solver": {
         "active_tiles": 0,
-        "array_bytes": 25600,
+        "array_bytes": 29696,
         "cells": 1024,
         "inactive_tiles": 0,
-        "max_ms": 0.005,
-        "mean_ms": 0.0013,
+        "max_ms": 0.009,
+        "mean_ms": 0.00141666666666667,
         "p95_ms": 0.002,
         "resident_tiles": 1,
         "samples": 120,
@@ -241,7 +162,89 @@
         "solver_cells": 0,
         "solver_ms": 0.001,
         "sources": 0,
-        "worst_ms": 0.005
+        "worst_ms": 0.009
+      }
+    },
+    "forward_plus": {
+      "active_solver": {
+        "active_tiles": 1,
+        "array_bytes": 29696,
+        "cells": 1024,
+        "inactive_tiles": 0,
+        "max_ms": 4.441,
+        "mean_ms": 2.59133333333333,
+        "p95_ms": 2.977,
+        "resident_tiles": 1,
+        "samples": 120,
+        "sleeping_tiles": 0,
+        "solver_cells": 1024,
+        "solver_ms": 2.69,
+        "sources": 0,
+        "worst_ms": 4.441
+      },
+      "renderer_off": {
+        "draw_calls": 1,
+        "max_ms": 29.9623333333333,
+        "mean_ms": 20.08965,
+        "method": "forward_plus",
+        "p95_ms": 28.7033333333356,
+        "samples": 60
+      },
+      "renderer_on": {
+        "draw_calls": 2,
+        "max_ms": 50.66,
+        "mean_ms": 27.9063814814815,
+        "method": "forward_plus",
+        "p95_ms": 43.4870000000023,
+        "samples": 60
+      },
+      "rendering": {
+        "draw_calls": 2.0,
+        "max_ms": 41.037,
+        "mean_ms": 27.839722846442,
+        "nodes": 9,
+        "p95_ms": 36.4102222222244,
+        "presentation": {
+          "last_mesh_ms": 0.052,
+          "state_texture_bytes": 26136,
+          "tile_meshes": 1,
+          "water_cells": 1024,
+          "water_nodes": 3,
+          "worst_mesh_ms": 1.846
+        },
+        "render_objects": 2.0,
+        "render_primitives": 2050.0,
+        "rendering_method": "forward_plus",
+        "samples": 89,
+        "static_memory_bytes": 74545101.0,
+        "water": {
+          "active_tiles": 0,
+          "array_bytes": 29696,
+          "inactive_tiles": 0,
+          "mean_ms": 0.0260181818181818,
+          "resident_tiles": 1,
+          "sleeping_tiles": 1,
+          "solver_cells": 0,
+          "solver_ms": 0.025,
+          "sources": 0,
+          "worst_ms": 0.051
+        }
+      },
+      "sleeping_solver": {
+        "active_tiles": 0,
+        "array_bytes": 29696,
+        "cells": 1024,
+        "inactive_tiles": 0,
+        "max_ms": 0.062,
+        "mean_ms": 0.00190833333333333,
+        "p95_ms": 0.003,
+        "resident_tiles": 1,
+        "samples": 120,
+        "sleeping_tiles": 1,
+        "solver_cells": 0,
+        "solver_ms": 0.001,
+        "sources": 0,
+        "worst_ms": 0.062
       }
     }
   }

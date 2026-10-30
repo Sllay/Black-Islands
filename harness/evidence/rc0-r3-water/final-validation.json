@@ -1,0 +1,272 @@
+{
+  "label": "DESKTOP SOFTWARE PROXY ONLY. Headless rendering counters are zero and are not GPU evidence. Renderer evidence is in renderer-smoke-metrics.json.",
+  "focused_c_isolated": {
+    "active_solver": {
+      "active_tiles": 1,
+      "array_bytes": 29696,
+      "cells": 1024,
+      "inactive_tiles": 0,
+      "max_ms": 4.003,
+      "mean_ms": 2.67811666666667,
+      "p95_ms": 3.573,
+      "resident_tiles": 1,
+      "samples": 120,
+      "sleeping_tiles": 0,
+      "solver_cells": 1024,
+      "solver_ms": 2.574,
+      "sources": 0,
+      "worst_ms": 4.003
+    },
+    "renderer_off": {
+      "draw_calls": 0,
+      "max_ms": 7.08,
+      "mean_ms": 6.76131111111111,
+      "method": "gl_compatibility",
+      "p95_ms": 6.94444444444444,
+      "samples": 60
+    },
+    "renderer_on": {
+      "draw_calls": 0,
+      "max_ms": 6.94444444444444,
+      "mean_ms": 6.90055,
+      "method": "gl_compatibility",
+      "p95_ms": 6.94444444444444,
+      "samples": 60
+    },
+    "rendering": {
+      "draw_calls": 0.0,
+      "max_ms": 16.6666666666667,
+      "mean_ms": 16.6659700374532,
+      "nodes": 9,
+      "p95_ms": 16.6666666666667,
+      "presentation": {
+        "last_mesh_ms": 0.029,
+        "state_texture_bytes": 26136,
+        "tile_meshes": 1,
+        "water_cells": 1024,
+        "water_nodes": 3,
+        "worst_mesh_ms": 2.119
+      },
+      "render_objects": 0.0,
+      "render_primitives": 0.0,
+      "rendering_method": "gl_compatibility",
+      "samples": 89,
+      "static_memory_bytes": 51871901.0,
+      "water": {
+        "active_tiles": 0,
+        "array_bytes": 29696,
+        "inactive_tiles": 0,
+        "mean_ms": 0.0255151515151515,
+        "resident_tiles": 1,
+        "sleeping_tiles": 1,
+        "solver_cells": 0,
+        "solver_ms": 0.024,
+        "sources": 0,
+        "worst_ms": 0.088
+      }
+    },
+    "sleeping_solver": {
+      "active_tiles": 0,
+      "array_bytes": 29696,
+      "cells": 1024,
+      "inactive_tiles": 0,
+      "max_ms": 0.004,
+      "mean_ms": 0.001275,
+      "p95_ms": 0.002,
+      "resident_tiles": 1,
+      "samples": 120,
+      "sleeping_tiles": 1,
+      "solver_cells": 0,
+      "solver_ms": 0.001,
+      "sources": 0,
+      "worst_ms": 0.004
+    }
+  },
+  "world_backend_smokes": {
+    "gl_compatibility": {
+      "lake": {
+        "current": "(0.0, 0.0, 0.0)",
+        "depth": 6.89908695220947,
+        "grid_cell": "(85, 8)",
+        "kind": "lake",
+        "level": 25.2779302597046,
+        "submerged": true,
+        "tile": "(2, 0)"
+      },
+      "ocean": {
+        "ocean_grid_allocated": 0,
+        "query": {
+          "current": "(0.0, 0.0, 0.0)",
+          "depth": 120.0,
+          "grid_cell": "(900, -1, 900)",
+          "kind": "ocean",
+          "level": 0.0,
+          "submerged": true
+        },
+        "tiles_after": 4,
+        "tiles_before": 4
+      },
+      "presentation": {
+        "last_mesh_ms": 5.865,
+        "state_texture_bytes": 235224,
+        "tile_meshes": 9,
+        "water_cells": 9216,
+        "water_nodes": 11,
+        "worst_mesh_ms": 39.525
+      },
+      "quality": "Low",
+      "rendering_method": "gl_compatibility",
+      "river": {
+        "current": "(-0.182943, 0.0, 0.099517)",
+        "depth": 6.78853702545166,
+        "grid_cell": "(-32, 95)",
+        "kind": "river",
+        "level": 17.599139213562,
+        "submerged": true,
+        "tile": "(-1, 2)"
+      },
+      "water": {
+        "active_tiles": 5,
+        "array_bytes": 267264,
+        "inactive_tiles": 4,
+        "mean_ms": 6.82207142857143,
+        "resident_tiles": 9,
+        "sleeping_tiles": 0,
+        "solver_cells": 4096,
+        "solver_ms": 7.947,
+        "sources": 2,
+        "worst_ms": 43.975
+      }
+    },
+    "mobile": {
+      "lake": {
+        "current": "(0.0, 0.0, 0.0)",
+        "depth": 6.89908695220947,
+        "grid_cell": "(85, 8)",
+        "kind": "lake",
+        "level": 25.2779302597046,
+        "submerged": true,
+        "tile": "(2, 0)"
+      },
+      "ocean": {
+        "ocean_grid_allocated": 0,
+        "query": {
+          "current": "(0.0, 0.0, 0.0)",
+          "depth": 120.0,
+          "grid_cell": "(900, -1, 900)",
+          "kind": "ocean",
+          "level": 0.0,
+          "submerged": true
+        },
+        "tiles_after": 4,
+        "tiles_before": 4
+      },
+      "presentation": {
+        "last_mesh_ms": 16.65,
+        "state_texture_bytes": 235224,
+        "tile_meshes": 9,
+        "water_cells": 9216,
+        "water_nodes": 11,
+        "worst_mesh_ms": 32.003
+      },
+      "quality": "Medium",
+      "rendering_method": "mobile",
+      "river": {
+        "current": "(-0.182943, 0.0, 0.099517)",
+        "depth": 6.78853702545166,
+        "grid_cell": "(-32, 95)",
+        "kind": "river",
+        "level": 17.599139213562,
+        "submerged": true,
+        "tile": "(-1, 2)"
+      },
+      "water": {
+        "active_tiles": 5,
+        "array_bytes": 267264,
+        "inactive_tiles": 4,
+        "mean_ms": 13.22,
+        "resident_tiles": 9,
+        "sleeping_tiles": 0,
+        "solver_cells": 4096,
+        "solver_ms": 79.175,
+        "sources": 2,
+        "worst_ms": 79.175
+      }
+    },
+    "forward_plus": {
+      "lake": {
+        "current": "(0.0, 0.0, 0.0)",
+        "depth": 6.89908695220947,
+        "grid_cell": "(85, 8)",
+        "kind": "lake",
+        "level": 25.2779302597046,
+        "submerged": true,
+        "tile": "(2, 0)"
+      },
+      "ocean": {
+        "ocean_grid_allocated": 0,
+        "query": {
+          "current": "(0.0, 0.0, 0.0)",
+          "depth": 120.0,
+          "grid_cell": "(900, -1, 900)",
+          "kind": "ocean",
+          "level": 0.0,
+          "submerged": true
+        },
+        "tiles_after": 4,
+        "tiles_before": 4
+      },
+      "presentation": {
+        "last_mesh_ms": 7.62,
+        "state_texture_bytes": 235224,
+        "tile_meshes": 9,
+        "water_cells": 9216,
+        "water_nodes": 11,
+        "worst_mesh_ms": 23.591
+      },
+      "quality": "High",
+      "rendering_method": "forward_plus",
+      "river": {
+        "current": "(-0.182943, 0.0, 0.099517)",
+        "depth": 6.78853702545166,
+        "grid_cell": "(-32, 95)",
+        "kind": "river",
+        "level": 17.599139213562,
+        "submerged": true,
+        "tile": "(-1, 2)"
+      },
+      "water": {
+        "active_tiles": 5,
+        "array_bytes": 267264,
+        "inactive_tiles": 4,
+        "mean_ms": 4.64179310344828,
+        "resident_tiles": 9,
+        "sleeping_tiles": 0,
+        "solver_cells": 4096,
+        "solver_ms": 10.396,
+        "sources": 2,
+        "worst_ms": 21.142
+      }
+    }
+  },
+  "diagnostic_contention": {
+    "active_solver": {
+      "active_tiles": 1,
+      "array_bytes": 29696,
+      "cells": 1024,
+      "inactive_tiles": 0,
+      "max_ms": 58.23,
+      "mean_ms": 16.3815083333333,
+      "p95_ms": 53.29,
+      "resident_tiles": 1,
+      "samples": 120,
+      "sleeping_tiles": 0,
+      "solver_cells": 1024,
+      "solver_ms": 5.964,
+      "sources": 0,
+      "worst_ms": 58.23
+    },
+    "note": "C test passed while the full island ran concurrently; this is a contention diagnostic, not the isolated comparison. Isolated rerun after stopping island is above."
+  },
+  "world_queries_equal_across_backends": true
+}
