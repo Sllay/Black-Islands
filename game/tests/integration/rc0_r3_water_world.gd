@@ -41,4 +41,10 @@ func qa_strike() -> Dictionary:
 	print("R3_WATER_TERRAIN ",JSON.stringify(evidence))
 	return evidence
 func report() -> Dictionary:
-	return {"water":session.water.domain.grid.report(),"sample":session.water.sample(session.pawn.position),"swimming":session.pawn.motor.water_motion.swimming,"edit":evidence,"graphics":session.graphics_metrics(),"save_error":session.player_save.flush()}
+	return {"water":session.water.domain.grid.report(),"sample":session.water.sample(session.pawn.position),"swimming":session.pawn.motor.water_motion.swimming,"edit":evidence,"graphics":session.graphics_metrics(),"save_error":session.player_save.flush(),"presentation":_presentation()}
+
+func _presentation() -> Dictionary:
+	for node: Node in main.find_children("*","Node3D",true,false):
+		if node is WaterRenderer:
+			return node.report()
+	return {}
