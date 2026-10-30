@@ -1,9 +1,12 @@
-[gd_resource type="ShaderMaterial" format=3 uid="uid://bqriy1r753w6s"]
+[gd_resource type="ShaderMaterial" format=4 uid="uid://bqriy1r753w6s"]
 
-[ext_resource type="Shader" uid="uid://d2txdkib41d17" path="res://shaders/ocean.gdshader" id="1_708ch"]
+[ext_resource type="Shader" uid="uid://dehg8j3a7wiod" path="res://shaders/water_surface.gdshader" id="1_708ch"]
 
 [resource]
 render_priority = 0
 shader = ExtResource("1_708ch")
-shader_parameter/deep_color = null
-shader_parameter/light_color = null
+shader_parameter/ocean = true
+shader_parameter/blend = 1.0
+shader_parameter/wave_amplitude = 0.04
+shader_parameter/foam_strength = 0.4
+shader_parameter/emitters = PackedVector4Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)

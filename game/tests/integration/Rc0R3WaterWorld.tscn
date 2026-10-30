@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b43xl24iogd5g"]
+
+[ext_resource type="Script" uid="uid://w3ahmnvd6kex" path="res://tests/integration/rc0_r3_water_world.gd" id="1_wi8a6"]
+
+[node name="WaterWorld" type="Node" unique_id=108643939]
+script = ExtResource("1_wi8a6")

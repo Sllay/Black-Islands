@@ -22,7 +22,12 @@
       "terrain_view_scale": 0.75,
       "shadow_atlas_size": 1024,
       "shadow_filter": 1,
-      "vfx_scale": 0.4
+      "vfx_scale": 0.4,
+      "water": {
+        "wave": 0.025,
+        "foam": 0.2,
+        "ripples": 1
+      }
     },
     "Medium": {
       "shadows": true,
@@ -40,7 +45,12 @@
       "terrain_view_scale": 1,
       "shadow_atlas_size": 2048,
       "shadow_filter": 2,
-      "vfx_scale": 0.75
+      "vfx_scale": 0.75,
+      "water": {
+        "wave": 0.045,
+        "foam": 0.45,
+        "ripples": 2
+      }
     },
     "High": {
       "shadows": true,
@@ -58,7 +68,12 @@
       "terrain_view_scale": 1.1,
       "shadow_atlas_size": 4096,
       "shadow_filter": 3,
-      "vfx_scale": 1
+      "vfx_scale": 1,
+      "water": {
+        "wave": 0.065,
+        "foam": 0.7,
+        "ripples": 4
+      }
     }
   },
   "distance_levels": {

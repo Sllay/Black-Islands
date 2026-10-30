@@ -1,9 +1,15 @@
 class_name GeneratedWaterView
 extends Node3D
-## Sleeping lake/river surfaces derived from metadata, no flow solver or collider.
+## Production uses the domain renderer. Metadata-only fallback supports old QA.
+var domain: WaterDomain
 var field: WorldFieldV2
 
 func _ready() -> void:
+	if domain != null:
+		var renderer := WaterRenderer.new()
+		renderer.domain = domain
+		add_child(renderer)
+		return
 	var material: Material = load("res://resources/world/OceanMaterial.tres")
 	for lake: Dictionary in field.lakes:
 		var points: Array[Vector3] = []

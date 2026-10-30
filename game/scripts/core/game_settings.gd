@@ -86,6 +86,8 @@ static func apply_scene(root: Node) -> void:
 		if session is WorldSession and session.terrain != null:
 			session.apply_graphics(budget)
 	for foliage: Node in root.find_children("*","Node3D",true,false):
+		if foliage is WaterRenderer:
+			foliage.apply_profile(budget)
 		if foliage is FoliagePresenter:
 			foliage.apply_profile(budget)
 

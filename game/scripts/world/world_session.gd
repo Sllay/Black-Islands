@@ -121,10 +121,13 @@ func _ready() -> void:
 		$Lake.visible = false
 		var waters := GeneratedWaterView.new()
 		waters.field = terrain.field
+		waters.domain = water.domain
 		add_child(waters)
 	else:
-		var lake := terrain.field.lake_body()
-		$Lake.position = Vector3(lake.center.x,lake.level,lake.center.y)
+		$Lake.visible = false
+		var legacy_water := WaterRenderer.new()
+		legacy_water.domain = water.domain
+		add_child(legacy_water)
 	if OS.is_debug_build():
 		_create_tools()
 		_create_player_qa()

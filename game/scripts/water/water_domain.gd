@@ -10,6 +10,9 @@ var candidates: Dictionary = {}
 var terrain_store: WorldDeltaStore
 var document: AtomicDocument
 var _save_tick := 0.0
+var last_save_error := OK
+var last_invalidation_cells := 0
+var source_cell := Vector2i(2147483647,2147483647)
 func configure(adapter: VoxelTerrainAdapter) -> void:
 	terrain = adapter
 	terrain_store = adapter.deltas
@@ -21,6 +24,8 @@ func configure(adapter: VoxelTerrainAdapter) -> void:
 			var radius := float(lake.radius)*1.5
 			_mark_bounds(center-Vector3(radius,0,radius),center+Vector3(radius,0,radius))
 		var points: Array = terrain.field.river.get("points",[])
+		if not points.is_empty():
+			source_cell = grid.cell_at(Vector3(points[0][0],0,points[0][2]))
 		for i: int in range(points.size()-1):
 			var a := Vector3(points[i][0],0,points[i][2])
 			var b := Vector3(points[i+1][0],0,points[i+1][2])
@@ -37,11 +42,11 @@ func _process(delta: float) -> void:
 	_save_tick += delta
 	if _save_tick > 4:
 		_save_tick = 0
-		flush()
+		last_save_error = flush()
 	_poll += delta
 	if observer != null and _poll > .5:
 		_poll = 0
-		ensure_near(observer.global_position)
+		ensure_near(observer.global_position,1)
 	accumulator = minf(accumulator+delta,.25)
 	var dt := 1.0/float(grid.tuning.solver_hz)
 	var count := 0
@@ -49,17 +54,49 @@ func _process(delta: float) -> void:
 		grid.step(dt)
 		accumulator -= dt
 		count += 1
-func ensure_near(point: Vector3) -> void:
+func ensure_near(point: Vector3, new_budget: int = 9) -> void:
 	var center := grid.address(grid.cell_at(point))
-	for z: int in range(center.y-1,center.y+2):
-		for x: int in range(center.x-1,center.x+2):
+	var radius := int(grid.tuning.resident_radius)
+	for tile: WaterTile in grid.tiles.values():
+		var distance := maxi(absi(tile.coord.x-center.x),absi(tile.coord.y-center.y))
+		if distance > radius+1:
+			tile.activity = WaterTile.Activity.INACTIVE
+		elif distance <= radius and tile.activity == WaterTile.Activity.INACTIVE:
+			tile.wake()
+	var created := 0
+	for z: int in range(center.y-radius,center.y+radius+1):
+		for x: int in range(center.x-radius,center.x+radius+1):
 			var coord := Vector2i(x,z)
-			if grid.tiles.has(coord):
+			if grid.tiles.has(coord) or not candidates.has(coord) or created >= new_budget:
 				continue
-			if candidates.has(coord):
-				var tile := grid.ensure_tile(coord)
-				if terrain.field is WorldFieldV2 and not terrain.field.river.is_empty():
-					tile.wake()
+			var tile := grid.ensure_tile(coord)
+			created += 1
+			if tile.kind.has(3):
+				tile.wake()
+	# Analytic upstream boundary feeds the resident river corridor. This is
+	# explicit external volume, never an unaccounted conservation exception.
+	grid.sources.clear()
+	for tile: WaterTile in grid.tiles.values():
+		if tile.activity == WaterTile.Activity.INACTIVE or not tile.kind.has(3):
+			continue
+		var best := -INF
+		var entry := Vector2i.ZERO
+		for i: int in tile.depth.size():
+			if tile.kind[i] != 3 or tile.depth[i] <= grid.tuning.dry_depth:
+				continue
+			var cell := tile.coord*tile.side+Vector2i(i%tile.side,floori(i/float(tile.side)))
+			var boundary := cell == source_cell
+			for direction: Vector2i in WaterGrid.DIRECTIONS:
+				var neighbor: WaterTile = grid.tiles.get(grid.address(cell+direction))
+				boundary = boundary or neighbor == null or neighbor.activity == WaterTile.Activity.INACTIVE
+			if not boundary:
+				continue
+			var level := float(_initial(grid.point_at(cell)).level)
+			if level > best:
+				best = level
+				entry = cell
+		if is_finite(best):
+			grid.sources[entry] = {"rate":float(grid.tuning.river_source_m3_s),"level":best}
 func _mark_bounds(low: Vector3, high: Vector3) -> void:
 	var first := grid.address(grid.cell_at(low))
 	var last := grid.address(grid.cell_at(high))
@@ -75,7 +112,7 @@ func invalidate(area: AABB) -> void:
 			var coord := Vector2i(x,z)
 			if candidates.has(coord) or (_initial(area.position).kind == "ocean" and _height(area.position) < 1):
 				grid.ensure_tile(coord)
-	grid.invalidate(area.grow(float(grid.tuning.cell_metres)))
+	last_invalidation_cells = grid.invalidate(area.grow(float(grid.tuning.cell_metres)))
 func _height(point: Vector3) -> float:
 	var base := terrain.field.top_surface(point.x,point.z)
 	if not is_finite(base):

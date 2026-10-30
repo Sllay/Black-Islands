@@ -8,6 +8,7 @@ var tiles: Dictionary = {}
 var height_sample: Callable
 var initial_water: Callable
 var waterfalls: Array[Dictionary] = []
+var sources: Dictionary = {}
 var steps := 0
 var last_cells := 0
 var last_ms := 0.0
@@ -65,13 +66,30 @@ func add_water(point: Vector3, cubic_metres: float) -> Error:
 	tile.revision += 1
 	tile.wake()
 	return OK
+func remove_water(point: Vector3, cubic_metres: float) -> Error:
+	if not point.is_finite() or not is_finite(cubic_metres) or cubic_metres < 0:
+		return ERR_INVALID_PARAMETER
+	var cell := cell_at(point)
+	var tile: WaterTile = tiles.get(address(cell))
+	if tile == null:
+		return ERR_UNAVAILABLE
+	var area := float(tuning.cell_metres)*float(tuning.cell_metres)
+	var i := index(cell)
+	if tile.depth[i]*area < cubic_metres:
+		return ERR_UNAVAILABLE
+	tile.depth[i] -= cubic_metres/area
+	tile.revision += 1
+	external_volume -= cubic_metres
+	dirty = true
+	tile.wake()
+	return OK
 func add_precipitation(area: AABB, metres: float) -> void:
 	if not is_finite(metres) or metres <= 0:
 		return
 	for tile: WaterTile in tiles.values():
 		for i: int in tile.depth.size():
 			var cell := tile.coord*side()+Vector2i(i%side(),floori(i/float(side())))
-			if area.has_point(point_at(cell)):
+			if Rect2(Vector2(area.position.x,area.position.z),Vector2(area.size.x,area.size.z)).has_point(Vector2(point_at(cell).x,point_at(cell).z)):
 				add_water(point_at(cell),metres*tuning.cell_metres*tuning.cell_metres)
 func invalidate(area: AABB) -> int:
 	var first := cell_at(area.position)
@@ -93,6 +111,15 @@ func invalidate(area: AABB) -> int:
 func step(dt: float) -> void:
 	var start := Time.get_ticks_usec()
 	last_cells = 0
+	for cell: Vector2i in sources:
+		var tile: WaterTile = tiles.get(address(cell))
+		if tile == null or tile.activity == WaterTile.Activity.INACTIVE:
+			continue
+		var source: Dictionary = sources[cell]
+		var i := index(cell)
+		var amount := minf(float(source.rate)*dt/(tuning.cell_metres*tuning.cell_metres),maxf(0,float(source.level)-tile.ground[i]-tile.depth[i]))
+		if amount > .000001:
+			add_water(point_at(cell),amount*tuning.cell_metres*tuning.cell_metres)
 	waterfalls.clear()
 	var active: Array[WaterTile] = []
 	var keys := tiles.keys()
@@ -107,6 +134,11 @@ func step(dt: float) -> void:
 	for tile: WaterTile in active:
 		participants[tile.coord] = tile
 		tile.change.fill(0)
+	var n := side()
+	var spacing := float(tuning.cell_metres)
+	var factor := float(tuning.conductance)*dt
+	var fraction := clampf(float(tuning.max_out_fraction),0,.249)
+	var drop := float(tuning.waterfall_drop)
 	for tile: WaterTile in active:
 		tile.previous = tile.depth.duplicate()
 		tile.flow_x.fill(0)
@@ -115,17 +147,23 @@ func step(dt: float) -> void:
 			last_cells += 1
 			if tile.depth[i] <= tuning.dry_depth :
 				continue
-			var cell := tile.coord*side()+Vector2i(i%side(),floori(i/float(side())))
-			for direction: Vector2i in DIRECTIONS:
-				var next := cell+direction
-				var other: WaterTile = tiles.get(address(next))
-				if other == null:
+			var column := i%n
+			var row := floori(i/float(n))
+			var own_surface := tile.ground[i]+tile.depth[i]
+			var limit := tile.depth[i]*fraction
+			for d: int in 4:
+				var direction: Vector2i = DIRECTIONS[d]
+				var other := tile
+				var j := i+direction.x+direction.y*n
+				if column+direction.x < 0 or column+direction.x >= n or row+direction.y < 0 or row+direction.y >= n:
+					other = tiles.get(tile.coord+direction)
+					j = posmod(row+direction.y,n)*n+posmod(column+direction.x,n)
+				if other == null or other.activity == WaterTile.Activity.INACTIVE:
 					continue
-				var j := index(next)
-				var head := tile.ground[i]+tile.depth[i]-(other.ground[j]+other.depth[j])
+				var head := own_surface-other.ground[j]-other.depth[j]
 				if head <= 0:
 					continue
-				var amount := minf(head*tuning.conductance*dt,tile.depth[i]*tuning.max_out_fraction)
+				var amount := minf(head*factor,limit)
 				if amount < 0.000001:
 					continue
 				if not participants.has(other.coord):
@@ -133,18 +171,19 @@ func step(dt: float) -> void:
 					other.change.fill(0)
 					other.previous = other.depth.duplicate()
 				if tile.kind[i] in [2,4] and other.kind[j] != 2:
-					other.kind[j] = 4 # Salt water is not an infinite boundary.
+					other.kind[j] = 4
 				elif other.kind[j] == 0:
 					other.kind[j] = 1
 				tile.change[i] -= amount
 				other.change[j] += amount
-				var speed: float = amount*tuning.cell_metres/maxf(dt*tile.depth[i],.0001)
+				var speed: float = amount*spacing/maxf(dt*tile.depth[i],.0001)
 				tile.flow_x[i] += direction.x*speed
 				tile.flow_z[i] += direction.y*speed
 				if other.activity != WaterTile.Activity.ACTIVE:
 					other.wake()
-				if head >= tuning.waterfall_drop and tile.ground[i]-other.ground[j] >= tuning.waterfall_drop and waterfalls.size() < int(tuning.max_waterfalls):
-					waterfalls.append({"from":point_at(cell)+Vector3.UP*(tile.ground[i]+tile.depth[i]),"to":point_at(next)+Vector3.UP*(other.ground[j]+other.depth[j]),"volume_per_second":amount*tuning.cell_metres*tuning.cell_metres/dt})
+				if head >= drop and tile.ground[i]-other.ground[j] >= drop and waterfalls.size() < int(tuning.max_waterfalls):
+					var cell := tile.coord*n+Vector2i(column,row)
+					waterfalls.append({"from":point_at(cell)+Vector3.UP*own_surface,"to":point_at(cell+direction)+Vector3.UP*(other.ground[j]+other.depth[j]),"volume_per_second":amount*spacing*spacing/dt})
 	for tile: WaterTile in participants.values():
 		var maximum := 0.0
 		var touched := false
@@ -186,4 +225,4 @@ func report() -> Dictionary:
 		active += int(tile.activity == WaterTile.Activity.ACTIVE)
 		sleeping += int(tile.activity == WaterTile.Activity.SLEEPING)
 		memory += tile.bytes_used()
-	return {"active_tiles":active,"sleeping_tiles":sleeping,"resident_tiles":tiles.size(),"solver_cells":last_cells,"solver_ms":last_ms,"mean_ms":total_ms/maxi(1,steps),"worst_ms":worst_ms,"array_bytes":memory}
+	return {"active_tiles":active,"sleeping_tiles":sleeping,"resident_tiles":tiles.size(),"inactive_tiles":tiles.size()-active-sleeping,"sources":sources.size(),"solver_cells":last_cells,"solver_ms":last_ms,"mean_ms":total_ms/maxi(1,steps),"worst_ms":worst_ms,"array_bytes":memory}

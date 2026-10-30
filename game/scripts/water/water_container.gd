@@ -20,6 +20,13 @@ static func refill(inventory: InventoryState, uid: String, facade: WorldWater, p
 	if sample.kind not in ["lake","river"] or sample.depth < .05:
 		return ERR_UNAVAILABLE
 	var tuning: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/water/tuning.json"))
+	if inventory._by_uid(uid) == null or inventory._by_uid(uid).item_id != "bi.tool.watering_can":
+		return ERR_INVALID_DATA
+	var amount := maxf(0,float(tuning.can_capacity)-volume(inventory,uid))
+	if facade.domain != null:
+		var error: Error = facade.domain.grid.remove_water(point,amount*float(tuning.can_litre_m3))
+		if error != OK:
+			return error
 	return change(inventory,uid,float(tuning.can_capacity))
 static func water_plot(inventory: InventoryState, uid: String, farms: FarmSystem, key: String) -> Error:
 	var cost := float(JSON.parse_string(FileAccess.get_file_as_string("res://data/water/tuning.json")).watering_cost)

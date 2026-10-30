@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c43aapwsrjbg"]
+
+[ext_resource type="Script" uid="uid://jxllad1yysaa" path="res://tests/integration/rc0_r3_water_c.gd" id="1_m30md"]
+
+[node name="WaterFoundation" type="Node3D" unique_id=1764038501]
+script = ExtResource("1_m30md")

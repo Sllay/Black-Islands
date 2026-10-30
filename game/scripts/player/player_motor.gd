@@ -48,6 +48,8 @@ func tick(delta: float, axis: Vector2, run_requested: bool) -> void:
 	var speed := tuning.run_speed if running else tuning.walk_speed
 	if camera.build_mode:
 		speed *= 0.55
+	if water != null and water_motion.swimming:
+		speed *= float(water.motion_tuning.swim_speed)
 	var desired := direction * speed
 	if actor.is_on_floor() and actor.get_floor_normal().dot(Vector3.UP) > cos(actor.floor_max_angle):
 		desired = direction.slide(actor.get_floor_normal()).normalized() * direction.length() * speed
@@ -59,9 +61,6 @@ func tick(delta: float, axis: Vector2, run_requested: bool) -> void:
 	if water != null:
 		var sample := water.sample(actor.global_position)
 		water_motion.apply(actor,sample,delta,water.motion_tuning)
-		if water_motion.swimming:
-			actor.velocity.x *= pow(float(water.motion_tuning.swim_speed),delta*4)
-			actor.velocity.z *= pow(float(water.motion_tuning.swim_speed),delta*4)
 	if water == null or not water_motion.swimming:
 		actor.velocity.y = -0.2 if actor.is_on_floor() else actor.velocity.y - tuning.gravity * delta
 	actor.velocity += external_impulse
