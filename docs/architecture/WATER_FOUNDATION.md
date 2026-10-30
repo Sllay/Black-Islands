@@ -1,0 +1,5 @@
+# Water Foundation (R3 C01)
+
+The voxel SDF remains terrain authority. WaterGrid/WaterTile are compact arrays in metres and cubic metres, not Nodes. A single WaterDomain schedules fixed15Hz steps, with bounded active tiles; stable tiles sleep. Surface differences produce explicitly capped conservative transfers (four outgoing edges each at most24%of old depth), double-buffered deltas prevent order-dependent borrowing. Closed unloaded edges conserve water; ocean exchanges are separately accounted external volume. Dry terrain is never an infinite-ocean sink. Profiles may change rendering, never the solver.
+
+Tuning lives in game/data/water/tuning.json. Initial2m cells over64m tiles are a mobile-oriented starting point, independently configurable. The surface heightfield cannot model stacked aquifers/cave fluids; structures are not hydraulic barriers. WorldWater is the public gameplay query facade. Native seed/profile hydrology initializes water; old generator versions remain supported. No terrain generator/profile/foliage or save ownership is replaced.

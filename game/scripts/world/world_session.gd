@@ -76,6 +76,10 @@ func _ready() -> void:
 	add_child(terrain)
 	water = WorldWater.new()
 	water.terrain = terrain
+	water.domain = WaterDomain.new()
+	water.domain.name = "WaterDomain"
+	water.domain.configure(terrain)
+	add_child(water.domain)
 	edits = TerrainEditService.new()
 	edits.terrain = terrain
 	edits.store = store
@@ -84,6 +88,7 @@ func _ready() -> void:
 	pawn = load("res://scenes/player/Player.tscn").instantiate()
 	pawn.terrain = terrain
 	pawn.water = water
+	water.domain.observer = pawn
 	add_child(pawn)
 	player_save = frontend_save if frontend_save != null else PlayerSaveCoordinator.new()
 	player_save.name = "PlayerSave"

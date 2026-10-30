@@ -3,11 +3,16 @@ extends RefCounted
 ## Analytic ocean + generated sleeping lake. Interface seam for future WaterGrid;
 ## no dynamic flow solver, drainage or hydrology performance claim in P02.
 
+var domain: WaterDomain
 var terrain: VoxelTerrainAdapter
 var dirty_notifications := 0
 var last_dirty_area := AABB()
 
 func sample(point: Vector3) -> Dictionary:
+	if domain != null:
+		var dynamic := domain.grid.sample(point)
+		if not dynamic.is_empty():
+			return dynamic
 	var body := terrain.field.lake_body()
 	var lake: bool = Vector2(point.x,point.z).distance_to(body.center) <= body.radius
 	var water: Dictionary = terrain.field.water_at(Vector2(point.x,point.z)) if terrain.field is WorldFieldV2 else {"kind":"lake" if lake else "ocean","level":body.level if lake else 0.0}
@@ -24,3 +29,5 @@ func sample(point: Vector3) -> Dictionary:
 func invalidate_terrain(area: AABB) -> void:
 	dirty_notifications += 1
 	last_dirty_area = area
+	if domain != null:
+		domain.invalidate(area)
