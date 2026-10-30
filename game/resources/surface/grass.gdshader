@@ -17,21 +17,24 @@ void vertex() {
 	vec3 root = MODEL_MATRIX[3].xyz;
 	vec2 mask_uv = (root.xz-mask_origin)/mask_size;
 	float suppressed = texture(suppression,mask_uv).r;
-	float distance_fade = 1.0-smoothstep(near_distance,far_distance,distance(root.xz,viewer.xz));
+	float view_distance = distance(root.xz,viewer.xz);
+	float detail = 1.0-smoothstep(near_distance*0.65,near_distance,view_distance);
+	float distance_fade = 1.0-smoothstep(near_distance,far_distance,view_distance);
 	float native_fade = mix(1.0-u_lod_fade.x,u_lod_fade.x,u_lod_fade.y);
 	coverage = (1.0-suppressed)*distance_fade*native_fade;
 	float tip = clamp((VERTEX.y-root.y)/0.65,0.0,1.0);
 	vec3 world_vertex = VERTEX;
 	float phase = dot(root.xz,vec2(0.31,0.19));
-	float wind = sin(TIME*1.6+phase)+0.4*sin(TIME*2.1+phase*1.7);
-	world_vertex.xz += vec2(wind,wind*0.4)*wind_amplitude*tip*tip;
-	for (int i=0;i<5;i++) {
+	float wind = sin(TIME*1.6+phase);
+	if (detail > 0.0) { wind += 0.4*sin(TIME*2.1+phase*1.7)*detail; }
+	world_vertex.xz += vec2(wind,wind*0.4)*wind_amplitude*tip*tip*mix(0.25,1.0,detail);
+	if (detail > 0.0) { for (int i=0;i<5;i++) {
 		vec2 away = root.xz-actors[i].xz;
 		float dist = length(away);
 		float influence = (1.0-smoothstep(0.0,interaction_radius,dist))*actors[i].w;
 		world_vertex.xz += away/max(dist,0.01)*influence*tip*0.5;
 		world_vertex.y -= influence*tip*0.22;
-	}
+	} }
 	world_vertex.y = mix(root.y,world_vertex.y,coverage);
 	VERTEX = world_vertex;
 	shade = 0.82+0.18*sin(phase);

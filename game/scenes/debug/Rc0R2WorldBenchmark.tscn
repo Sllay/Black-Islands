@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cmtn47aakbcd4"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r2_world_benchmark.gd" id="1_ors7x"]
+
+[node name="Rc0R2WorldBenchmark" type="Node3D" unique_id=1045998800]
+script = ExtResource("1_ors7x")
