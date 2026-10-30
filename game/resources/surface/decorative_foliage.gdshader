@@ -5,11 +5,13 @@ uniform vec2 mask_origin;
 uniform vec3 viewer;
 uniform vec3 tint : source_color;
 uniform float far_distance = 60.0;
+uniform vec2 u_lod_fade = vec2(1.0);
 varying float coverage;
 void vertex() {
 	vec3 root = MODEL_MATRIX[3].xyz;
 	float blocked = texture(suppression,(root.xz-mask_origin)/256.0).r;
 	coverage = (1.0-blocked)*(1.0-smoothstep(far_distance-12.0,far_distance,distance(root.xz,viewer.xz)));
+	coverage *= mix(1.0-u_lod_fade.x,u_lod_fade.x,u_lod_fade.y);
 	VERTEX = mix(root,VERTEX,coverage);
 }
 void fragment() {

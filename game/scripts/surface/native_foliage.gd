@@ -78,6 +78,9 @@ func _rebuild() -> void:
 		decoration.mesh = load("res://resources/surface/"+str(row[1])+".res")
 		var decoration_material := ShaderMaterial.new()
 		decoration_material.shader = load("res://resources/surface/decorative_foliage.gdshader")
+		if rd:
+			decoration_material.shader = decoration_material.shader.duplicate()
+			decoration_material.shader.code = decoration_material.shader.code.replace("uniform vec2 u_lod_fade = vec2(1.0);","instance uniform vec2 u_lod_fade = vec2(1.0);")
 		decoration_material.set_shader_parameter("suppression",mask_texture)
 		decoration_material.set_shader_parameter("far_distance",float(budget.far)+24)
 		decoration_material.set_shader_parameter("tint",Vector3(.25,.48,.2) if row[1] == "bush" else Vector3(.48,.5,.54))

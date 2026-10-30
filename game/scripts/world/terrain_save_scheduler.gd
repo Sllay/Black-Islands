@@ -17,11 +17,14 @@ func _process(delta: float) -> void:
 
 func flush() -> Error:
 	edits.poll()
+	var error := store.flush()
+	if error != OK:
+		return error
 	# A still-pending intent is not reported as a saved action. Navigation waits
 	# or receives a failure; expiry is separately surfaced to the player.
 	if edits.pending_count() > 0:
 		return ERR_BUSY
-	return store.flush()
+	return OK
 
 func _exit_tree() -> void:
 	if store != null:

@@ -19,6 +19,17 @@ func request_quit() -> void:
 	if _flush_players() == OK:
 		get_tree().quit()
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		# A platform suspension cannot wait for distant data. Cancel only intents
+		# that never executed, then durably checkpoint all accepted domain state.
+		for coordinator: PlayerSaveCoordinator in get_tree().get_nodes_in_group("player_save_coordinators"):
+			if coordinator.terrain_saver != null:
+				coordinator.terrain_saver.edits.cancel_pending()
+		var error := _flush_players()
+		if error != OK:
+			push_warning("Lifecycle save failed: %s"%error)
+
 func show_saves() -> void:
 	if Profiles.world_slot > 0:
 		show_worlds()

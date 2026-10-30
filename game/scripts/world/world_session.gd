@@ -337,7 +337,7 @@ func apply_graphics(budget: Dictionary) -> void:
 func graphics_metrics() -> Dictionary:
 	var native := terrain.statistics()
 	var io := store.metrics()
-	return {"profile":GameSettings.effective(),"data_slots":native.data_blocks,"mesh_slots":native.mesh_blocks,
+	return {"profile":GameSettings.effective(),"rendering_method":RenderingServer.get_current_rendering_method(),"data_slots":native.data_blocks,"mesh_slots":native.mesh_blocks,
 		"voxel_buffer_bytes":native.engine.memory_pools.voxel_used,"generation_queue":native.engine.tasks.generation,
 		"meshing_queue":native.engine.tasks.meshing,"dirty_chunks":io.get("dirty_chunks",0),
 		"foliage":surface.foliage.report(),"active_mob_actors":surface.mobs.actors.size(),

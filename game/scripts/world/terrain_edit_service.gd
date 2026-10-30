@@ -125,5 +125,14 @@ func _finish(operation: Dictionary, callback: Callable) -> void:
 func pending_count() -> int:
 	return _queue.size()
 
+func cancel_pending(reason: Error = ERR_SKIP) -> void:
+	for intent: Dictionary in _queue.values():
+		var operation := {"id":intent.id,"center":intent.center,"error":reason}
+		operation_failed.emit(operation)
+		if intent.callback.is_valid():
+			intent.callback.call(operation)
+		expired += _queue.size()
+	_queue.clear()
+
 func queue_report() -> Dictionary:
 	return {"pending":_queue.size(),"accepted":accepted,"coalesced":coalesced,"expired":expired}
