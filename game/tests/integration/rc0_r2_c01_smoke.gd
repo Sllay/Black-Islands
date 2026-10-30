@@ -7,6 +7,10 @@ func check(condition: bool, label: String) -> void:
 func _ready() -> void:
 	_run.call_deferred()
 func _run() -> void:
+	var library := FrontendLibrary.new("user://qa_r2_world_metadata/"+Crypto.new().generate_random_bytes(6).hex_encode())
+	check(library.create_world(1,"Native Chapter1",424242) == OK,"new world metadata create")
+	var profile := library.read("world",1)
+	check(profile.world_generation_version == 2 and profile.world_profile == WorldGenerationProfile.ID and not FileAccess.file_exists(library.world_directory(profile).path_join("active.json")),"new worlds pin v2 without generating in frontend")
 	var signatures: Dictionary = {}
 	var rivers := 0
 	var first: WorldFieldV2 = null
@@ -15,6 +19,9 @@ func _run() -> void:
 		if first == null:
 			first = field
 		check(field.graph is VoxelGeneratorGraph and field.graph.use_xz_caching and field.graph.use_optimized_execution_map and field.graph.use_subdivision,"native optimized production graph")
+		for offset: int in [0,512,1024,1536,-1536]:
+			var range_value := field.graph.debug_analyze_range(Vector3(offset,-128,-256),Vector3(offset+128,128,256))
+			check(range_value.x <= range_value.y,"native interval analysis remains ordered")
 		check(field.metadata.land_area_m2 > 500000 and field.metadata.land_area_m2 < 750000,"roughly4x original land area")
 		check(field.metadata.lowland_ratio > .5 and field.metadata.highland_ratio > .15,"broad lowlands and highlands")
 		check(field.lakes.size() in [1,2] and field.village_candidates.size() > 10,"hydrology/village candidates")

@@ -51,8 +51,11 @@ func noise(seed_value: int, frequency: float, nx: int, nz: int, octaves: int = 2
 	return id
 
 func smooth(source: int, low: float, high: float) -> int:
-	var t := expression("clamp((a-%.9f)/%.9f,0,1)"%[low,high-low],{"a":source})
-	return expression("a*a*(3-2*a)",{"a":t})
+	var id := node(VoxelGraphFunction.NODE_SMOOTHSTEP)
+	function.set_node_param(id,0,low)
+	function.set_node_param(id,1,high)
+	function.add_connection(source,0,id,0)
+	return id
 
 func less(source: int, threshold: float) -> int:
 	var id := node(VoxelGraphFunction.NODE_SELECT)
@@ -91,11 +94,11 @@ func build_v2(profile: Dictionary, seed_value: int, lakes: Array = [], river: Di
 	height = expression("(%.7f+b*c*%.7f)*(1-a)+d*%.7f"%[float(profile.lowland_height),float(profile.elevation_step),float(profile.deep_ocean_level)*float(profile.elevation_step)],{"a":beach,"b":terraces,"c":center,"d":deep})
 	# Calm pockets are designed into the macro field; spawn is a flat clearing.
 	var spawn := smooth(expression("sqrt(a*a+b*b)",{"a":x,"b":z}),18,42)
-	height = expression("lerp(%.7f,a,b)"%float(profile.lowland_height),{"a":height,"b":spawn})
+	height = expression("%.7f*(1-b)+a*b"%float(profile.lowland_height),{"a":height,"b":spawn})
 	for lake: Dictionary in lakes:
-		var r := expression("sqrt(((a-%.7f)/%.7f)*((a-%.7f)/%.7f)+((b-%.7f)/%.7f)*((b-%.7f)/%.7f))+c*0.10"%[lake.center[0],lake.radii[0],lake.center[0],lake.radii[0],lake.center[1],lake.radii[1],lake.center[1],lake.radii[1]],{"a":x,"b":z,"c":noise(seed_value+int(lake.index)+211,.075,x,z)})
+		var r := expression("sqrt(((a-%.7f)/%.7f)*((a-%.7f)/%.7f)+((b-%.7f)/%.7f)*((b-%.7f)/%.7f))+c*%.7f"%[lake.center[0],lake.radii[0],lake.center[0],lake.radii[0],lake.center[1],lake.radii[1],lake.center[1],lake.radii[1],float(profile.lakes.shore_irregularity)],{"a":x,"b":z,"c":noise(seed_value+int(lake.index)+211,.075,x,z)})
 		var bank := smooth(r,.20,1.3)
-		height = expression("min(a,lerp(%.7f,a,b))"%float(lake.level-lake.depth),{"a":height,"b":bank})
+		height = expression("min(a,%.7f*(1-b)+a*b)"%float(lake.level-lake.depth),{"a":height,"b":bank})
 	var points: Array = river.get("points",[])
 	for index: int in range(maxi(0,points.size()-1)):
 		var a: Array = points[index]
@@ -106,7 +109,7 @@ func build_v2(profile: Dictionary, seed_value: int, lakes: Array = [], river: Di
 		var ratio := expression("clamp(((x-%.7f)*%.7f+(z-%.7f)*%.7f)/%.7f,0,1)"%[a[0],dx,a[2],dz,length2],{"x":x,"z":z})
 		var r := expression("sqrt((x-(%.7f+t*%.7f))*(x-(%.7f+t*%.7f))+(z-(%.7f+t*%.7f))*(z-(%.7f+t*%.7f)))/%.7f"%[a[0],dx,a[0],dx,a[2],dz,a[2],dz,float(river.width)],{"x":x,"z":z,"t":ratio})
 		var bank := smooth(r,.25,1.9)
-		height = expression("min(h,lerp(lerp(%.7f,%.7f,t)-%.7f,h,b))"%[a[1],b[1],float(river.depth)],{"h":height,"t":ratio,"b":bank})
+		height = expression("min(h,(%.7f*(1-t)+%.7f*t-%.7f)*(1-b)+h*b)"%[a[1],b[1],float(river.depth)],{"h":height,"t":ratio,"b":bank})
 	var sdf := expression("(a-b)*2",{"a":y,"b":height})
 	var sand := expression("1-a",{"a":smooth(height,2.5,5.0)})
 	var rock := smooth(expression("b-a",{"a":y,"b":height}),10,13)
@@ -120,10 +123,10 @@ func build_legacy(field: IslandField) -> Dictionary:
 	generator.sdf_clip_threshold = 16.0
 	var n := noise(field.world_seed,.012,x,z,3)
 	var clearing := smooth(expression("sqrt(a*a+b*b)",{"a":x,"b":z}),16,42)
-	height = expression("lerp(12,14+16*a,b)",{"a":n,"b":clearing})
+	height = expression("12*(1-b)+(14+16*a)*b",{"a":n,"b":clearing})
 	var lake_r := expression("sqrt((a+72)*(a+72)+(b-48)*(b-48))",{"a":x,"b":z})
 	var lake_edge := smooth(lake_r,18,28)
-	height = expression("lerp(min(h,4+5*(r/18)*(r/18)),h,t)",{"h":height,"r":lake_r,"t":lake_edge})
+	height = expression("min(h,4+5*(r/18)*(r/18))*(1-t)+h*t",{"h":height,"r":lake_r,"t":lake_edge})
 	var radial := expression("(a/240)*(a/240)+(b/210)*(b/210)",{"a":x,"b":z})
 	var body := expression("(sqrt(a+((b+35)/65)*((b+35)/65))-1)*50",{"a":radial,"b":y})
 	var top := expression("min(h,-35+65*sqrt(max(0,1-r)))",{"h":height,"r":radial})

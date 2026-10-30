@@ -146,7 +146,7 @@ func water_distance(point: Vector2) -> float:
 func water_at(point: Vector2) -> Dictionary:
 	for body: Dictionary in lakes:
 		var local := (point-Vector2(body.center[0],body.center[1]))/Vector2(body.radii[0],body.radii[1])
-		if local.length() < 1.3:
+		if local.length() < 1.5:
 			return {"kind":"lake","level":body.level}
 	var samples: Array = river.get("points",[])
 	for index: int in range(maxi(0,samples.size()-1)):

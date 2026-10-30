@@ -25,7 +25,7 @@ func _ready() -> void:
 		var tool := SurfaceTool.new()
 		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 		for index: int in 48:
-			for point: Vector3 in [Vector3(center.x,float(lake.level)+.025,center.y),points[index+1],points[index]]:
+			for point: Vector3 in [Vector3(center.x,float(lake.level)+.025,center.y),points[index],points[index+1]]:
 				tool.set_normal(Vector3.UP)
 				tool.add_vertex(point)
 		_add(tool.commit(),material,str(lake.id))
