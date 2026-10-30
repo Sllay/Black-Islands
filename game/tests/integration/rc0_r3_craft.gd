@@ -152,6 +152,9 @@ func _save() -> void:
 func _performance() -> void:
 	var player := store("perf",256,256)
 	var chest := store("chest",256,256)
+	for slot: int in range(2,20):
+		player._slots[slot] = ItemStack.new("bi.weapon.starter_sword",1)
+		chest._slots[slot] = ItemStack.new("bi.weapon.starter_sword",1)
 	var service := service_for(resources([player,chest]))
 	for index: int in 105:
 		var recipe := RecipeDefinition.new({"id":"qa.recipe.%d"%index,"ingredients":[{"item_id":"bi.resource.wood","quantity":1}],"outputs":[{"item_id":"bi.ammo.arrow","quantity":1}],"craft_duration":1})
@@ -185,8 +188,11 @@ func _spoilage_performance() -> void:
 	var microseconds := Time.get_ticks_usec()-start
 	check(simulation.polls == 0 and simulation.expirations == 0,"1280 spoilage stacks idle has no repeated scans")
 	start = Time.get_ticks_usec()
-	simulation.advance(110.1)
+	simulation.clock.advance(110.1)
+	var worst_batch := 0
 	while simulation.clock.now >= simulation._next:
+		var batch_start := Time.get_ticks_usec()
 		simulation.settle()
-	print("SPOILAGE_PERF stacks=1280 idle600ticks_us=",microseconds," expiry1280_ms=",(Time.get_ticks_usec()-start)/1000.0," expirations=",simulation.expirations)
+		worst_batch = maxi(worst_batch,Time.get_ticks_usec()-batch_start)
+	print("SPOILAGE_PERF stacks=1280 idle600ticks_us=",microseconds," expiry1280_ms=",(Time.get_ticks_usec()-start)/1000.0," expirations=",simulation.expirations," budget=",InventorySimulation.EXPIRATION_BUDGET," worst_batch_ms=",worst_batch/1000.0)
 	simulation.free()

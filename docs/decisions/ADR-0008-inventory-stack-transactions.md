@@ -1,6 +1,6 @@
 # ADR-0008 — Inventory metadata, active spoilage and atomic publications
 
-Status: C02-A implemented; UX/crafting follow in C02-B/C.
+Status: accepted and implemented in R3 C02-A/B/C.
 
 The existing InventoryState / stack UID / revision / InventoryTransactions boundary is preserved. InventoryPlan owns detached copies. Commit checks all participant revisions/identities and duplicate stack ownership before adopting every store. Prepared publications can atomically add a world bag or advance a future craft queue before any observer signal. Preflight is pure, apply is infallible/main-thread, notifications happen after all truth is committed. Save coordinators reject reentrant snapshots during a transaction.
 

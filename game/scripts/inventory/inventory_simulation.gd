@@ -1,6 +1,7 @@
 class_name InventorySimulation
 extends Node
 signal unit_spoiled(source_item_id: String, result_item_id: String)
+const EXPIRATION_BUDGET := 8
 ## One active-time scheduler. No per-stack Node and no per-frame inventory scan.
 var clock := GameplayTimeSource.new()
 var stores: Array[InventoryState] = []
@@ -46,7 +47,7 @@ func advance(delta: float) -> void:
 	clock.advance(delta)
 	if clock.now >= _next:
 		settle()
-func settle(budget: int = 64) -> void:
+func settle(budget: int = EXPIRATION_BUDGET) -> void:
 	if InventoryTransactions.busy:
 		return
 	var count := 0
