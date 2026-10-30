@@ -23,6 +23,14 @@ func primary() -> void:
 			runtime.harvest_prop(target.entity.spawn_id,runtime.player)
 		elif is_instance_valid(target.entity) and target.entity.has_method("harvest"):
 			target.entity.harvest()
+		elif target.kind in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID]:
+			var operation: Dictionary = SurfaceCatalog.data().tools[item.id].get("terrain_operation",{})
+			if operation.get("mode") == "dig":
+				var error := runtime.session.edits.request(target.world_position,float(operation.radius),false,2,runtime.player)
+				if error == OK:
+					runtime.player.visual.play_semantic(LPCActionResolver.MELEE_SLASH,.35)
+				else:
+					runtime.message.emit("Este terreno não pode ser escavado.")
 		return
 	var point := target.world_position
 	var key := SurfaceLedger.cell_key(point)

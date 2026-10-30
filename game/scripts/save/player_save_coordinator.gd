@@ -9,6 +9,8 @@ var _poll := 0.0
 var _since_save := 0.0
 var _last_key := ""
 var _safe_feet := Vector3.ZERO
+var terrain_saver: TerrainSaveScheduler
+var _autosaving := false
 
 func configure(player: PlayerActor, storage: PlayerSaveStore) -> void:
 	actor = player
@@ -41,7 +43,9 @@ func _process(delta: float) -> void:
 	if actor.is_on_floor() or (actor.water != null and actor.water.sample(actor.global_position).kind != "dry"):
 		_safe_feet = actor.global_position
 	if _since_save >= 8 and actor.combat.phase == PlayerCombat.Phase.READY and actor.is_on_floor():
+		_autosaving = true
 		flush()
+		_autosaving = false
 
 func snapshot() -> Dictionary:
 	var feet := actor.global_position if actor.is_on_floor() else _safe_feet
@@ -58,7 +62,11 @@ func snapshot() -> Dictionary:
 	return data
 
 func flush() -> Error:
-	if actor == null or not actor.spawned:
+	if terrain_saver != null and not _autosaving:
+		last_error = terrain_saver.flush()
+		if last_error != OK:
+			return last_error
+	if actor == null or (_autosaving and not actor.spawned):
 		return OK
 	var data := snapshot()
 	var key := JSON.stringify(data,"",true).sha256_text()

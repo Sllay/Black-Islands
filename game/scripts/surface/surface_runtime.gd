@@ -24,6 +24,10 @@ func ground_contact(cell: Vector3i) -> bool:
 	return _ground_at(StructureModule.center(cell))
 
 func _ground_at(point: Vector3) -> bool:
+	if terrain != null and terrain.field is WorldFieldV2:
+		var water: Dictionary = terrain.field.water_at(Vector2(point.x,point.z))
+		if water.kind == "ocean" and terrain.field.top_surface(point.x,point.z) < -float(terrain.field.profile.elevation_step)*3:
+			return false
 	return _density(point-Vector3.UP*.55) < 0 and _density(point+Vector3.UP*.55) > 0
 
 func foundation_contact(cell: Vector3i) -> bool:

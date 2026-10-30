@@ -72,6 +72,9 @@ static func apply_scene(root: Node) -> void:
 	for light: Node in root.find_children("*","DirectionalLight3D",true,false):
 		light.shadow_enabled = current.get("shadows",true)
 		light.directional_shadow_max_distance = float(catalog.presets[current.get("quality","Medium")].shadow_distance)
+	for session: Node in root.find_children("*","Node3D",true,false):
+		if session is WorldSession:
+			session.apply_distance(int(current.get("distance",6)))
 
 static func distance_budget(level: int) -> Dictionary:
 	return catalog.distance_levels[str(clampi(level,2,10))].duplicate(true)

@@ -75,7 +75,11 @@ func _process(delta: float) -> void:
 	super(delta)
 
 func flush() -> Error:
-	if actor == null or not actor.spawned or world_store.runtime == null:
+	if terrain_saver != null and not _autosaving:
+		last_error = terrain_saver.flush()
+		if last_error != OK:
+			return last_error
+	if actor == null or (_autosaving and not actor.spawned) or world_store.runtime == null:
 		return OK
 	var snapshot_data := snapshot()
 	last_error = PlayerSaveStore.validate_snapshot(snapshot_data)

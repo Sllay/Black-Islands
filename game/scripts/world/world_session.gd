@@ -18,6 +18,8 @@ var remesh_confirmations := 0
 var collision_confirmations := 0
 var last_edit: Dictionary = {}
 var _started := 0
+var terrain_saver: TerrainSaveScheduler
+var residency_anchor: TerrainResidencyAnchor
 
 var grid_debug_visible := false
 
@@ -48,7 +50,7 @@ func _ready() -> void:
 			_show_load_error(preparation)
 			return
 		storage_root = Profiles.library.world_directory(profile).get_base_dir()
-	store = WorldDeltaStore.new(storage_root.path_join(profile.save_id),profile)
+	store = BufferedWorldDeltaStore.new(storage_root.path_join(profile.save_id),profile)
 	var error := store.load_world()
 	if error != OK:
 		_show_load_error(error)
@@ -78,6 +80,7 @@ func _ready() -> void:
 	edits.terrain = terrain
 	edits.store = store
 	edits.terrain_changed.connect(water.invalidate_terrain)
+	edits.operation_completed.connect(func(operation: Dictionary) -> void: _observe_edit(operation,float(operation.center.y)))
 	pawn = load("res://scenes/player/Player.tscn").instantiate()
 	pawn.terrain = terrain
 	pawn.water = water
@@ -86,13 +89,26 @@ func _ready() -> void:
 	player_save.name = "PlayerSave"
 	add_child(player_save)
 	player_save.configure(pawn,player_store)
+	terrain_saver = TerrainSaveScheduler.new()
+	terrain_saver.name = "TerrainSaveScheduler"
+	terrain_saver.store = store
+	terrain_saver.edits = edits
+	add_child(terrain_saver)
+	player_save.terrain_saver = terrain_saver
+	residency_anchor = TerrainResidencyAnchor.new()
+	residency_anchor.name = "TerrainResidencyAnchor"
+	add_child(residency_anchor)
+	residency_anchor.configure(pawn,pawn.get_node("Viewer"))
 	streamer = WorldStreamer.new()
 	streamer.name = "WorldStreamer"
 	streamer.field = terrain.field
 	streamer.viewer = pawn
 	add_child(streamer)
 	_create_surface()
+	edits.intent_queued.connect(func(_operation: Dictionary) -> void: surface.message.emit("Preparando o terreno próximo…"))
+	edits.operation_failed.connect(func(_operation: Dictionary) -> void: surface.message.emit("Ação de terreno cancelada: área ainda indisponível ou alvo alterado."))
 	GameSettings.apply_scene(self)
+	apply_distance(int(GameSettings.current.get("distance",6)))
 	if terrain.field is WorldFieldV2:
 		$Lake.visible = false
 		var waters := GeneratedWaterView.new()
@@ -143,12 +159,9 @@ func edit_ahead(paint: bool) -> bool:
 	if pawn == null:
 		return false
 	var target := pawn.targeter.current
-	if target.kind not in [TargetResult.Kind.TERRAIN, TargetResult.Kind.BUILD_GRID]:
+	if target.kind not in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID]:
 		return false
-	if edits.apply(target.world_position, 2, paint, 2) != OK:
-		return false
-	_observe_edit(edits.last_result.duplicate(), target.world_position.y)
-	return true
+	return edits.request(target.world_position,2,paint,2,pawn) == OK
 
 func _observe_edit(operation: Dictionary, before_y: float) -> void:
 	var deadline := Time.get_ticks_msec() + 10000
@@ -302,3 +315,11 @@ func _update_placement_preview() -> void:
 	else:
 		$BuildHighlight.scale = Vector3.ONE
 		$BuildHighlight.position = Vector3(target.build_cell)+Vector3(.5,target.world_position.y-target.build_cell.y+.06,.5)
+
+func apply_distance(level: int) -> void:
+	if terrain == null or pawn == null:
+		return
+	var budget := GameSettings.distance_budget(level)
+	terrain.native.view_distance = ceili(float(budget.viewer_metres)/WorldCoordinates.VOXEL_SIZE)
+	pawn.get_node("Viewer").view_distance = int(budget.viewer_metres)
+	streamer.set_radius(int(budget.near_ring))

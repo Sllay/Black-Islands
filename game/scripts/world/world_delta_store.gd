@@ -82,7 +82,7 @@ func commit(changes: Dictionary) -> Error:
 		records[_key(chunk)] = name
 	var path := directory.path_join("active.json")
 	# Preserve future or externally replaced data, even after this store was loaded.
-	var primary := _read_index(path)
+	var primary := read_checkpoint_head(path)
 	if primary.error == ERR_UNAVAILABLE:
 		return ERR_UNAVAILABLE
 	if primary.error == OK and primary.revision != revision:
@@ -120,6 +120,16 @@ func snapshot_box(origin: Vector3i, extent: Vector3i) -> Dictionary:
 						result[voxel] = chunk[voxel].duplicate(true)
 	_mutex.unlock()
 	return result
+
+func read_checkpoint_head(path: String) -> Dictionary:
+	# Session load validates all referenced chunks. Commit only needs the small
+	# checksummed manifest/revision; never re-read the whole world per checkpoint.
+	var header := _read_envelope(path,"index")
+	if header.error != OK:
+		return header
+	if not _integer(header.payload.get("revision")) or not header.payload.get("records") is Dictionary:
+		return {"error":ERR_FILE_CORRUPT}
+	return {"error":OK,"revision":header.payload.revision}
 
 func metrics() -> Dictionary:
 	_mutex.lock()

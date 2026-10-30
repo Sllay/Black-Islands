@@ -12,6 +12,9 @@ var viewer: Node3D
 var active: Dictionary = {}
 var center := Vector3i.ZERO
 var initialized := false
+var radius := 1
+var _applied_radius := 0
+var _requested_radius := 1
 var plan_requests := 0
 var applied := 0
 var unloaded := 0
@@ -32,7 +35,7 @@ func _process(delta: float) -> void:
 
 func update_target(point: Vector3, delta: float) -> void:
 	var wanted := WorldCoordinates.world_to_chunk(point)
-	if initialized:
+	if initialized and radius == _applied_radius:
 		var envelope := AABB(WorldCoordinates.chunk_origin(center) - Vector3.ONE * HYSTERESIS, Vector3.ONE * (64.0 + 2.0 * HYSTERESIS))
 		if envelope.has_point(point):
 			_stable_for = 0.0
@@ -41,16 +44,17 @@ func update_target(point: Vector3, delta: float) -> void:
 		_candidate = wanted
 		_stable_for = 0.0
 	_stable_for += delta
-	if _task < 0 and _applying.is_empty() and (not initialized or _stable_for >= DEBOUNCE):
+	if _task < 0 and _applying.is_empty() and (not initialized or radius != _applied_radius or _stable_for >= DEBOUNCE):
 		_requested_center = wanted
+		_requested_radius = radius
 		_started = Time.get_ticks_msec()
-		_task = WorkerThreadPool.add_task(_prepare.bind(wanted), false, "Black Island region descriptors")
+		_task = WorkerThreadPool.add_task(_prepare.bind(wanted,radius), false, "Black Island region descriptors")
 		plan_requests += 1
 
-func _prepare(target: Vector3i) -> void:
+func _prepare(target: Vector3i, requested_radius: int = 1) -> void:
 	var result: Array[Dictionary] = []
-	for z: int in range(target.z - 1, target.z + 2):
-		for x: int in range(target.x - 1, target.x + 2):
+	for z: int in range(target.z-requested_radius,target.z+requested_radius+1):
+		for x: int in range(target.x-requested_radius,target.x+requested_radius+1):
 			var layers: Dictionary = {}
 			for offset: Vector2 in [Vector2(1, 1), Vector2(63, 1), Vector2(1, 63), Vector2(63, 63), Vector2(32, 32)]:
 				var top := field.top_surface(x * 64.0 + offset.x, z * 64.0 + offset.y)
@@ -89,6 +93,7 @@ func _poll() -> void:
 				unloaded += 1
 		_next.clear()
 		center = _requested_center
+		_applied_radius = _requested_radius
 		initialized = true
 		last_transition_ms = Time.get_ticks_msec() - _started
 		ring_changed.emit()
@@ -104,3 +109,6 @@ func metrics() -> Dictionary:
 func _exit_tree() -> void:
 	if _task >= 0:
 		WorkerThreadPool.wait_for_task_completion(_task)
+
+func set_radius(value: int) -> void:
+	radius = clampi(value,1,3)

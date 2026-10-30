@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cabmyav40u4od"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r2_benchmark.gd" id="1_6l1nh"]
+
+[node name="Rc0R2Benchmark" type="Node3D" unique_id=540602541]
+script = ExtResource("1_6l1nh")

@@ -27,6 +27,8 @@ func _ready() -> void:
 	set_seed(424242)
 
 func set_seed(seed_value: int) -> void:
+	if store is BufferedWorldDeltaStore:
+		assert(store.flush() == OK)
 	if is_instance_valid(terrain):
 		remove_child(terrain)
 		terrain.queue_free()
@@ -37,7 +39,7 @@ func set_seed(seed_value: int) -> void:
 	field = WorldFieldV2.new(seed_value)
 	var profile := {"save_id":"22222222222222222222222222222222","created_at":"2026-10-30T00:00:00Z",
 		"world_seed":seed_value,"world_generation_version":2,"world_profile":field.profile_id}
-	store = WorldDeltaStore.new(directory.path_join(str(seed_value)),profile)
+	store = BufferedWorldDeltaStore.new(directory.path_join(str(seed_value)),profile)
 	assert(store.load_world() == OK)
 	terrain = load("res://scenes/world/WorldTerrain.tscn").instantiate()
 	terrain.name = "NativeTerrain"
@@ -67,6 +69,8 @@ func report() -> Dictionary:
 func edit_probe() -> void:
 	var before := terrain.surface_hit(0,0)
 	var error := edits.apply(Vector3(0,8,0),1.2)
+	if store is BufferedWorldDeltaStore and error == OK:
+		error = store.flush()
 	await get_tree().create_timer(1).timeout
 	var after := terrain.surface_hit(0,0)
 	result = {"edit":error,"before":before.get("position"),"after":after.get("position"),"delta":store.metrics()}

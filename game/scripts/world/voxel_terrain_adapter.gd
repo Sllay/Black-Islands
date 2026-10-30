@@ -7,6 +7,7 @@ var field := IslandField.new()
 var native: VoxelLodTerrain
 var generator: VoxelGeneratorGraph
 var edit_requests: int = 0
+var _recent_edits: Array[Dictionary] = []
 
 var deltas: WorldDeltaStore
 
@@ -22,7 +23,7 @@ func _ready() -> void:
 	native.collision_lod_count = 1
 	native.collision_update_delay = 16
 	native.collision_layer = CollisionLayers.WORLD
-	native.cache_generated_blocks = true
+	native.cache_generated_blocks = false
 	var mesher := VoxelMesherTransvoxel.new()
 	mesher.texturing_mode = VoxelMesherTransvoxel.TEXTURES_MIXEL4_S4
 	mesher.textures_ignore_air_voxels = true
@@ -42,16 +43,33 @@ func _ready() -> void:
 	native.generator = generator
 
 func is_editable(center: Vector3, radius: float) -> bool:
-	if not is_finite(radius) or radius <= 0.0 or not center.is_finite():
+	if native == null or not center.is_finite() or not is_finite(radius) or radius <= 0:
 		return false
+	if field is WorldFieldV2:
+		var water: Dictionary = field.water_at(Vector2(center.x,center.z))
+		if water.kind == "ocean" and field.top_surface(center.x,center.z) < -float(field.profile.elevation_step)*3:
+			return false
+	var world_area := AABB(center-Vector3.ONE*radius,Vector3.ONE*radius*2)
+	var now := Time.get_ticks_msec()
+	for index: int in range(_recent_edits.size()-1,-1,-1):
+		if now >= int(_recent_edits[index].until):
+			_recent_edits.remove_at(index)
+		elif world_area.intersects(_recent_edits[index].area):
+			return false
 	var point := native.to_local(center)
-	var extent := Vector3.ONE * (radius / WorldCoordinates.VOXEL_SIZE + 2.0)
-	var area := AABB(point - extent, extent * 2.0)
-	# v1.7x can accept edits while initial generation/meshing is still in flight,
-	# leaving a stale first collider. Conservatively expose edits at an idle gate.
-	# Data residency alone is not readiness. No global remesh is used as a repair.
-	var tasks: Dictionary = Engine.get_singleton("VoxelEngine").call("get_stats").tasks
-	return native.voxel_bounds.encloses(area) and native.get_voxel_tool().is_area_editable(area) and native.is_area_meshed(area, 0) and tasks.generation == 0 and tasks.meshing == 0 and tasks.main_thread == 0
+	var extent := Vector3.ONE*(radius/WorldCoordinates.VOXEL_SIZE+2)
+	var area := AABB(point-extent,extent*2)
+	if not native.voxel_bounds.encloses(area) or not native.get_voxel_tool().is_area_editable(area) or not native.is_area_meshed(area,0):
+		return false
+	var first := Vector3i((area.position/float(native.mesh_block_size)).floor())
+	var last := Vector3i((area.end/float(native.mesh_block_size)).floor())
+	for z: int in range(first.z,last.z+1):
+		for x: int in range(first.x,last.x+1):
+			for y: int in range(first.y,last.y+1):
+				var block := native.debug_get_mesh_block_info(Vector3i(x,y,z),0)
+				if block.get("meshed",false) and not block.get("collision_active",false):
+					return false
+	return true
 
 func dig_sphere(center: Vector3, radius: float) -> bool:
 	if not is_editable(center, radius):
@@ -62,6 +80,7 @@ func dig_sphere(center: Vector3, radius: float) -> bool:
 	tool.sdf_scale = 1.0
 	tool.do_sphere(native.to_local(center), radius / WorldCoordinates.VOXEL_SIZE)
 	edit_requests += 1
+	_recent_edits.append({"area":AABB(center-Vector3.ONE*radius,Vector3.ONE*radius*2),"until":Time.get_ticks_msec()+50})
 	region_changed.emit(AABB(center - Vector3.ONE * radius, Vector3.ONE * radius * 2.0))
 	return true
 
@@ -76,6 +95,7 @@ func paint_sphere(center: Vector3, radius: float, logical_material: int) -> bool
 	tool.texture_falloff = 0.5
 	tool.do_sphere(native.to_local(center), radius / WorldCoordinates.VOXEL_SIZE)
 	edit_requests += 1
+	_recent_edits.append({"area":AABB(center-Vector3.ONE*radius,Vector3.ONE*radius*2),"until":Time.get_ticks_msec()+50})
 	region_changed.emit(AABB(center - Vector3.ONE * radius, Vector3.ONE * radius * 2.0))
 	return true
 
@@ -148,3 +168,33 @@ func collision_data_ready(world_point: Vector3) -> bool:
 
 func statistics() -> Dictionary:
 	return {"native": native.get_statistics(), "engine": Engine.get_singleton("VoxelEngine").call("get_stats"), "data_blocks": native.debug_get_data_block_count(), "mesh_blocks": native.debug_get_mesh_block_count(), "edit_requests": edit_requests}
+
+func capture_buffer(origin: Vector3i, extent: Vector3i, buffer: VoxelBuffer) -> void:
+	if buffer.get_size() != extent:
+		buffer.create(extent.x,extent.y,extent.z)
+	native.get_voxel_tool().copy(origin,buffer,NativeTerrainGraph.CHANNELS)
+
+func difference(before: VoxelBuffer, after: VoxelBuffer, origin: Vector3i) -> Dictionary:
+	var a_sdf := before.get_channel_as_byte_array(VoxelBuffer.CHANNEL_SDF)
+	var a_indices := before.get_channel_as_byte_array(VoxelBuffer.CHANNEL_INDICES)
+	var a_weights := before.get_channel_as_byte_array(VoxelBuffer.CHANNEL_WEIGHTS)
+	var b_sdf := after.get_channel_as_byte_array(VoxelBuffer.CHANNEL_SDF)
+	var b_indices := after.get_channel_as_byte_array(VoxelBuffer.CHANNEL_INDICES)
+	var b_weights := after.get_channel_as_byte_array(VoxelBuffer.CHANNEL_WEIGHTS)
+	var changes: Dictionary = {}
+	var size := after.get_size()
+	for index: int in size.x*size.y*size.z:
+		var offset := index*2
+		if a_sdf.decode_u16(offset) == b_sdf.decode_u16(offset) and a_indices.decode_u16(offset) == b_indices.decode_u16(offset) and a_weights.decode_u16(offset) == b_weights.decode_u16(offset):
+			continue
+		@warning_ignore("integer_division")
+		var cell := Vector3i((index/size.y)%size.x,index%size.y,index/(size.y*size.x))
+		var indices := b_indices.decode_u16(offset)
+		var packed := b_weights.decode_u16(offset)
+		var weights := [0,0,0,0]
+		for material: int in 4:
+			var logical := (indices>>(material*4))&15
+			if logical < 4:
+				weights[logical] += (packed>>(material*4))&15
+		changes[origin+cell] = {"density":b_sdf.decode_s16(offset),"materials":weights}
+	return changes

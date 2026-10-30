@@ -5,97 +5,97 @@
       "id": "bi.tool.axe",
       "title": "Machado",
       "category": "TOOL",
-      "icon": "\u265c"
+      "icon": "♜"
     },
     {
       "id": "bi.tool.knife",
       "title": "Faca",
       "category": "TOOL",
-      "icon": "\u2020"
+      "icon": "†"
     },
     {
       "id": "bi.tool.hoe",
       "title": "Enxada",
       "category": "TOOL",
-      "icon": "\u2301"
+      "icon": "⌁"
     },
     {
       "id": "bi.tool.watering_can",
       "title": "Regador",
       "category": "TOOL",
-      "icon": "\u2652"
+      "icon": "♒"
     },
     {
       "id": "bi.tool.shovel",
-      "title": "P\u00e1 / caminho",
+      "title": "Pá / caminho",
       "category": "TOOL",
-      "icon": "\u2660"
+      "icon": "♠"
     },
     {
       "id": "bi.resource.wood",
       "title": "Madeira",
       "category": "RESOURCE",
-      "icon": "\u25a5"
+      "icon": "▥"
     },
     {
       "id": "bi.resource.fiber",
       "title": "Fibra",
       "category": "RESOURCE",
-      "icon": "\u2248"
+      "icon": "≈"
     },
     {
       "id": "bi.resource.sap",
       "title": "Seiva",
       "category": "RESOURCE",
-      "icon": "\u25cf"
+      "icon": "●"
     },
     {
       "id": "bi.resource.metal",
-      "title": "Min\u00e9rio",
+      "title": "Minério",
       "category": "RESOURCE",
-      "icon": "\u25c8"
+      "icon": "◈"
     },
     {
       "id": "bi.seed.turnip",
       "title": "Semente de nabo",
       "category": "CONSUMABLE",
-      "icon": "\u22c6"
+      "icon": "⋆"
     },
     {
       "id": "bi.food.turnip",
       "title": "Nabo",
       "category": "CONSUMABLE",
-      "icon": "\u25c9"
+      "icon": "◉"
     },
     {
       "id": "bi.resource.meat",
       "title": "Carne",
       "category": "RESOURCE",
-      "icon": "\u25b0"
+      "icon": "▰"
     },
     {
       "id": "bi.resource.light_hide",
       "title": "Couro leve",
       "category": "RESOURCE",
-      "icon": "\u25c7"
+      "icon": "◇"
     },
     {
       "id": "bi.resource.heavy_hide",
       "title": "Couro pesado",
       "category": "RESOURCE",
-      "icon": "\u25c6"
+      "icon": "◆"
     },
     {
       "id": "bi.resource.feather",
       "title": "Pena",
       "category": "RESOURCE",
-      "icon": "\u2301"
+      "icon": "⌁"
     },
     {
       "id": "bi.resource.rotten_flesh",
-      "title": "Carne p\u00fatrida",
+      "title": "Carne pútrida",
       "category": "RESOURCE",
-      "icon": "\u25b0"
+      "icon": "▰"
     }
   ],
   "props": [
@@ -429,7 +429,11 @@
         "bi.resource.stone": 1,
         "bi.resource.metal": 1
       },
-      "stamina": 5
+      "stamina": 5,
+      "terrain_operation": {
+        "mode": "dig",
+        "radius": 1.0
+      }
     },
     "bi.tool.knife": {
       "power": 20,
