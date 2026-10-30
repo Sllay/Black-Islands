@@ -50,7 +50,7 @@ func _settings() -> void:
 func _local(session: WorldSession) -> bool:
 	var start := Time.get_ticks_msec()
 	while Time.get_ticks_msec()-start < 25000:
-		if session.pawn.spawned and session.terrain.is_editable(Vector3(-2,8,-2),.6):
+		if session.pawn.spawned and session.terrain.is_editable(Vector3(-2,8,-2),1.2):
 			return true
 		await get_tree().physics_frame
 	return false
@@ -80,7 +80,8 @@ func _integrated() -> void:
 	check(session.surface.building.place("r2_root","foundation",Vector3i(6,8,6)) == OK,"real footprint-supported structure")
 	session.surface.objects.reconcile()
 	session.surface.foliage.cut(Vector3(3,8,3),1.4)
-	check(session.edits.apply(Vector3(-2,8,-2),.6) == OK,"native gameplay edit")
+	check(session.edits.apply(Vector3(-2,8,-2),1.2) == OK,"native gameplay edit")
+	check(session.surface.ledger.suppression.values().any(func(row: Dictionary) -> bool: return "excavated" in row.reasons),"unsupported native foliage persists column suppression")
 	var density := session.terrain.density_at(Vector3(-2,8,-2))
 	check(session.edits.request(Vector3(300,20,300),.6) == OK and session.edits.pending_count() == 1,"remote unready intent queued")
 	Flow._notification(NOTIFICATION_APPLICATION_PAUSED)
@@ -96,6 +97,7 @@ func _integrated() -> void:
 	check(await _local(session),"reopened real world locally ready")
 	check(is_equal_approx(density,session.terrain.density_at(Vector3(-2,8,-2))),"terrain delta restored through native stream")
 	check(session.surface.building.pieces.has("r2_root") and not session.surface.ledger.suppression.is_empty(),"structures/suppression restored")
+	check(session.surface.ledger.suppression.values().any(func(row: Dictionary) -> bool: return "excavated" in row.reasons),"excavation suppression survives native reload")
 	check(_quantity(session.pawn.inventory.state,"bi.resource.wood") == old_wood+11 and session.pawn.state.current_health == 73,"portable inventory/health unchanged on reload")
 	check(AtomicDocument.same_value(appearance,session.pawn.visual.configuration),"LPC config restored without cached texture in save")
 	check(session.frontend_save.world_document.schema == 2 and session.frontend_save.portable.document.schema == 2,"R1 schema2 preserved")

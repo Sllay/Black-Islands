@@ -272,6 +272,7 @@ func refresh(point: Vector3) -> void:
 	foliage.invalidate(AABB(point-Vector3(1,2,1),Vector3(3,4,3)))
 
 func terrain_changed(area: AABB) -> void:
+	_suppress_unsupported_foliage(area)
 	for z: int in range(floori(area.position.z/16),floori(area.end.z/16)+1):
 		for x: int in range(floori(area.position.x/16),floori(area.end.x/16)+1):
 			edited_patches[Vector2i(x,z)] = true
@@ -292,6 +293,20 @@ func terrain_changed(area: AABB) -> void:
 		reconcile_container_support(AABB(Vector3(SupportGraph.cell(row)),Vector3(2,4,2)))
 	reconcile_container_support(area)
 	objects.reconcile()
+
+func _suppress_unsupported_foliage(area: AABB) -> void:
+	# Native series snapping sees the base graph. Suppress only edited columns
+	# whose original surface lost support, including after native block reload.
+	for z: int in range(floori(area.position.z),ceili(area.end.z)):
+		for x: int in range(floori(area.position.x),ceili(area.end.x)):
+			var y := terrain.field.top_surface(x+.5,z+.5)
+			if not is_finite(y) or y < area.position.y-.5 or y > area.end.y+.5:
+				continue
+			var point := Vector3(x+.5,y,z+.5)
+			if _density(point-Vector3.UP*.45) > 0:
+				ledger.suppress(point,"excavated")
+			elif "excavated" in ledger.suppression.get(SurfaceLedger.cell_key(point),{}).get("reasons",[]):
+				ledger.release(point,"excavated")
 
 func foundation_foliage(row: Dictionary, suppress: bool) -> void:
 	var cell := SupportGraph.cell(row)

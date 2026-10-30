@@ -65,11 +65,10 @@ func begin_flush() -> void:
 	if _task >= 0 or _pending.is_empty():
 		return
 	var started := Time.get_ticks_usec()
-	var chunks: Dictionary = {}
 	_mutex.lock()
-	for chunk: Vector3i in _pending:
-		chunks[chunk] = _chunks[chunk].duplicate(true)
-	_snapshot = {"chunks":chunks,"patches":_pending.duplicate(true),"epochs":_epochs.duplicate(),"records":_records.duplicate(),"revision":revision}
+	# Copy only bounded uncheckpointed patches. Historical full chunks are read
+	# and merged by the worker, so a long mining session cannot grow this copy.
+	_snapshot = {"patches":_pending.duplicate(true),"epochs":_epochs.duplicate(),"records":_records.duplicate(),"revision":revision}
 	_mutex.unlock()
 	last_capture_ms = (Time.get_ticks_usec()-started)/1000.0
 	_completion = {}
@@ -131,7 +130,6 @@ func _serializer() -> WorldDeltaStore:
 func _write_worker(snapshot: Dictionary) -> void:
 	var started := Time.get_ticks_usec()
 	var writer := _serializer()
-	writer._chunks = snapshot.chunks
 	writer._records = snapshot.records
 	writer.revision = int(snapshot.revision)
 	var changes: Dictionary = {}
@@ -143,6 +141,8 @@ func _write_worker(snapshot: Dictionary) -> void:
 			rows.append([voxel.x,voxel.y,voxel.z,row.density,row.materials[0],row.materials[1],row.materials[2],row.materials[3]])
 	var path := directory.path_join("terrain_pending.json")
 	var error := DirAccess.make_dir_recursive_absolute(directory)
+	if error == OK:
+		error = _load_dirty_history(writer,snapshot.patches)
 	var current := writer.read_checkpoint_head(directory.path_join("active.json"))
 	if error == OK and current.error == ERR_UNAVAILABLE:
 		error = ERR_UNAVAILABLE
@@ -157,6 +157,27 @@ func _write_worker(snapshot: Dictionary) -> void:
 	if error == OK:
 		error = DirAccess.remove_absolute(path)
 	_completion = {"error":error,"records":writer._records,"revision":writer.revision,"ms":(Time.get_ticks_usec()-started)/1000.0}
+
+func _load_dirty_history(writer: WorldDeltaStore, patches: Dictionary) -> Error:
+	for chunk: Vector3i in patches:
+		var key := writer._key(chunk)
+		if not writer._records.has(key):
+			continue
+		var record := writer._read_envelope(directory.path_join(writer._records[key]),"chunk")
+		if record.error != OK:
+			return record.error
+		if not record.payload.get("voxels") is Array:
+			return ERR_FILE_CORRUPT
+		var rows: Dictionary = {}
+		for row: Variant in record.payload.voxels:
+			if not writer._valid_row(row):
+				return ERR_FILE_CORRUPT
+			var point := Vector3i(row[0],row[1],row[2])
+			if WorldCoordinates.voxel_to_chunk(point) != chunk:
+				return ERR_FILE_CORRUPT
+			rows[point] = {"density":int(row[3]),"materials":[int(row[4]),int(row[5]),int(row[6]),int(row[7])]}
+		writer._chunks[chunk] = rows
+	return OK
 
 func _recover_journal() -> Error:
 	var path := directory.path_join("terrain_pending.json")
