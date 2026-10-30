@@ -1,8 +1,8 @@
 class_name WorldWater
 extends RefCounted
-## Analytic ocean + generated sleeping lake. Interface seam for future WaterGrid;
-## no dynamic flow solver, drainage or hydrology performance claim in P02.
+## Stable gameplay facade: dynamic inland water and cheap analytic ocean.
 
+var motion_tuning: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/water/tuning.json"))
 var domain: WaterDomain
 var terrain: VoxelTerrainAdapter
 var dirty_notifications := 0
@@ -13,6 +13,8 @@ func sample(point: Vector3) -> Dictionary:
 		var dynamic := domain.grid.sample(point)
 		if not dynamic.is_empty():
 			return dynamic
+	if terrain == null:
+		return {"kind":"dry","level":0.0,"depth":0.0,"submerged":false,"current":Vector3.ZERO}
 	var body := terrain.field.lake_body()
 	var lake: bool = Vector2(point.x,point.z).distance_to(body.center) <= body.radius
 	var water: Dictionary = terrain.field.water_at(Vector2(point.x,point.z)) if terrain.field is WorldFieldV2 else {"kind":"lake" if lake else "ocean","level":body.level if lake else 0.0}

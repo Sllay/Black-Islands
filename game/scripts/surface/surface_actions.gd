@@ -37,7 +37,10 @@ func primary() -> void:
 	if target.entity is SurfaceObject and target.entity.role == "farm":
 		key = target.entity.object_id
 	if item.id == "bi.tool.watering_can":
-		runtime.farms.water(key)
+		if runtime.farms.plots.has(key):
+			WaterContainer.water_plot(runtime.player.inventory.state,runtime.player.inventory.state.hotbar_at(runtime.player.inventory.state.selected).stack_uid,runtime.farms,key)
+		else:
+			WaterContainer.refill(runtime.player.inventory.state,runtime.player.inventory.state.hotbar_at(runtime.player.inventory.state.selected).stack_uid,runtime.session.water,point,runtime.player.global_position)
 	elif item.id == "bi.tool.hoe":
 		if runtime.farms.plots.has(key):
 			farm_interact(key)

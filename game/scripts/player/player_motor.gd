@@ -7,6 +7,7 @@ var actor: CharacterBody3D
 var state: PlayerState
 var camera: PlayerCameraRig
 var terrain: VoxelTerrainAdapter
+var water_motion := WaterMotion.new()
 var water: WorldWater
 var ready_for_play := false
 var movement_locked := false
@@ -53,14 +54,16 @@ func tick(delta: float, axis: Vector2, run_requested: bool) -> void:
 	var rate := tuning.acceleration if direction.length_squared() > 0 else tuning.deceleration
 	actor.velocity.x = move_toward(actor.velocity.x, desired.x, rate * delta)
 	actor.velocity.z = move_toward(actor.velocity.z, desired.z, rate * delta)
-	actor.velocity.y = -0.2 if actor.is_on_floor() else actor.velocity.y - tuning.gravity * delta
 	if direction.length_squared() > 0.01:
 		facing = direction.normalized()
 	if water != null:
 		var sample := water.sample(actor.global_position)
-		if sample.kind != "dry" and actor.global_position.y <= sample.level + 0.15:
-			actor.global_position.y = sample.level + 0.03
-			actor.velocity.y = 0
+		water_motion.apply(actor,sample,delta,water.motion_tuning)
+		if water_motion.swimming:
+			actor.velocity.x *= pow(float(water.motion_tuning.swim_speed),delta*4)
+			actor.velocity.z *= pow(float(water.motion_tuning.swim_speed),delta*4)
+	if water == null or not water_motion.swimming:
+		actor.velocity.y = -0.2 if actor.is_on_floor() else actor.velocity.y - tuning.gravity * delta
 	actor.velocity += external_impulse
 	external_impulse = external_impulse.move_toward(Vector3.ZERO, tuning.deceleration * delta)
 	if not burst_velocity.is_zero_approx():

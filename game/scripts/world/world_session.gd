@@ -79,6 +79,9 @@ func _ready() -> void:
 	water.domain = WaterDomain.new()
 	water.domain.name = "WaterDomain"
 	water.domain.configure(terrain)
+	if water.domain.open_save(store.directory,str(profile.save_id)) != OK:
+		_show_load_error(ERR_FILE_CORRUPT)
+		return
 	add_child(water.domain)
 	edits = TerrainEditService.new()
 	edits.terrain = terrain

@@ -100,6 +100,10 @@ func _set_hit(entity: Node3D, point: Vector3, surface_normal: Vector3) -> void:
 	current.build_cell = WorldCoordinates.world_to_cell(point)
 	current.build_edge = BuildGrid.shared_edge(current.build_cell,current.build_cell+Vector3i.RIGHT)
 	current.available_actions.clear()
+	if actor is PlayerActor and actor.water != null:
+		var held: ItemDefinition = actor.inventory.state.active_definition()
+		if held != null and held.id == "bi.tool.watering_can" and actor.water.sample(point).kind in ["lake","river"] and current.distance <= 4:
+			current.available_actions.append(&"refill")
 	if entity.has_method("available_actions"):
 		for id: String in entity.call("available_actions",actor):
 			current.available_actions.append(StringName(id))
@@ -109,6 +113,8 @@ func _set_hit(entity: Node3D, point: Vector3, surface_normal: Vector3) -> void:
 			current.available_actions.append(&"build")
 
 func interact() -> bool:
+	if &"refill" in current.available_actions:
+		return WaterContainer.refill(actor.inventory.state,actor.inventory.state.hotbar_at(actor.inventory.state.selected).stack_uid,actor.water,current.world_position,actor.global_position) == OK
 	if current.available_actions.is_empty():
 		return false
 	if is_instance_valid(current.entity) and current.entity.has_method("interact"):

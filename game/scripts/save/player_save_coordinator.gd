@@ -66,6 +66,12 @@ func snapshot() -> Dictionary:
 	return data
 
 func flush() -> Error:
+	if actor != null and actor.water != null and actor.water.domain != null and not _autosaving:
+		if terrain_saver != null and terrain_saver.flush() != OK:
+			return ERR_BUSY
+		var water_error := actor.water.domain.flush()
+		if water_error != OK:
+			return water_error
 	if terrain_saver != null and not _autosaving:
 		last_error = terrain_saver.flush()
 		if last_error != OK:

@@ -7,7 +7,6 @@ var tuning: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://
 var tiles: Dictionary = {}
 var height_sample: Callable
 var initial_water: Callable
-var sources: Dictionary = {}
 var waterfalls: Array[Dictionary] = []
 var steps := 0
 var last_cells := 0
@@ -40,7 +39,7 @@ func ensure_tile(coord: Vector2i) -> WaterTile:
 			var water: Dictionary = {"kind":"dry","level":0}
 			if initial_water.is_valid():
 				water = initial_water.call(point)
-			tile.kind[i] = 2 if water.kind == "ocean" and tile.ground[i] < 0 else (1 if water.kind in ["lake","river"] else 0)
+			tile.kind[i] = 2 if water.kind == "ocean" and tile.ground[i] < 0 else (3 if water.kind == "river" else (1 if water.kind == "lake" else 0))
 			tile.depth[i] = maxf(0,float(water.level)-tile.ground[i]) if tile.kind[i] != 0 else 0.0
 			tile.previous[i] = tile.depth[i]
 	tiles[coord] = tile
@@ -54,7 +53,7 @@ func sample(point: Vector3) -> Dictionary:
 	var i := index(cell)
 	var level := tile.ground[i]+tile.depth[i]
 	var current := Vector3(tile.flow_x[i],0,tile.flow_z[i]).limit_length(tuning.max_current)
-	return {"kind":"dry" if tile.depth[i] <= tuning.dry_depth else ("ocean" if tile.kind[i] == 2 else "lake"),"level":level,"depth":tile.depth[i],"submerged":point.y < level and tile.depth[i] > tuning.dry_depth,"current":current,"grid_cell":cell,"tile":coord}
+	return {"kind":"dry" if tile.depth[i] <= tuning.dry_depth else ("ocean" if tile.kind[i] in [2,4] else ("river" if tile.kind[i] == 3 else "lake")),"level":level,"depth":tile.depth[i],"submerged":point.y < level and tile.depth[i] > tuning.dry_depth,"current":current,"grid_cell":cell,"tile":coord}
 func add_water(point: Vector3, cubic_metres: float) -> Error:
 	if not point.is_finite() or not is_finite(cubic_metres) or cubic_metres < 0:
 		return ERR_INVALID_PARAMETER
@@ -63,6 +62,7 @@ func add_water(point: Vector3, cubic_metres: float) -> Error:
 	tile.depth[index(cell)] += cubic_metres/(tuning.cell_metres*tuning.cell_metres)
 	external_volume += cubic_metres
 	dirty = true
+	tile.revision += 1
 	tile.wake()
 	return OK
 func add_precipitation(area: AABB, metres: float) -> void:
@@ -74,20 +74,21 @@ func add_precipitation(area: AABB, metres: float) -> void:
 			if area.has_point(point_at(cell)):
 				add_water(point_at(cell),metres*tuning.cell_metres*tuning.cell_metres)
 func invalidate(area: AABB) -> int:
+	var first := cell_at(area.position)
+	var last := cell_at(area.end)
 	var count := 0
-	for tile: WaterTile in tiles.values():
-		var changed := false
-		for i: int in tile.depth.size():
-			var cell := tile.coord*side()+Vector2i(i%side(),floori(i/float(side())))
-			var point := point_at(cell)
-			if point.x < area.position.x or point.x > area.end.x or point.z < area.position.z or point.z > area.end.z:
+	for z: int in range(first.y,last.y+1):
+		for x: int in range(first.x,last.x+1):
+			var cell := Vector2i(x,z)
+			var tile: WaterTile = tiles.get(address(cell))
+			if tile == null:
 				continue
-			tile.ground[i] = height_sample.call(point)
-			count += 1
-			changed = true
-		if changed:
+			var i := index(cell)
+			tile.ground[i] = height_sample.call(point_at(cell))
+			tile.revision += 1
 			tile.wake()
-			dirty = true
+			count += 1
+	dirty = dirty or count > 0
 	return count
 func step(dt: float) -> void:
 	var start := Time.get_ticks_usec()
@@ -131,6 +132,10 @@ func step(dt: float) -> void:
 					participants[other.coord] = other
 					other.change.fill(0)
 					other.previous = other.depth.duplicate()
+				if tile.kind[i] in [2,4] and other.kind[j] != 2:
+					other.kind[j] = 4 # Salt water is not an infinite boundary.
+				elif other.kind[j] == 0:
+					other.kind[j] = 1
 				tile.change[i] -= amount
 				other.change[j] += amount
 				var speed: float = amount*tuning.cell_metres/maxf(dt*tile.depth[i],.0001)
@@ -138,11 +143,12 @@ func step(dt: float) -> void:
 				tile.flow_z[i] += direction.y*speed
 				if other.activity != WaterTile.Activity.ACTIVE:
 					other.wake()
-				if tile.ground[i]-other.ground[j] >= tuning.waterfall_drop and waterfalls.size() < 32:
+				if head >= tuning.waterfall_drop and tile.ground[i]-other.ground[j] >= tuning.waterfall_drop and waterfalls.size() < int(tuning.max_waterfalls):
 					waterfalls.append({"from":point_at(cell)+Vector3.UP*(tile.ground[i]+tile.depth[i]),"to":point_at(next)+Vector3.UP*(other.ground[j]+other.depth[j]),"volume_per_second":amount*tuning.cell_metres*tuning.cell_metres/dt})
 	for tile: WaterTile in participants.values():
 		var maximum := 0.0
 		var touched := false
+		var fastest := 0.0
 		for i: int in tile.depth.size():
 			if tile.kind[i] == 2:
 				var target := maxf(0,-tile.ground[i])
@@ -151,12 +157,13 @@ func step(dt: float) -> void:
 			else:
 				tile.depth[i] = maxf(0,tile.depth[i]+tile.change[i])
 			maximum = maxf(maximum,absf(tile.change[i]))
+			fastest = maxf(fastest,Vector2(tile.flow_x[i],tile.flow_z[i]).length())
 			touched = touched or absf(tile.change[i]) > .000001
 		if touched:
 			tile.revision += 1
 			dirty = true
 		if tile in active:
-			tile.quiet = tile.quiet+1 if maximum < tuning.sleep_delta else 0
+			tile.quiet = tile.quiet+1 if maximum < tuning.sleep_delta and fastest < tuning.sleep_current else 0
 			if tile.quiet >= int(tuning.sleep_steps):
 				tile.activity = WaterTile.Activity.SLEEPING
 				tile.flow_x.fill(0)
