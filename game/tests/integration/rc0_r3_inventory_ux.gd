@@ -116,6 +116,14 @@ func run_automated() -> void:
 	modal.confirmed.emit(modal.amount)
 	await pause()
 	check(state.slot_at(3).quantity == 7 and registry.inventories["qa.chest"].slot_at(2).quantity == 4,"confirmed partial transfer")
+	await drag_slot("Container",2,"Player",3)
+	var reverse := panel._popup as InventoryQuantityModal
+	check(reverse != null and reverse.source_title == "Container" and reverse.target_title == "Sua bagagem","reverse modal direction")
+	reverse._sync(9999)
+	check(reverse.amount == 4,"quantity clamps to transferable maximum")
+	reverse.cancelled.emit()
+	await pause()
+	check(registry.inventories["qa.chest"].slot_at(2).quantity == 4,"cancel has no mutation")
 	for mode: String in ["one","half","all"]:
 		var split_uid: String = state.slot_at(3).stack_uid
 		check(panel.controller.split(state,split_uid,mode,state.revision) == OK,"split "+mode)

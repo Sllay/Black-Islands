@@ -1,0 +1,113 @@
+{
+  "platform": "DESKTOP PROXY ONLY",
+  "physical_mobile_performance": "NOT VALIDATED",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "tests": {
+    "inventory_domain": 35,
+    "craft_and_scheduler": 29,
+    "save_domains": 15,
+    "native_gestures": 30,
+    "fuzz_operations": 5000,
+    "fuzz_audits": 5000,
+    "fuzz_seed": 320205000,
+    "fuzz_stale_rejected": 240,
+    "conservation": "PASS",
+    "uid_ownership_and_stack_limits": "PASS",
+    "attempted": {
+      "16": 296,
+      "1": 307,
+      "0": 299,
+      "14": 289,
+      "15": 281,
+      "7": 297,
+      "9": 274,
+      "10": 292,
+      "13": 277,
+      "5": 295,
+      "2": 313,
+      "6": 297,
+      "12": 314,
+      "3": 351,
+      "4": 270,
+      "11": 285,
+      "8": 263
+    },
+    "successful": {
+      "16": 296,
+      "1": 281,
+      "0": 280,
+      "14": 276,
+      "15": 281,
+      "7": 276,
+      "9": 274,
+      "10": 226,
+      "13": 173,
+      "2": 292,
+      "5": 100,
+      "6": 271,
+      "12": 180,
+      "3": 117,
+      "11": 183,
+      "4": 86
+    },
+    "final_item_totals_including_world_bags_and_pending": {
+      "bi.resource.wood": 475,
+      "bi.resource.stone": 868,
+      "bi.resource.meat": 9,
+      "bi.food.coconut": 15,
+      "bi.weapon.starter_sword": 6,
+      "bi.tool.stone_pick": 59,
+      "bi.build.ceiling": 82,
+      "bi.build.foundation": 42,
+      "bi.resource.rotten_flesh": 63,
+      "bi.resource.spoiled_food": 33
+    }
+  },
+  "regressions": [
+    "PlayerC02Smoke",
+    "PlayerC03Smoke",
+    "PlayerSaveSmoke",
+    "Rc0C02Smoke",
+    "Rc0C03Smoke"
+  ],
+  "lsp": {
+    "files": 51,
+    "errors": 0,
+    "warnings": 0
+  },
+  "mcp": {
+    "production_main": true,
+    "seed": 424242,
+    "generation": 2,
+    "graph": "VoxelGeneratorGraph",
+    "player_inventory_slots": 20,
+    "workbench_crafts_completed": 1,
+    "project_errors": 0,
+    "project_warnings": 0,
+    "resolutions": [
+      [
+        1280,
+        720
+      ],
+      [
+        1920,
+        864
+      ]
+    ]
+  },
+  "performance": {
+    "full_inventory_pair_slots": 40,
+    "recipes": 110,
+    "queue_jobs": 5,
+    "cold_availability_ms": 3.884,
+    "cached_11000_queries_ms": 36.865,
+    "perishable_stacks": 1280,
+    "idle_scheduler_600ticks_us": 145,
+    "idle_inventory_scans": 0,
+    "expiry_1280_total_ms": 1041.717,
+    "expiration_budget_per_tick": 8,
+    "worst_eight_expiration_batch_ms": 23.262,
+    "fuzz_ms": 4165.734
+  },
+  "external_warning_waiver": "Tried to save instance block, but VoxelStreamScript does not support them."
+}
