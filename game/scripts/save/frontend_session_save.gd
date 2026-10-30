@@ -75,6 +75,8 @@ func _process(delta: float) -> void:
 	super(delta)
 
 func flush() -> Error:
+	if InventoryTransactions.busy:
+		return ERR_BUSY
 	if actor != null and actor.water != null and actor.water.domain != null and not _autosaving:
 		if terrain_saver != null and terrain_saver.flush() != OK:
 			return ERR_BUSY
@@ -136,6 +138,8 @@ func bind_surface(surface: SurfaceRuntime) -> void:
 	world_store.bind(surface)
 
 func snapshot() -> Dictionary:
+	if actor.inventory.simulation != null:
+		actor.inventory.simulation.checkpoint()
 	# Player-only capture: never calls SurfaceRuntime.snapshot or hashes world.
 	var feet := actor.global_position if actor.is_on_floor() else _safe_feet
 	var appearance := actor.visual.configuration.duplicate(true)

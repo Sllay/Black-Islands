@@ -13,6 +13,9 @@ var equipment_slots: Array
 var defense: float
 var moveset_id: String
 var visual_id: String
+var spoilage: Dictionary = {}
+var description: String
+var droppable := true
 var use_effect: String
 var use_amount: float
 
@@ -26,6 +29,9 @@ func _init(record: Dictionary) -> void:
 	defense = float(record.get("defense", 0))
 	moveset_id = record.get("moveset_id", "")
 	visual_id = record.get("visual_id", "")
+	spoilage = record.get("spoilage",{}).duplicate(true)
+	description = record.get("description","")
+	droppable = bool(record.get("droppable",true))
 	use_effect = record.get("use_effect", "")
 	use_amount = float(record.get("use_amount", 0))
 

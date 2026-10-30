@@ -78,7 +78,9 @@ static func valid_harvest(state: Dictionary) -> bool:
 static func inventory(record: Dictionary, owned: Dictionary) -> bool:
 	if InventoryState.new().restore(record) != OK:
 		return false
-	for row: Variant in record.slots:
+	var rows: Array = record.slots.duplicate()
+	rows.append_array(record.get("pending_outputs",[]))
+	for row: Variant in rows:
 		if row == null:
 			continue
 		if owned.has(row.stack_uid):

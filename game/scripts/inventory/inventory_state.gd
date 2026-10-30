@@ -1,7 +1,7 @@
 class_name InventoryState
 extends RefCounted
 ## Serialized single-owner mutation boundary. Hotbar/equipment reference owned
-## stack IDs; they do not clone inventory contents. Multi-store planning is P04.
+## stack IDs; they do not clone inventory contents. Plans serialize all stores.
 
 signal changed(revision: int)
 const CAPACITY := 20
@@ -16,6 +16,8 @@ var _hotbar: Array[String] = []
 var _equipment: Dictionary = {}
 
 var owner_scope := "PLAYER"
+var time_source := GameplayTimeSource.new()
+var _pending: Array[ItemStack] = []
 
 func _init() -> void:
 	_slots.resize(CAPACITY)
@@ -39,6 +41,7 @@ func record_by_uid(uid: String) -> Dictionary:
 	return stack.record() if stack != null else {}
 
 func adopt_committed(plan: InventoryState) -> void:
+	_pending = plan._pending
 	_slots = plan._slots
 	_hotbar = plan._hotbar
 	_equipment = plan._equipment
@@ -58,9 +61,10 @@ func add_item(id: String, count: int, data: Dictionary = {}) -> int:
 	var definition := ItemCatalog.resolve(id)
 	if definition == null or count <= 0:
 		return maxi(0, count)
+	data = StackPolicy.normalize(definition,data,time_source.now)
 	var remaining := count
 	for stack: ItemStack in _slots:
-		if stack != null and stack.item_id == id and stack.instance_data == data and stack.quantity < definition.max_stack:
+		if stack != null and stack.item_id == id and StackPolicy.compatible(id,stack.instance_data,data) and stack.quantity < definition.max_stack:
 			var amount := mini(remaining, definition.max_stack - stack.quantity)
 			stack.quantity += amount
 			stack.revision += 1
@@ -145,22 +149,35 @@ func snapshot() -> Dictionary:
 	var slots: Array = []
 	for stack: ItemStack in _slots:
 		if stack != null:
-			slots.append(stack.record())
+			var row := stack.record()
+			row.instance_data = StackPolicy.copied_data(stack,time_source.now)
+			slots.append(row)
 		else:
 			slots.append(null)
-	return {"schema_version":1, "catalog_version":ItemCatalog.VERSION, "inventory_id":inventory_id,
+	var pending: Array = []
+	for stack: ItemStack in _pending:
+		var row := stack.record()
+		row.instance_data = StackPolicy.copied_data(stack,time_source.now)
+		pending.append(row)
+	return {"schema_version":2, "pending_outputs":pending, "catalog_version":ItemCatalog.VERSION, "inventory_id":inventory_id,
 		"owner_scope":owner_scope, "revision":revision, "slots":slots, "hotbar":_hotbar.duplicate(),
 		"equipment":_equipment.duplicate(), "selected":selected, "wallet":wallet.duplicate()}
 
 func restore(data: Dictionary) -> Error:
-	if data.get("schema_version") != 1 or data.get("catalog_version") != ItemCatalog.VERSION:
+	if (data.get("schema_version") != 1 and data.get("schema_version") != 2) or data.get("catalog_version") != ItemCatalog.VERSION:
 		return ERR_UNAVAILABLE
 	if not data.get("slots") is Array or data.slots.size() != CAPACITY or not data.get("hotbar") is Array or data.hotbar.size() != HOTBAR_SIZE or not data.get("equipment") is Dictionary:
 		return ERR_INVALID_DATA
 	var candidate := InventoryState.new()
+	candidate.time_source = time_source
 	var ids: Dictionary = {}
-	for index: int in range(CAPACITY):
-		var row: Variant = data.slots[index]
+	var pending: Variant = data.get("pending_outputs",[])
+	if not pending is Array:
+		return ERR_INVALID_DATA
+	var combined: Array = data.slots.duplicate()
+	combined.append_array(pending)
+	for index: int in combined.size():
+		var row: Variant = combined[index]
 		if row == null:
 			continue
 		if not row is Dictionary or not row.get("item_id") is String or not row.get("stack_uid") is String or row.stack_uid.is_empty() or ids.has(row.stack_uid):
@@ -169,7 +186,17 @@ func restore(data: Dictionary) -> Error:
 		var count: Variant = row.get("quantity")
 		if definition == null or not (count is float or count is int) or count < 1 or count > definition.max_stack or count != int(count) or not row.get("instance_data", {}) is Dictionary:
 			return ERR_INVALID_DATA
-		candidate._slots[index] = ItemStack.new(row.item_id, int(count), row.get("instance_data", {}), row.stack_uid)
+		if not StackPolicy.valid(definition,row.get("instance_data",{})):
+			return ERR_INVALID_DATA
+		var restored := ItemStack.new(row.item_id,int(count),StackPolicy.normalize(definition,row.get("instance_data",{}),time_source.now),row.stack_uid)
+		var stack_revision: Variant = row.get("revision",0)
+		if not (stack_revision is float or stack_revision is int) or stack_revision < 0 or stack_revision != int(stack_revision):
+			return ERR_INVALID_DATA
+		restored.revision = int(stack_revision)
+		if index < CAPACITY:
+			candidate._slots[index] = restored
+		else:
+			candidate._pending.append(restored)
 		ids[row.stack_uid] = true
 	for index: int in range(HOTBAR_SIZE):
 		var uid: Variant = data.hotbar[index]
@@ -199,6 +226,15 @@ func restore(data: Dictionary) -> Error:
 	var coins: Variant = saved_wallet.get("bi.currency.coins", 0)
 	if not (coins is int or coins is float) or coins < 0 or coins > 2147483647 or coins != int(coins):
 		return ERR_INVALID_DATA
+	var saved_id: Variant = data.get("inventory_id",inventory_id)
+	var saved_owner: Variant = data.get("owner_scope",owner_scope)
+	var saved_revision: Variant = data.get("revision",0)
+	if not saved_id is String or saved_id.is_empty() or saved_owner not in ["PLAYER","WORLD","TRIBE","SYSTEM"] or not (saved_revision is int or saved_revision is float) or saved_revision < 0 or saved_revision != int(saved_revision):
+		return ERR_INVALID_DATA
+	inventory_id = saved_id
+	owner_scope = saved_owner
+	revision = maxi(revision,int(saved_revision))
+	_pending = candidate._pending
 	_slots = candidate._slots
 	_hotbar = candidate._hotbar
 	_equipment = candidate._equipment

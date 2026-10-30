@@ -2,6 +2,7 @@ class_name ContainerService
 extends RefCounted
 signal changed(id: String)
 var inventories: Dictionary = {}
+var revision := 0
 var records: Dictionary = {}
 
 func create(id: String, point: Vector3, kind: String = "Chest") -> InventoryState:
@@ -14,6 +15,7 @@ func create(id: String, point: Vector3, kind: String = "Chest") -> InventoryStat
 	records[id] = {"id":id,"position":[point.x,point.y,point.z],"kind":kind,"deadline":-1,"policy":"persistent"}
 	_index_record(id,point)
 	inventory.changed.connect(_inventory_changed.bind(id))
+	revision += 1
 	changed.emit(id)
 	return inventory
 
@@ -77,16 +79,21 @@ func break_chest(id: String) -> Error:
 	return OK
 
 func _inventory_changed(_revision: int, id: String) -> void:
+	revision += 1
 	changed.emit(id)
 
 func transfer_all(source: InventoryState, destination: InventoryState) -> Error:
-	var from := InventoryTransactions.clone(source)
-	var to := InventoryTransactions.clone(destination)
-	for index: int in InventoryState.CAPACITY:
-		var row := from.slot_at(index)
-		if row.is_empty():
+	var plan := InventoryPlan.new()
+	var from := plan.include(source)
+	var to := plan.include(destination)
+	for stack: ItemStack in from._slots+from._pending:
+		if stack == null:
 			continue
-		if to.add_item(row.item_id,int(row.quantity),row.instance_data) != 0:
-			return ERR_OUT_OF_MEMORY
-		from.consume_uid(row.stack_uid,int(row.quantity))
-	return InventoryTransactions.commit([source,destination],[from,to],[source.revision,destination.revision])
+		var data := StackPolicy.copied_data(stack,from.time_source.now)
+		var remaining := InventoryCommands.place(to,stack.item_id,stack.quantity,data,stack.stack_uid)
+		if remaining > 0:
+			to._pending.append(ItemStack.new(stack.item_id,remaining,StackPolicy.normalize(ItemCatalog.resolve(stack.item_id),data,to.time_source.now),stack.stack_uid))
+		if stack in from._slots:
+			from.consume_uid(stack.stack_uid,stack.quantity)
+	from._pending.clear()
+	return plan.commit()

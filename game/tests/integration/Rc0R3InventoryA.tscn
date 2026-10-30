@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://7ha8v86vj5dc"]
+
+[ext_resource type="Script" uid="uid://lc428ulunl6" path="res://tests/integration/rc0_r3_inventory_a.gd" id="1_copnr"]
+
+[node name="InventoryDomain" type="Node" unique_id=1343491262]
+script = ExtResource("1_copnr")

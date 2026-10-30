@@ -71,7 +71,11 @@
       "id": "bi.resource.meat",
       "title": "Carne",
       "category": "RESOURCE",
-      "icon": "▰"
+      "icon": "▰",
+      "spoilage": {
+        "duration": 120.0,
+        "result_item_id": "bi.resource.rotten_flesh"
+      }
     },
     {
       "id": "bi.resource.light_hide",
@@ -96,6 +100,13 @@
       "title": "Carne pútrida",
       "category": "RESOURCE",
       "icon": "▰"
+    },
+    {
+      "id": "bi.resource.spoiled_food",
+      "title": "Restos estragados",
+      "category": "RESOURCE",
+      "icon": "·",
+      "description": "Restos de alimento que perderam o frescor."
     }
   ],
   "props": [

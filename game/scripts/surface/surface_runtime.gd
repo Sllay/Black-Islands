@@ -138,6 +138,8 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	_attach_qa.call_deferred()
 	session.edits.terrain_changed.connect(terrain_changed)
 	_provision_tools()
+	if player.inventory.simulation != null:
+		player.inventory.simulation.bind_world(containers,_inventory_position,objects.reconcile)
 
 func _provision_tools() -> void:
 	var authority: Dictionary = session.frontend_save.portable.unlocks if session.frontend_save != null else ledger.flags
@@ -364,3 +366,9 @@ func report() -> Dictionary:
 		"patch_updates":foliage.patch_updates,"prop_deltas":ledger.props.size(),"destroyed":exhausted,
 		"bags":bags,"farms":farms.plots.size(),"structures":building.pieces.size(),
 		"support":building.last_benchmark,"containers":containers.records.size(),"mobs":mobs.report()}
+
+func _inventory_position(store: InventoryState) -> Vector3:
+	if store == player.inventory.state:
+		return player.global_position
+	var row: Dictionary = containers.records.get(store.inventory_id,{})
+	return Vector3(row.position[0],row.position[1],row.position[2]) if not row.is_empty() else player.global_position

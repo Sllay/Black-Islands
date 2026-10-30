@@ -52,6 +52,8 @@ func _process(delta: float) -> void:
 		_autosaving = false
 
 func snapshot() -> Dictionary:
+	if actor.inventory.simulation != null:
+		actor.inventory.simulation.checkpoint()
 	var feet := actor.global_position if actor.is_on_floor() else _safe_feet
 	var config := actor.visual.configuration.duplicate(true)
 	config.equipment_visuals = []
@@ -66,6 +68,8 @@ func snapshot() -> Dictionary:
 	return data
 
 func flush() -> Error:
+	if InventoryTransactions.busy:
+		return ERR_BUSY
 	if actor != null and actor.water != null and actor.water.domain != null and not _autosaving:
 		if terrain_saver != null and terrain_saver.flush() != OK:
 			return ERR_BUSY

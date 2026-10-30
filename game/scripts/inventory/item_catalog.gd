@@ -5,7 +5,7 @@ const VERSION := 1
 const DEFINITIONS := [
 	{"id":"bi.weapon.starter_sword", "title":"Espada de treino", "category":"WEAPON", "icon":"⚔", "moveset_id":"sword.training.v1", "visual_id":"lpc.weapon.sword"},
 	{"id":"bi.tool.stone_pick", "title":"Picareta", "category":"TOOL", "icon":"⛏"},
-	{"id":"bi.food.coconut", "title":"Coco", "category":"CONSUMABLE", "icon":"◉", "use_effect":"restore_health", "use_amount":12},
+	{"id":"bi.food.coconut", "title":"Coco", "category":"CONSUMABLE", "icon":"◉", "use_effect":"restore_health", "use_amount":12, "spoilage":{"duration":300.0,"result_item_id":"bi.resource.spoiled_food"}},
 	{"id":"bi.resource.stone", "title":"Pedra", "category":"RESOURCE", "icon":"◆"},
 	{"id":"bi.build.foundation", "title":"Fundação", "category":"BUILDING_PIECE", "icon":"▱"},
 	{"id":"bi.ammo.arrow", "title":"Flecha", "category":"PROJECTILE", "icon":"➶"},
