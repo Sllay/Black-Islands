@@ -12,6 +12,7 @@ var grass_instances := 0
 var patch_updates := 0
 var native_foliage: NativeFoliage
 var prop_distance := 72.0
+var presentation_enabled := true
 var _poll := 0.0
 var _task := -1
 var _prepared: Array[Dictionary] = []
@@ -26,13 +27,16 @@ func _ready() -> void:
 	apply_profile(GameSettings.effective())
 
 func apply_profile(profile: Dictionary) -> void:
+	presentation_enabled = true
 	native_foliage.apply_budget(profile.foliage)
 	prop_distance = float(profile.prop_distance)
 	for root: Node3D in patches.values():
+		root.visible = true
 		for view: MultiMeshInstance3D in root.get_children():
 			view.visibility_range_end = prop_distance+24
 
 func apply_quality(quality: String, enabled: bool = true) -> void:
+	presentation_enabled = enabled
 	var profile: Dictionary = GameSettings.catalog.presets[quality]
 	native_foliage.apply_budget(profile.foliage,enabled)
 	prop_distance = float(profile.prop_distance)
@@ -118,6 +122,7 @@ func _build(key: Vector2i, rows: Array[Dictionary]) -> void:
 	if patches.has(key):
 		patches[key].queue_free()
 	var root := Node3D.new()
+	root.visible = presentation_enabled
 	root.position = Vector3(key.x*REGION,0,key.y*REGION)
 	add_child(root)
 	patches[key] = root

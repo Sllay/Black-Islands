@@ -50,3 +50,11 @@ func _route_clear(field: IslandField, x: int, z: int) -> bool:
 				if row.point[0] >= x-2 and row.point[0] <= x+37 and absf(float(row.point[2])-z) < .85:
 					return false
 	return true
+
+func full_profile(quality_name: String) -> Dictionary:
+	GameSettings.current = GameSettings.defaults()
+	GameSettings.current.quality = quality_name
+	GameSettings.apply_safe()
+	return {"profile":GameSettings.effective(),"actual_renderer":RenderingServer.get_current_rendering_method(),
+		"viewer_metres":baseline.pawn.get_node("Viewer").view_distance,
+		"native_view_voxels":baseline.terrain.native.view_distance,"foliage":surface.foliage.report()}
