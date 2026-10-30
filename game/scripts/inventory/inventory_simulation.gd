@@ -1,5 +1,6 @@
 class_name InventorySimulation
 extends Node
+signal unit_spoiled(source_item_id: String, result_item_id: String)
 ## One active-time scheduler. No per-stack Node and no per-frame inventory scan.
 var clock := GameplayTimeSource.new()
 var stores: Array[InventoryState] = []
@@ -83,6 +84,7 @@ func _expire(store: InventoryState) -> Error:
 		var error := plan.commit()
 		if error == OK:
 			expirations += 1
+			unit_spoiled.emit(live.item_id,str(definition.spoilage.result_item_id))
 		return error
 	_changed(0,store)
 	return ERR_DOES_NOT_EXIST

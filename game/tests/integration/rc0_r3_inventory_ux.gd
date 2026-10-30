@@ -26,6 +26,7 @@ func _setup() -> void:
 	chest.add_item("bi.food.coconut",30,{"spoilage":{"remaining":30}})
 	chest.add_item("bi.resource.stone",200)
 	actor.inventory.simulation.bind_world(registry,func(_store: InventoryState) -> Vector3: return Vector3.ZERO,Callable())
+	actor.inventory.crafting.bind_world(registry,"qa.world")
 	hud = load("res://scenes/ui/ProductionHUD.tscn").instantiate()
 	add_child(hud)
 	hud.present_world()

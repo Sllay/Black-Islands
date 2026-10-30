@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bgp30f2qfwr5y"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r3_inventory_fuzz.gd" id="1_dqyd4"]
+
+[node name="InventoryFuzz" type="Node" unique_id=1651489396]
+script = ExtResource("1_dqyd4")

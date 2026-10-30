@@ -90,6 +90,9 @@ func completion_plan(job: CraftJob) -> InventoryPlan:
 	plan.publications.append(publication)
 	return plan
 func request_completion(job: CraftJob) -> Error:
+	var recipe := catalog.resolve(job.recipe_id)
+	if recipe == null or queue.elapsed < recipe.duration:
+		return ERR_BUSY
 	var error := completion_plan(job).commit()
 	if error != OK:
 		queue.elapsed = 0
