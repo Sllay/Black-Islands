@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c51h0nkc4hvg7"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r3_inventory_save.gd" id="1_q2ywj"]
+
+[node name="InventorySave" type="Node3D" unique_id=225853233]
+script = ExtResource("1_q2ywj")

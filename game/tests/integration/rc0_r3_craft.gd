@@ -42,6 +42,7 @@ func _ready() -> void:
 	_output()
 	_save()
 	_performance()
+	_spoilage_performance()
 	for service: CraftService in _services:
 		var scope := service.scope({})
 		if scope != null:
@@ -169,3 +170,23 @@ func _performance() -> void:
 	var cached := Time.get_ticks_usec()-start
 	check(service.cache_misses == misses,"110 recipes repeated cached without rescanning stacks")
 	print("CRAFT_PERF recipes=",service.catalog.definitions.size()," initial_us=",initial," cached11000_us=",cached," misses=",misses," queue=",service.queue.jobs.size())
+
+func _spoilage_performance() -> void:
+	var simulation := InventorySimulation.new()
+	for index: int in 64:
+		var inventory := InventoryState.new()
+		inventory.inventory_id = "spoil_perf%d"%index
+		for slot: int in 20:
+			inventory._slots[slot] = ItemStack.new("bi.resource.meat",10,{"batch":slot})
+		simulation.register(inventory)
+	var start := Time.get_ticks_usec()
+	for frame: int in 600:
+		simulation.advance(1.0/60)
+	var microseconds := Time.get_ticks_usec()-start
+	check(simulation.polls == 0 and simulation.expirations == 0,"1280 spoilage stacks idle has no repeated scans")
+	start = Time.get_ticks_usec()
+	simulation.advance(110.1)
+	while simulation.clock.now >= simulation._next:
+		simulation.settle()
+	print("SPOILAGE_PERF stacks=1280 idle600ticks_us=",microseconds," expiry1280_ms=",(Time.get_ticks_usec()-start)/1000.0," expirations=",simulation.expirations)
+	simulation.free()

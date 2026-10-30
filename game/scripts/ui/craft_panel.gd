@@ -87,10 +87,11 @@ func _ready() -> void:
 	_timer.wait_time = .25
 	_timer.timeout.connect(_progress)
 	add_child(_timer)
-	_timer.start()
+	visibility_changed.connect(_visibility)
+	_visibility()
 	refresh()
 func refresh() -> void:
-	if details == null:
+	if details == null or not is_visible_in_tree():
 		return
 	var service := runtime.service
 	for index: int in CraftQueue.CAPACITY:
@@ -119,7 +120,8 @@ func _progress() -> void:
 		return
 	var recipe := runtime.service.catalog.resolve(runtime.service.queue.jobs[0].recipe_id)
 	if recipe != null:
-		queue_buttons[0].tooltip_text = "%d%% da unidade atual"%roundi(clampf(runtime.service.queue.elapsed/recipe.duration,0,1)*100)
+		var job := runtime.service.queue.jobs[0]
+		queue_buttons[0].text = "%s %d\n%d%%"%[recipe.icon,job.requested_remaining,roundi(clampf(runtime.service.queue.elapsed/recipe.duration,0,1)*100)]
 func _queue_command(direction: int) -> void:
 	var queue := runtime.service.queue
 	for index: int in queue.jobs.size():
@@ -130,3 +132,12 @@ func _queue_command(direction: int) -> void:
 				queue.reorder(selected_job,clampi(index+(-1 if direction == -2 else 1),0,queue.jobs.size()-1))
 			runtime.service.invalidate()
 			return
+
+func _visibility() -> void:
+	if _timer == null:
+		return
+	if is_visible_in_tree():
+		_timer.start()
+		refresh()
+	else:
+		_timer.stop()

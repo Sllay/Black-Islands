@@ -1,0 +1,97 @@
+extends Node3D
+var failures := 0
+var assertions := 0
+var root_path := "user://qa_r3_c02_save/"+Crypto.new().generate_random_bytes(8).hex_encode()
+func check(ok: bool, label: String) -> void:
+	assertions += 1
+	if not ok:
+		failures += 1
+		push_error("R3_INVENTORY_SAVE "+label)
+func _ready() -> void:
+	_run.call_deferred()
+func _run() -> void:
+	var library := FrontendLibrary.new(root_path)
+	library.create_world(1,"C02 World",424242)
+	library.create_world(2,"Other World",424243)
+	library.create_player(1,"C02 Player",LPCCustomization.default_for("female"))
+	var world := library.read("world",1)
+	var player: PlayerActor = load("res://scenes/player/Player.tscn").instantiate()
+	add_child(player)
+	player.set_physics_process(false)
+	player.position = Vector3.ZERO
+	player.inventory.crafting.set_process(false)
+	player.inventory.simulation.set_process(false)
+	var save := FrontendSessionSave.new()
+	check(save.prepare(library,1,1) == OK,"new player/world prepare")
+	add_child(save)
+	save.set_process(false)
+	save.configure(player,save.portable)
+	var surface := SurfaceRuntime.new()
+	surface.player = player
+	surface.farms = FarmSystem.new(surface.ledger)
+	surface.building = SupportGraph.new()
+	surface.building.ground = func(_cell: Vector3i) -> bool: return true
+	surface.containers = ContainerService.new()
+	surface.mobs = MobSimulation.new()
+	surface.mobs.domain = MobDomain.new(surface.ledger,surface.containers)
+	add_child(surface)
+	surface.set_process(false)
+	var composition := WorldSession.new()
+	composition.frontend_save = save
+	surface.session = composition
+	save.bind_surface(surface)
+	var bench := surface.containers.create("station",Vector3.ONE,"Workbench")
+	bench.add_item("bi.resource.wood",64)
+	bench.add_item("bi.resource.meat",10)
+	var chest := surface.containers.create("chest",Vector3(2,0,0))
+	chest.add_item("bi.resource.stone",32)
+	player.inventory.simulation.bind_world(surface.containers,func(_store: InventoryState) -> Vector3: return Vector3.ZERO,Callable())
+	player.inventory.crafting.bind_world(surface.containers,world.world_id)
+	var context := {"world_id":world.world_id,"station_id":"station"}
+	var service := player.inventory.crafting.service
+	check(service.enqueue("bi.recipe.foundation",3,context) == OK,"world station scope queue")
+	service.tick(.75)
+	player.inventory.simulation.advance(12.25)
+	var before := player.inventory.state.snapshot()
+	check(save.flush() == OK,"atomic player/world save with fractional crafting and spoilage")
+	var terrain := WorldDeltaStore.new(library.world_directory(world),world)
+	terrain.load_world()
+	check(terrain.commit({Vector3i.ZERO:{"density":2000,"materials":[1,0,0,0]}}) == OK,"existing independent voxel delta")
+	var reload := FrontendSessionSave.new()
+	check(reload.prepare(library,1,1) == OK,"new session reads all domains")
+	var restored: PlayerActor = load("res://scenes/player/Player.tscn").instantiate()
+	add_child(restored)
+	restored.set_physics_process(false)
+	restored.inventory.crafting.set_process(false)
+	restored.inventory.simulation.set_process(false)
+	reload.configure(restored,reload.portable)
+	check(restored.inventory.crafting.service.queue.jobs.size() == 1 and restored.inventory.crafting.service.queue.jobs[0].requested_remaining == 3,"personal queue order/quantity restored")
+	check(restored.inventory.crafting.service.queue.elapsed == 0,"fractional timer restarts")
+	check(AtomicDocument.same_value(restored.inventory.state.snapshot().slots,before.slots),"UID and freshness preserved")
+	check(reload.restored_surface.containers.station.kind == "Workbench" and reload.restored_surface.containers.chest.inventory.slots[0].quantity == 32,"world station/container preserved")
+	var remaining := float(reload.restored_surface.containers.station.inventory.slots[1].instance_data.spoilage.remaining)
+	check(is_equal_approx(remaining,107.75),"partial spoilage progress persisted world dirty region")
+	check(not reload.portable.document.loaded.character.has("surface") and not reload.portable.document.loaded.character.has("spawn") and reload.portable.document.loaded.character.has("craft_queue"),"queue owned solely by portable player")
+	var voxel_reload := WorldDeltaStore.new(library.world_directory(world),world)
+	check(voxel_reload.load_world() == OK and voxel_reload.revision == terrain.revision,"terrain unaffected by inventory save")
+	var other := FrontendSessionSave.new()
+	check(other.prepare(library,2,1) == OK and other.portable.document.path == reload.portable.document.path and other.restored_surface.is_empty(),"same player in another independent world")
+	var runtime := restored.inventory.crafting
+	runtime.bind_world(ContainerService.new(),library.read("world",2).world_id)
+	check(runtime.resolve(context) == null,"station-bound job cannot spend another world's inventories")
+	var snapshot := save.snapshot()
+	snapshot.erase("craft_queue")
+	snapshot.inventory.schema_version = 1
+	snapshot.inventory.erase("pending_outputs")
+	check(PlayerSaveStore.validate_snapshot(snapshot) == OK,"pre-C02 save remains valid no reset")
+	print("R3_INVENTORY_SAVE ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures)
+	surface.building.ground = Callable()
+	composition.free()
+	reload.free()
+	other.free()
+	save.free()
+	player.free()
+	restored.free()
+	surface.mobs.free()
+	surface.free()
+	get_tree().quit(1 if failures else 0)
