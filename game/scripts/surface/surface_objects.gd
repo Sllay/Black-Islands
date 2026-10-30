@@ -46,7 +46,7 @@ func reconcile() -> void:
 		var row: Dictionary = runtime.containers.records[id]
 		if row.kind == "Corpse":
 			continue
-		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*.22,"size":Vector3(.75,.44,.5),"color":Color("b49560") if row.kind == "Chest" else Color("bdb087"),"role":"container","blocking":row.kind == "Chest"}
+		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*.22,"size":Vector3(.75,.44,.5),"color":Color("b49560") if row.kind in ["Chest","Workbench"] else Color("bdb087"),"role":"container","blocking":row.kind in ["Chest","Workbench"]}
 	for id: String in views.keys():
 		if not rows.has(id) or views[id].get_meta("row") != rows[id] or views[id].position.distance_to(runtime.player.position) > 64:
 			views[id].queue_free()

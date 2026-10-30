@@ -74,14 +74,14 @@ func snap_cell(target: TargetResult) -> Vector3i:
 	selected_support = ""
 	if not target.entity is SurfaceObject or target.entity.role != "structure":
 		var point := StructureModule.snap(target.build_cell)
-		if selected_structure in ["foundation","pillar","chest"]:
+		if selected_structure in ["foundation","pillar","chest","workbench"]:
 			point.y = roundi(target.world_position.y)
 		return point
 	var source: Dictionary = runtime.building.pieces.get(target.entity.object_id,{})
 	if source.is_empty():
 		return StructureModule.snap(target.build_cell)
 	var base := SupportGraph.cell(source)
-	if selected_structure == "chest" and source.definition in ["foundation","ceiling"]:
+	if selected_structure in ["chest","workbench"] and source.definition in ["foundation","ceiling"]:
 		selected_support = str(source.id)
 		return base
 	var relative := target.world_position-StructureModule.center(base)
@@ -114,7 +114,7 @@ func farm_interact(key: String) -> void:
 
 func build_at(cell: Vector3i, support_id: String = "") -> Error:
 	cell = StructureModule.snap(cell)
-	if selected_structure == "chest":
+	if selected_structure in ["chest","workbench"]:
 		var point := StructureModule.center(cell)+Vector3.UP*.02
 		var supported := runtime.ground_contact(cell)
 		if support_id.is_empty():
@@ -132,7 +132,7 @@ func build_at(cell: Vector3i, support_id: String = "") -> Error:
 		if InventoryTransactions.pay(runtime.player.inventory.state,{"bi.resource.wood":8}) != OK:
 			return ERR_UNAVAILABLE
 		var chest_id := runtime.ledger.new_id("chest")
-		runtime.containers.create(chest_id,point)
+		runtime.containers.create(chest_id,point,"Workbench" if selected_structure == "workbench" else "Chest")
 		runtime.containers.records[chest_id].support_id = support_id
 		runtime.objects.reconcile()
 		return OK

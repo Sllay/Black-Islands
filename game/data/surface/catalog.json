@@ -107,6 +107,12 @@
       "category": "RESOURCE",
       "icon": "·",
       "description": "Restos de alimento que perderam o frescor."
+    },
+    {
+      "id": "bi.build.ceiling",
+      "title": "Plataforma",
+      "category": "BUILDING_PIECE",
+      "icon": "▱"
     }
   ],
   "props": [

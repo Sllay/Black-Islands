@@ -66,7 +66,7 @@ func open_palette() -> void:
 	body.add_child(ShellUI.label_text("Escolha uma peça; mire com a câmera Build e toque em Attack.\nCultivo: enxada prepara, Interagir planta/colhe, regador molha.",20))
 	var row := HBoxContainer.new()
 	body.add_child(row)
-	for entry: Array in [["foundation","Fundação"],["wall","Parede"],["ceiling","Plataforma"],["pillar","Pilar"],["chest","Baú"]]:
+	for entry: Array in [["foundation","Fundação"],["wall","Parede"],["ceiling","Plataforma"],["pillar","Pilar"],["chest","Baú"],["workbench","Bancada"]]:
 		var button := ShellUI.button(entry[1],entry[0],Vector2(160,64))
 		button.pressed.connect(func() -> void:
 			runtime.actions.selected_structure = entry[0]

@@ -144,8 +144,11 @@ func snapshot() -> Dictionary:
 	var feet := actor.global_position if actor.is_on_floor() else _safe_feet
 	var appearance := actor.visual.configuration.duplicate(true)
 	appearance.equipment_visuals = []
-	return {"schema_version":1,"spawn":{"context":"surface","feet":[feet.x,feet.y,feet.z],
+	var data := {"schema_version":1,"spawn":{"context":"surface","feet":[feet.x,feet.y,feet.z],
 		"facing":[actor.motor.facing.x,actor.motor.facing.y,actor.motor.facing.z]},
 		"appearance":appearance,"inventory":actor.inventory.state.snapshot(),
 		"stats":{"health":actor.state.current_health,"max_health":actor.state.max_health,
 		"stamina":actor.state.current_stamina,"max_stamina":actor.state.max_stamina,"defense":actor.state.defense}}
+	if actor.inventory.crafting != null:
+		data.craft_queue = actor.inventory.crafting.service.queue.snapshot()
+	return data

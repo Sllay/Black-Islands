@@ -127,6 +127,8 @@ static func validate_snapshot(data: Dictionary) -> Error:
 	var defense: Variant = data.stats.get("defense")
 	if not (defense is float or defense is int) or not is_finite(float(defense)) or defense < 0 or defense > 10000:
 		return ERR_INVALID_DATA
+	if data.has("craft_queue") and (not data.craft_queue is Dictionary or CraftQueue.new().restore(data.craft_queue) != OK):
+		return ERR_INVALID_DATA
 	return _validate_surface(data)
 
 static func _validate_surface(data: Dictionary) -> Error:

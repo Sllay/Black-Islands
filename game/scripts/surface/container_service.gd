@@ -65,7 +65,7 @@ func in_area(area: AABB) -> Array[String]:
 	return result
 
 func break_chest(id: String) -> Error:
-	if not records.has(id) or records[id].kind != "Chest":
+	if not records.has(id) or records[id].kind not in ["Chest","Workbench"]:
 		return ERR_ALREADY_IN_USE
 	var row: Dictionary = records[id]
 	var point := Vector3(row.position[0],row.position[1],row.position[2])

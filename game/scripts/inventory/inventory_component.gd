@@ -5,6 +5,7 @@ signal open_changed(open: bool)
 var state := InventoryState.new()
 var is_open := false
 var simulation: InventorySimulation
+var crafting: CraftRuntime
 
 func _ready() -> void:
 	for entry: Array in [["bi.weapon.starter_sword",1],["bi.tool.stone_pick",1],["bi.food.coconut",5],["bi.build.foundation",3],["bi.resource.stone",300],["bi.ammo.arrow",18],["bi.armor.fiber_hat",1],["bi.armor.fiber_chest",1],["bi.armor.fiber_legs",1],["bi.accessory.shell_charm",2]]:
@@ -15,7 +16,15 @@ func _ready() -> void:
 	add_child(simulation)
 	for index: int in range(4):
 		state.assign_hotbar(index, index)
+	crafting = CraftRuntime.new()
+	crafting.name = "CraftRuntime"
+	crafting.configure(self)
+	add_child(crafting)
 
 func toggle() -> void:
 	is_open = not is_open
+	if is_open and get_parent() is PlayerActor:
+		get_parent().combat.cancel()
+	if not is_open and crafting != null:
+		crafting.open_container("")
 	open_changed.emit(is_open)

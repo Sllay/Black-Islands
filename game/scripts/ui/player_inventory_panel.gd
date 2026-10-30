@@ -126,8 +126,10 @@ func _build_panes() -> void:
 		_install_craft()
 	_changed(0)
 func _install_craft() -> void:
-	# The craft view is installed by the crafting domain integration checkpoint.
-	_right.add_child(ShellUI.label_text("CRIAÇÃO",22,ShellUI.GOLD))
+	var view := CraftPanel.new()
+	view.runtime = component.crafting
+	view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_right.add_child(view)
 func _grid(parent: Node, store: InventoryState, title: String, prefix: String) -> void:
 	parent.add_child(ShellUI.label_text(title,18,ShellUI.GOLD))
 	var scroll := ScrollContainer.new()
@@ -167,6 +169,7 @@ func open_container(id: String) -> void:
 		paired = null
 		controller.paired = null
 		return
+	component.crafting.open_container(id)
 	_watch(paired)
 	_mode = "container"
 	if not component.is_open:

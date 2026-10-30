@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://8vykxtlsfbuj"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r3_craft.gd" id="1_j77vw"]
+
+[node name="CraftQA" type="Node" unique_id=2034828210]
+script = ExtResource("1_j77vw")

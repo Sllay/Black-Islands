@@ -23,6 +23,8 @@ func configure(player: PlayerActor, storage: PlayerSaveStore) -> void:
 	if not store.loaded.is_empty():
 		var data := store.loaded
 		actor.inventory.state.restore(data.inventory)
+		if actor.inventory.crafting != null:
+			actor.inventory.crafting.service.queue.restore(data.get("craft_queue",{}))
 		actor.visual.set_appearance(data.appearance)
 		actor._refresh_appearance() # Weapon visual derives from hotbar, not a second save authority.
 		actor.state.max_health = float(data.stats.get("max_health",100))
@@ -62,6 +64,8 @@ func snapshot() -> Dictionary:
 		"appearance":config,"inventory":actor.inventory.state.snapshot(),
 		"stats":{"health":actor.state.current_health,"max_health":actor.state.max_health,
 			"stamina":actor.state.current_stamina,"max_stamina":actor.state.max_stamina,"defense":actor.state.defense}}
+	if actor.inventory.crafting != null:
+		data.craft_queue = actor.inventory.crafting.service.queue.snapshot()
 	var surface := get_tree().get_first_node_in_group("surface_runtime")
 	if surface != null:
 		data.surface = surface.snapshot()

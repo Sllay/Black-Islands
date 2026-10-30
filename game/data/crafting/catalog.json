@@ -1,0 +1,11 @@
+{
+ "schema_version":1,
+ "nearby_radius":12.0,
+ "recipes":[
+  {"id":"bi.recipe.foundation","name":"Fundação","icon":"▱","ingredients":[{"item_id":"bi.resource.wood","quantity":8},{"item_id":"bi.resource.stone","quantity":2}],"outputs":[{"item_id":"bi.build.foundation","quantity":1}],"craft_duration":2},
+  {"id":"bi.recipe.ceiling","name":"Plataforma","icon":"▱","ingredients":[{"item_id":"bi.resource.wood","quantity":4}],"outputs":[{"item_id":"bi.build.ceiling","quantity":1}],"craft_duration":2},
+  {"id":"bi.recipe.axe","name":"Machado","icon":"⚒","ingredients":[{"item_id":"bi.resource.wood","quantity":3},{"item_id":"bi.resource.stone","quantity":3}],"outputs":[{"item_id":"bi.tool.axe","quantity":1}],"craft_duration":2.5},
+  {"id":"bi.recipe.arrows","name":"Flechas ×4","icon":"➶","ingredients":[{"item_id":"bi.resource.wood","quantity":2},{"item_id":"bi.resource.stone","quantity":1}],"outputs":[{"item_id":"bi.ammo.arrow","quantity":4}],"craft_duration":1.5,"station_requirements":["workbench"]},
+  {"id":"bi.recipe.pick","name":"Picareta","icon":"⛏","ingredients":[{"item_id":"bi.resource.wood","quantity":3},{"item_id":"bi.resource.stone","quantity":4}],"outputs":[{"item_id":"bi.tool.stone_pick","quantity":1}],"craft_duration":3}
+ ]
+}

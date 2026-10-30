@@ -124,7 +124,7 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 		if row.definition == "foundation":
 			foundation_foliage(row,false)
 	for row: Dictionary in containers.records.values().duplicate():
-		if row.kind == "Chest":
+		if row.kind in ["Chest","Workbench"]:
 			var point := Vector3(row.position[0],row.position[1],row.position[2])
 			reconcile_container_support(AABB(point-Vector3.ONE,Vector3.ONE*2))
 	_configure_mobs(restored)
@@ -140,6 +140,8 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	_provision_tools()
 	if player.inventory.simulation != null:
 		player.inventory.simulation.bind_world(containers,_inventory_position,objects.reconcile)
+	if player.inventory.crafting != null:
+		player.inventory.crafting.bind_world(containers,str(session.store.identity.get("save_id","")))
 
 func _provision_tools() -> void:
 	var authority: Dictionary = session.frontend_save.portable.unlocks if session.frontend_save != null else ledger.flags
@@ -324,7 +326,7 @@ func foundation_foliage(row: Dictionary, suppress: bool) -> void:
 func reconcile_container_support(area: AABB) -> void:
 	for id: String in containers.in_area(area.grow(1)):
 		var row: Dictionary = containers.records[id]
-		if row.kind != "Chest":
+		if row.kind not in ["Chest","Workbench"]:
 			continue
 		var support: String = row.get("support_id","")
 		var valid := false
