@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dfxeusrn8oil3"]
+
+[ext_resource type="Script" uid="uid://cv0daxkfue5ws" path="res://tests/integration/rc0_r3_inventory_ux.gd" id="1_dodix"]
+
+[node name="InventoryUX" type="Control" unique_id=801349848]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_dodix")

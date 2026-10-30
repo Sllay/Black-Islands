@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed(HOTBAR_ACTIONS[index]):
 			inventory.state.select_hotbar(index)
 	var axis := Input.get_vector("move_left","move_right","move_up","move_down")
-	combat.tick(delta,axis,Input.is_action_just_pressed("attack_primary"),Input.is_action_just_released("attack_primary"),Input.is_action_just_pressed("dodge"))
+	combat.tick(delta,axis,not inventory.is_open and Input.is_action_just_pressed("attack_primary"),not inventory.is_open and Input.is_action_just_released("attack_primary"),not inventory.is_open and Input.is_action_just_pressed("dodge"))
 	motor.movement_locked = inventory.is_open or combat.movement_locked()
 	motor.tick(delta,axis,Input.is_action_pressed("run"))
 	camera_rig.tick(delta)

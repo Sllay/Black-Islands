@@ -1,0 +1,8 @@
+{
+  "tap_max_seconds": 0.4,
+  "double_tap_seconds": 0.28,
+  "long_press_seconds": 0.4,
+  "drag_threshold_logical_px": 12,
+  "freshness_refresh_seconds": 0.25,
+  "container_reach_metres": 4
+}

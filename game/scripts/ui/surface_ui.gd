@@ -4,11 +4,6 @@ extends CanvasLayer
 var runtime: SurfaceRuntime
 var panel: PanelContainer
 var body: VBoxContainer
-var opened_id := ""
-var selection: Dictionary = {}
-var quantity: SpinBox
-var feedback: Label
-var _grids: Array[GridContainer] = []
 
 func _ready() -> void:
 	layer = 8
@@ -36,7 +31,6 @@ func _ready() -> void:
 	runtime.player.inventory.open_changed.connect(func(open: bool) -> void:
 		if not open:
 			panel.visible = false)
-	runtime.container_opened.connect(open_container)
 	_attach_button.call_deferred()
 
 func _attach_button() -> void:
@@ -51,7 +45,6 @@ func _reset(title: String) -> void:
 	for child: Node in body.get_children():
 		body.remove_child(child)
 		child.queue_free()
-	_grids.clear()
 	var header := HBoxContainer.new()
 	body.add_child(header)
 	header.add_child(ShellUI.label_text(title,26,ShellUI.GOLD))
@@ -63,6 +56,9 @@ func _reset(title: String) -> void:
 	header.add_child(close)
 	if not runtime.player.inventory.is_open:
 		runtime.player.inventory.toggle()
+	var inventory := get_tree().root.find_child("InventoryPanel",true,false) as PlayerInventoryPanel
+	if inventory != null:
+		inventory.visible = false
 	panel.visible = true
 
 func open_palette() -> void:
@@ -94,65 +90,7 @@ func open_palette() -> void:
 		tools.add_child(button)
 
 func open_container(id: String) -> void:
-	if not runtime.containers.inventories.has(id):
-		return
-	opened_id = id
-	selection = {}
-	var title: String = {"Chest":"Baú","WorldDropBag":"Pacote","DeathBagInventory":"Espólio","Corpse":"Corpo"}.get(runtime.containers.records[id].kind,"Container")
-	_reset("BAGAGEM  ↔  "+title)
-	var panes := HBoxContainer.new()
-	panes.add_theme_constant_override("separation",24)
-	body.add_child(panes)
-	for store: InventoryState in [runtime.player.inventory.state,runtime.containers.inventories[id]]:
-		var column := ShellUI.column(panes,8)
-		column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		column.add_child(ShellUI.label_text("Sua bagagem" if store == runtime.player.inventory.state else "Container",20,ShellUI.GOLD))
-		var grid := GridContainer.new()
-		grid.columns = 5
-		column.add_child(grid)
-		_grids.append(grid)
-		for index: int in InventoryState.CAPACITY:
-			var button := ShellUI.button("—","Slot%d" % index,Vector2(90,52))
-			button.pressed.connect(_select.bind(store,index))
-			grid.add_child(button)
-	var controls := HBoxContainer.new()
-	body.add_child(controls)
-	quantity = SpinBox.new()
-	quantity.min_value = 1
-	quantity.max_value = 999
-	quantity.custom_minimum_size = Vector2(140,56)
-	controls.add_child(quantity)
-	for entry: Array in [["Transferir quantidade",false],["Transferir stack inteiro",true]]:
-		var button := ShellUI.button(entry[0],"Transfer",Vector2(250,56))
-		button.pressed.connect(_transfer.bind(entry[1]))
-		controls.add_child(button)
-	feedback = ShellUI.label_text("Escolha um stack de qualquer lado.",18,ShellUI.MUTED)
-	body.add_child(feedback)
-	_refresh()
-
-func _select(source: InventoryState, index: int) -> void:
-	var row := source.slot_at(index)
-	if row.is_empty():
-		return
-	var other: InventoryState = runtime.containers.inventories[opened_id] if source == runtime.player.inventory.state else runtime.player.inventory.state
-	selection = {"source":source,"target":other,"uid":row.stack_uid,"source_revision":source.revision,"target_revision":other.revision,"max":int(row.quantity)}
-	quantity.max_value = row.quantity
-	quantity.value = 1
-	feedback.text = ItemCatalog.resolve(row.item_id).title+" • escolha a quantidade."
-
-func _transfer(full: bool) -> void:
-	if selection.is_empty():
-		return
-	var amount := int(selection.max) if full else int(quantity.value)
-	var error := InventoryTransactions.transfer(selection.source,selection.target,selection.uid,amount,selection.source_revision,selection.target_revision)
-	feedback.text = "Transferido." if error == OK else "Inventário mudou ou não há espaço. Selecione novamente."
-	selection = {}
-	_refresh()
-
-func _refresh() -> void:
-	var stores: Array[InventoryState] = [runtime.player.inventory.state,runtime.containers.inventories[opened_id]]
-	for pane: int in range(2):
-		for index: int in InventoryState.CAPACITY:
-			var row := stores[pane].slot_at(index)
-			var button: Button = _grids[pane].get_child(index)
-			button.text = "—" if row.is_empty() else "%s %d" % [ItemCatalog.resolve(row.item_id).icon,row.quantity]
+	var inventory := get_tree().root.find_child("InventoryPanel",true,false) as PlayerInventoryPanel
+	if inventory != null:
+		panel.visible = false
+		inventory.open_container(id)
