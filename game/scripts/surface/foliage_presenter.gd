@@ -171,6 +171,8 @@ func cut(point: Vector3, radius: float) -> void:
 			var location := Vector3(x+.5,point.y,z+.5)
 			if Vector2(location.x-point.x,location.z-point.z).length() > radius:
 				continue
+			if runtime.ledger.suppressed(location,false):
+				continue # Cutting cannot replace construction/path/farm authority.
 			runtime.ledger.suppress(location,"cut")
 			runtime.ledger.suppression[SurfaceLedger.cell_key(location)].foliage_only = true
 			runtime.ledger.release(location,"cut")
