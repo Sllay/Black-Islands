@@ -55,10 +55,10 @@ func _resolve(context: Dictionary) -> ResourceScope:
 	if actor == null:
 		return result if context.is_empty() else null
 	var point := actor.global_position
-	var owner := component.state.inventory_id
+	var actor_id := component.state.inventory_id
 	if not context.is_empty():
 		var id := str(context.get("station_id",""))
-		if context.get("world_id") != world_id or not CraftStation.available(registry,id) or not nearby.policy.allows(registry,id,owner,point,4):
+		if context.get("world_id") != world_id or not CraftStation.available(registry,id) or not nearby.policy.allows(registry,id,actor_id,point,4):
 			return null
 		var station: InventoryState = registry.inventories[id]
 		result.sources.append(station)
@@ -66,10 +66,10 @@ func _resolve(context: Dictionary) -> ResourceScope:
 		result.station_tags = ["workbench"]
 		var row: Dictionary = registry.records[id]
 		var center := Vector3(row.position[0],row.position[1],row.position[2])
-		for store: InventoryState in nearby.resolve(registry,center,service.catalog.nearby_radius,owner):
+		for store: InventoryState in nearby.resolve(registry,center,service.catalog.nearby_radius,actor_id):
 			result.sources.append(store)
 			result.destinations.append(store)
-	elif not opened_id.is_empty() and nearby.policy.allows(registry,opened_id,owner,point,4):
+	elif not opened_id.is_empty() and nearby.policy.allows(registry,opened_id,actor_id,point,4):
 		result.sources.append(registry.inventories[opened_id])
 		result.destinations.append(registry.inventories[opened_id])
 	return result

@@ -40,7 +40,7 @@ func _setup() -> void:
 func report() -> Dictionary:
 	return {"player":actor.inventory.state.snapshot(),"chest":registry.inventories["qa.chest"].snapshot(),"dragging":panel.gestures.dragging,"popup":panel._popup.get_class() if is_instance_valid(panel._popup) else "","bag_count":registry.records.size()-1}
 func touch_slot(side: String, index: int, pressed: bool) -> void:
-	var slot: InventorySlotView = panel.find_child(side+"Slot%02d"%index,true,false)
+	var slot: InventorySlotView = panel.cells[20+index] if side == "Hotbar" else panel.find_child(side+"Slot%02d"%index,true,false)
 	if slot == null:
 		return
 	var event := InputEventScreenTouch.new()
@@ -50,7 +50,7 @@ func touch_slot(side: String, index: int, pressed: bool) -> void:
 	Input.parse_input_event(event)
 	Input.flush_buffered_events()
 func drag_to(side: String, index: int) -> void:
-	var slot: InventorySlotView = panel.find_child(side+"Slot%02d"%index,true,false)
+	var slot: InventorySlotView = panel.cells[20+index] if side == "Hotbar" else panel.find_child(side+"Slot%02d"%index,true,false)
 	var event := InputEventScreenDrag.new()
 	event.index = 0
 	event.position = slot.get_global_rect().get_center()
@@ -104,6 +104,10 @@ func run_automated() -> void:
 	check(state.slot_at(0).is_empty() and state.slot_at(7).quantity == 11,"same inventory move")
 	await drag_slot("Player",7,"Player",3)
 	check(state.slot_at(7).item_id == "bi.resource.wood" and state.slot_at(3).item_id == "bi.resource.meat","same inventory swap")
+	await drag_slot("Player",2,"Hotbar",4)
+	check(state.hotbar_at(4).stack_uid == state.slot_at(2).stack_uid,"hotbar assigns reference")
+	await drag_slot("Player",7,"Hotbar",5)
+	check(state.hotbar_at(5).is_empty(),"resource hotbar rejection")
 	await drag_slot("Player",3,"Container",3)
 	check(panel._popup is InventoryQuantityModal,"cross inventory modal before mutation")
 	var modal := panel._popup as InventoryQuantityModal
@@ -131,3 +135,9 @@ func run_automated() -> void:
 	check(panel.paired == null and panel.find_child("ContainerGrid",true,false) == null,"reopen clears old context")
 	print("R3_INVENTORY_UX ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures)
 	get_tree().quit(1 if failures else 0)
+
+func qa_workbench() -> void:
+	var bench := registry.create("qa.bench",Vector3(1,0,0),"Workbench")
+	bench.add_item("bi.resource.wood",64)
+	bench.add_item("bi.resource.stone",32)
+	panel.open_container("qa.bench")
