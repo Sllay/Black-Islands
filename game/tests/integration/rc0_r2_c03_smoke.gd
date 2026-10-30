@@ -43,6 +43,13 @@ func _run() -> void:
 	foliage.cut(point,1.4)
 	foliage.native_foliage._process(.2)
 	check(bench.surface.ledger.suppression.size() > 0,"attack cut creates local suppression")
+	var old_instancer := foliage.native_foliage.instancer
+	foliage.apply_quality("Low")
+	await get_tree().create_timer(1).timeout
+	check(foliage.native_foliage.instancer == old_instancer and old_instancer.debug_get_instance_counts().get(1,0) > 100,"quality change regenerates already-resident blocks")
+	foliage.apply_quality("High")
+	await get_tree().create_timer(1).timeout
+	check(old_instancer.debug_get_instance_counts().get(1,0) > 100,"higher density remains visible after live settings commit")
 	print("R2_C03_NATIVE ",JSON.stringify(stats))
 	bench.queue_free()
 	await get_tree().process_frame

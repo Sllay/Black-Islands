@@ -4,6 +4,7 @@ extends Node
 var runtime: SurfaceRuntime
 var instancer: VoxelInstancer
 var material: ShaderMaterial
+var decoration_materials: Array[ShaderMaterial] = []
 var mask: Image
 var mask_texture: ImageTexture
 var mask_origin := Vector2(INF,INF)
@@ -17,10 +18,10 @@ func _ready() -> void:
 	runtime.ledger.changed.connect(func(_domain: String,_id: String) -> void: mask_dirty = true)
 	_rebuild()
 func _rebuild() -> void:
-	if is_instance_valid(instancer):
-		instancer.get_parent().remove_child(instancer)
-		instancer.queue_free()
+	# Keep old materials alive until native clear_layers detaches their RIDs.
+	var previous_library: VoxelInstanceLibrary = instancer.library if is_instance_valid(instancer) else null
 	var library := VoxelInstanceLibrary.new()
+	decoration_materials.clear()
 	material = ShaderMaterial.new()
 	var shader: Shader = load("res://resources/surface/grass.gdshader")
 	var rd := RenderingServer.get_current_rendering_method() != "gl_compatibility"
@@ -74,6 +75,13 @@ func _rebuild() -> void:
 		decoration.name = row[1]
 		decoration.lod_index = int(row[3])
 		decoration.mesh = load("res://resources/surface/"+str(row[1])+".res")
+		var decoration_material := ShaderMaterial.new()
+		decoration_material.shader = load("res://resources/surface/decorative_foliage.gdshader")
+		decoration_material.set_shader_parameter("suppression",mask_texture)
+		decoration_material.set_shader_parameter("far_distance",float(budget.far)+24)
+		decoration_material.set_shader_parameter("tint",Vector3(.25,.48,.2) if row[1] == "bush" else Vector3(.48,.5,.54))
+		decoration.material_override = decoration_material
+		decoration_materials.append(decoration_material)
 		var placement := VoxelInstanceGenerator.new()
 		placement.emit_mode = VoxelInstanceGenerator.EMIT_FROM_FACES
 		placement.density = float(row[2]) if enabled else 0.0
@@ -85,12 +93,19 @@ func _rebuild() -> void:
 		decoration.generator = placement
 		decoration.cast_shadow = RenderingServer.SHADOW_CASTING_SETTING_OFF
 		library.add_item(row[0],decoration)
-	instancer = VoxelInstancer.new()
-	instancer.name = "NativeFoliage"
-	instancer.library = library
+	if not is_instance_valid(instancer):
+		instancer = VoxelInstancer.new()
+		instancer.name = "NativeFoliage"
+		instancer.library = library
+		runtime.terrain.native.add_child(instancer)
+	else:
+		# Native set_library regenerates layers against already-resident meshes.
+		# Replacing the Node loses those mesh events until streaming moves again.
+		instancer.library = library
 	instancer.fading_enabled = rd
 	instancer.fading_duration = .45
-	runtime.terrain.native.add_child(instancer)
+	if previous_library != null:
+		previous_library = null
 	mask_dirty = true
 func apply_budget(values: Dictionary, active: bool = true) -> void:
 	if budget == values and enabled == active:
@@ -108,6 +123,8 @@ func _process(delta: float) -> void:
 	_poll = 0
 	var player := runtime.player.global_position
 	material.set_shader_parameter("viewer",player)
+	for decoration: ShaderMaterial in decoration_materials:
+		decoration.set_shader_parameter("viewer",player)
 	var positions := PackedVector4Array([Vector4(player.x,player.y,player.z,1)])
 	if runtime.mobs != null:
 		for actor: Node3D in runtime.mobs.actors.values():
@@ -135,6 +152,8 @@ func _update_mask() -> void:
 				mask.set_pixel(pixel.x,pixel.y,Color.WHITE)
 	mask_texture.update(mask)
 	material.set_shader_parameter("mask_origin",mask_origin)
+	for decoration: ShaderMaterial in decoration_materials:
+		decoration.set_shader_parameter("mask_origin",mask_origin)
 	mask_dirty = false
 func remove_local(point: Vector3, radius: float) -> void:
 	instancer.remove_instances_in_sphere(instancer.to_local(point),radius/WorldCoordinates.VOXEL_SIZE)

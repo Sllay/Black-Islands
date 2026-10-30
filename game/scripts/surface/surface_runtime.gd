@@ -332,6 +332,7 @@ func snapshot() -> Dictionary:
 	return data
 
 func report() -> Dictionary:
+	foliage._recount()
 	var exhausted := 0
 	var bags := 0
 	var batches := 0
