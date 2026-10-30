@@ -3,6 +3,8 @@ extends Node3D
 class SessionHarness extends WorldSession:
 	func _ready() -> void:
 		pass
+	func _process(_delta: float) -> void:
+		pass # Composition-only fixture has no WorldSession presentation children.
 
 var baseline: Node3D
 var surface: SurfaceRuntime
