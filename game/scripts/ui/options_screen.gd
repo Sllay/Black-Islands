@@ -5,7 +5,7 @@ var graphics_page: VBoxContainer
 var values: Dictionary = {}
 
 func _ready() -> void:
-	staged = GameSettings.current.duplicate(true)
+	staged = GameSettings.staged_copy()
 	frame("OPTIONS","Ajuste sua experiência")
 	var tabs := HBoxContainer.new()
 	content.add_child(tabs)
@@ -26,17 +26,22 @@ func _ready() -> void:
 	graphics_page.add_child(presets)
 	var preset_group := ButtonGroup.new()
 	for quality: String in GameSettings.catalog.presets:
-		var button := action(presets,quality,func() -> void: staged.quality = quality,"Quality"+quality)
+		var button := action(presets,quality,_quality_selected.bind(quality),"Quality"+quality)
 		button.toggle_mode = true
 		button.button_group = preset_group
 		button.button_pressed = quality == staged.quality
-	_slider(graphics_page,"Distância do mundo",int(staged.distance),2,10,func(value: int) -> void: staged.distance = value,"Distance")
+	_slider(graphics_page,"Distância do mundo",int(staged.distance),2,10,func(value: int) -> void:
+		staged.distance = value
+		staged.overrides.distance = true,"Distance")
 	for key: String in ["shadows","vsync"]:
 		var toggle := CheckButton.new()
 		toggle.text = "Shadows" if key == "shadows" else "VSync"
 		toggle.button_pressed = staged[key]
 		toggle.custom_minimum_size.y = 48
-		toggle.toggled.connect(func(enabled: bool) -> void: staged[key] = enabled)
+		toggle.toggled.connect(func(enabled: bool) -> void:
+			staged[key] = enabled
+			staged.overrides[key] = true)
+		values[key] = toggle
 		graphics_page.add_child(toggle)
 	var backends := OptionButton.new()
 	backends.name = "Backend"
@@ -61,6 +66,7 @@ func _slider(parent: Node, title: String, value: int, minimum: int, maximum: int
 	var amount := ShellUI.label_text(str(value),20,ShellUI.GOLD)
 	amount.custom_minimum_size.x = 50
 	row.add_child(amount)
+	values[id+"Amount"] = amount
 	var slider := HSlider.new()
 	slider.name = id
 	slider.min_value = minimum
@@ -73,6 +79,19 @@ func _slider(parent: Node, title: String, value: int, minimum: int, maximum: int
 		changed.call(int(next)))
 	parent.add_child(slider)
 	values[id] = slider
+
+func _quality_selected(quality: String) -> void:
+	staged.quality = quality
+	var budget := GraphicsBudget.resolve(staged,GameSettings.catalog)
+	staged.distance = budget.distance_level
+	staged.shadows = budget.shadows
+	values.Distance.set_block_signals(true)
+	values.Distance.value = staged.distance
+	values.Distance.set_block_signals(false)
+	values.DistanceAmount.text = str(staged.distance)
+	values.shadows.set_block_signals(true)
+	values.shadows.button_pressed = staged.shadows
+	values.shadows.set_block_signals(false)
 
 func _tab(index: int) -> void:
 	audio_page.visible = index == 0

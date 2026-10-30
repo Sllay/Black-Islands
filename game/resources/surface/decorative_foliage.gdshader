@@ -8,7 +8,7 @@ uniform float far_distance = 60.0;
 varying float coverage;
 void vertex() {
 	vec3 root = MODEL_MATRIX[3].xyz;
-	float blocked = texture(suppression,(root.xz-mask_origin)/128.0).r;
+	float blocked = texture(suppression,(root.xz-mask_origin)/256.0).r;
 	coverage = (1.0-blocked)*(1.0-smoothstep(far_distance-12.0,far_distance,distance(root.xz,viewer.xz)));
 	VERTEX = mix(root,VERTEX,coverage);
 }

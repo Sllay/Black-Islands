@@ -1,6 +1,7 @@
 class_name NativeFoliage
 extends Node
 ## Native block-scoped disposable instances; ledger owns sparse suppression.
+const MASK_SIZE := 256
 var runtime: SurfaceRuntime
 var instancer: VoxelInstancer
 var material: ShaderMaterial
@@ -13,7 +14,7 @@ var enabled := true
 var budget: Dictionary = {"density":.25,"near":22.0,"far":36.0,"interaction":2.0,"wind":.12}
 var _poll := 0.0
 func _ready() -> void:
-	mask = Image.create(128,128,false,Image.FORMAT_R8)
+	mask = Image.create(MASK_SIZE,MASK_SIZE,false,Image.FORMAT_R8)
 	mask_texture = ImageTexture.create_from_image(mask)
 	runtime.ledger.changed.connect(func(_domain: String,_id: String) -> void: mask_dirty = true)
 	_rebuild()
@@ -135,7 +136,7 @@ func _process(delta: float) -> void:
 	while positions.size() < 5:
 		positions.append(Vector4.ZERO)
 	material.set_shader_parameter("actors",positions)
-	var origin := Vector2(floorf(player.x/32)*32-64,floorf(player.z/32)*32-64)
+	var origin := Vector2(floorf(player.x/32)*32-MASK_SIZE*.5,floorf(player.z/32)*32-MASK_SIZE*.5)
 	if origin != mask_origin:
 		mask_origin = origin
 		mask_dirty = true
@@ -148,7 +149,7 @@ func _update_mask() -> void:
 		var point := Vector3(float(parts[0]),float(parts[1]),float(parts[2]))
 		if runtime.ledger.suppressed(point):
 			var pixel := Vector2i(Vector2(point.x,point.z)-mask_origin)
-			if pixel.x >= 0 and pixel.y >= 0 and pixel.x < 128 and pixel.y < 128:
+			if pixel.x >= 0 and pixel.y >= 0 and pixel.x < MASK_SIZE and pixel.y < MASK_SIZE:
 				mask.set_pixel(pixel.x,pixel.y,Color.WHITE)
 	mask_texture.update(mask)
 	material.set_shader_parameter("mask_origin",mask_origin)
@@ -161,7 +162,7 @@ func remove_local(point: Vector3, radius: float) -> void:
 func report() -> Dictionary:
 	var counts := instancer.debug_get_instance_counts()
 	return {"native_instances":counts,"native_blocks":instancer.debug_get_block_count(),"density":budget.density,
-		"distance":budget.far,"native_fading":instancer.fading_enabled,"mask_bytes":128*128,"mesh_lods":[3,2,1]}
+		"distance":budget.far,"native_fading":instancer.fading_enabled,"mask_bytes":MASK_SIZE*MASK_SIZE,"mesh_lods":[3,2,1]}
 func _exit_tree() -> void:
 	if is_instance_valid(instancer):
 		instancer.queue_free()

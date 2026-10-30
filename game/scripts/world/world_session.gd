@@ -108,7 +108,7 @@ func _ready() -> void:
 	edits.intent_queued.connect(func(_operation: Dictionary) -> void: surface.message.emit("Preparando o terreno próximo…"))
 	edits.operation_failed.connect(func(_operation: Dictionary) -> void: surface.message.emit("Ação de terreno cancelada: área ainda indisponível ou alvo alterado."))
 	GameSettings.apply_scene(self)
-	apply_distance(int(GameSettings.current.get("distance",6)))
+	apply_graphics(GameSettings.effective())
 	if terrain.field is WorldFieldV2:
 		$Lake.visible = false
 		var waters := GeneratedWaterView.new()
@@ -287,7 +287,7 @@ func _process(delta: float) -> void:
 			ready_ms = Time.get_ticks_msec() - _started
 			print("WORLD_READY ", ready_ms, "ms")
 	_update_placement_preview()
-	if metrics_label == null:
+	if metrics_label == null or tools == null or not tools.visible:
 		return
 	_refresh += delta
 	if _refresh < 0.25:
@@ -301,6 +301,9 @@ func _process(delta: float) -> void:
 	var ring := streamer.metrics()
 	var water_sample := water.sample(pawn.global_position)
 	metrics_label.text = "P02 DEBUG • DESKTOP PROXY\nseed %s • cell %s\nregions %s • chunks %s • pending %s\nloads %s • unloads %s • transition %sms\nnative data %s • meshes %s\njobs gen %s / mesh %s • pool %.1f MiB\nremesh confirmations %s • collision %s\ndelta %s voxels • water %s\nedit commit %sms / mesh %sms / collision %sms" % [terrain.field.world_seed, WorldCoordinates.world_to_cell(pawn.global_position), ring.horizontal_regions, ring.loaded_chunks, ring.pending_jobs, ring.applied, ring.unloaded, ring.transition_ms, report.data_blocks, report.mesh_blocks, report.engine.tasks.generation, report.engine.tasks.meshing, report.engine.memory_pools.voxel_total / 1048576.0, remesh_confirmations, collision_confirmations, store.metrics().changed_voxels, water_sample.kind, last_edit.get("commit_ms", "-"), last_edit.get("mesh_ms", "-"), last_edit.get("collision_ms", "-")]
+
+	var graphics := graphics_metrics()
+	metrics_label.text += "\nRC0-R2 %s • draw %d • bodies %d\nfoliage %s • dirty chunks %d • %.1fms" % [graphics.profile.quality,graphics.draw_calls,graphics.physics_active_bodies,graphics.foliage.native_instances,graphics.dirty_chunks,graphics.frame_ms]
 
 func _update_placement_preview() -> void:
 	var target := pawn.targeter.current
@@ -317,9 +320,28 @@ func _update_placement_preview() -> void:
 		$BuildHighlight.position = Vector3(target.build_cell)+Vector3(.5,target.world_position.y-target.build_cell.y+.06,.5)
 
 func apply_distance(level: int) -> void:
+	var settings := GameSettings.staged_copy()
+	settings.distance = clampi(level,2,10)
+	settings.overrides.distance = true
+	apply_graphics(GraphicsBudget.resolve(settings,GameSettings.catalog))
+
+func apply_graphics(budget: Dictionary) -> void:
 	if terrain == null or pawn == null:
 		return
-	var budget := GameSettings.distance_budget(level)
 	terrain.native.view_distance = ceili(float(budget.viewer_metres)/WorldCoordinates.VOXEL_SIZE)
 	pawn.get_node("Viewer").view_distance = int(budget.viewer_metres)
 	streamer.set_radius(int(budget.near_ring))
+	if surface != null and surface.foliage != null:
+		surface.foliage.apply_profile(budget)
+
+func graphics_metrics() -> Dictionary:
+	var native := terrain.statistics()
+	var io := store.metrics()
+	return {"profile":GameSettings.effective(),"data_slots":native.data_blocks,"mesh_slots":native.mesh_blocks,
+		"voxel_buffer_bytes":native.engine.memory_pools.voxel_used,"generation_queue":native.engine.tasks.generation,
+		"meshing_queue":native.engine.tasks.meshing,"dirty_chunks":io.get("dirty_chunks",0),
+		"foliage":surface.foliage.report(),"active_mob_actors":surface.mobs.actors.size(),
+		"physics_active_bodies":Performance.get_monitor(Performance.PHYSICS_3D_ACTIVE_OBJECTS),
+		"frame_ms":Performance.get_monitor(Performance.TIME_PROCESS)*1000,
+		"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
+		"static_memory_mib":Performance.get_monitor(Performance.MEMORY_STATIC)/1048576.0}

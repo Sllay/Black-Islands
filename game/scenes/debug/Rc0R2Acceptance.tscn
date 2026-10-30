@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://rv7tlumnj2ux"]
+
+[ext_resource type="Script" path="res://scripts/debug/rc0_r2_acceptance.gd" id="1_e7tst"]
+
+[node name="Rc0R2Acceptance" type="Node" unique_id=1637374475]
+script = ExtResource("1_e7tst")

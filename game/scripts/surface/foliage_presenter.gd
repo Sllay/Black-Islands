@@ -23,7 +23,14 @@ func _ready() -> void:
 	native_foliage = NativeFoliage.new()
 	native_foliage.runtime = runtime
 	add_child(native_foliage)
-	apply_quality(GameSettings.current.get("quality","Medium"))
+	apply_profile(GameSettings.effective())
+
+func apply_profile(profile: Dictionary) -> void:
+	native_foliage.apply_budget(profile.foliage)
+	prop_distance = float(profile.prop_distance)
+	for root: Node3D in patches.values():
+		for view: MultiMeshInstance3D in root.get_children():
+			view.visibility_range_end = prop_distance+24
 
 func apply_quality(quality: String, enabled: bool = true) -> void:
 	var profile: Dictionary = GameSettings.catalog.presets[quality]

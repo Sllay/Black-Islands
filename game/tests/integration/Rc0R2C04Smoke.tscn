@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://d4k8odr6jvguj"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r2_c04_smoke.gd" id="1_box0f"]
+
+[node name="Rc0R2C04Smoke" type="Node" unique_id=1789585820]
+script = ExtResource("1_box0f")

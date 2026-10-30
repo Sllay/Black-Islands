@@ -9,7 +9,7 @@ case "$checkpoint" in
  c02) scenes=(Rc0R2C02Smoke) ;;
  c03) scenes=(Rc0R2C03Smoke) ;;
  c04) scenes=(Rc0R2C04Smoke) ;;
- all) scenes=(Rc0R2C01Smoke Rc0R2C02Smoke Rc0R2C03Smoke Rc0R2C04Smoke) ;;
+ all) scenes=(Rc0R2C01Smoke Rc0R2C02Smoke Rc0R2C03Smoke Rc0R2C04Smoke Rc0C01Smoke Rc0C02Smoke Rc0C03Smoke PlayerC03Smoke) ;;
  *) echo 'Usage: validate_rc0_r2.sh [c01|c02|c03|c04|all]' >&2; exit 2 ;;
 esac
 mkdir -p .tools/logs

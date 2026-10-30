@@ -1,0 +1,13 @@
+# Chapter1 graphics budgets
+
+Renderer backend is startup/export-only: Desktop `forward_plus`, Mobile `mobile`, Compatibility `gl_compatibility`. Options saves a renderer override for the next launch; quality never hot-swaps the backend. Software drivers are a desktop proxy.
+
+`game/data/graphics_profiles.json` is the immutable catalog. `GraphicsBudget.resolve` combines a copied profile with explicit user overrides. Defaults: Low distance4/native view120m, Medium6/192m, High8/281.6m. Existing R1 settings acquire explicit override flags, preserving saved distance/shadows/VSync. New profiles supply defaults until a user changes that control. UI remains staged until Save and exit. Settings remain schema1 with backward-compatible optional flags; Player/World schema2 and migrations are unchanged.
+
+Distance levels2–10 map to base viewer128/144/160/176/192/224/256/288/320m, logical descriptor ring1/1/1/1/1/2/2/2/3, resource envelope32..80m, foliage range multiplier0.65..1.25. Quality multiplies terrain view by0.75/1/1.1; native VoxelLodTerrain receives voxel units (`metres/0.5`), VoxelViewer receives metres. Native clipbox owns data/mesh/collision residency; logical64m descriptors own gameplay organization. Viewer4m and logical-region8m hysteresis are independent. Voxel resolution, mesh block32, four LODs and near collision LOD remain unchanged.
+
+Grass cluster density Low/Medium/High .10/.22/.34 per native square unit (~.4/.88/1.36 per world m²). Base near/far ranges14/24,22/36,30/48m scale with distance, far capped56m. Wind amplitude .04/.12/.18m, interaction1/2/2.8m; resource range48/72/96m additionally capped by distance. Shadows use atlas1024/2048/4096 and24/48/72m range, filtering1/2/3. VSync/custom shadows override profile fields. VFX scale is reserved data while no expensive VFX system exists.
+
+Grass and decorative cutout/dither shaders have Compatibility fallbacks. Native per-block instance fading is enabled only on RD renderers; Compatibility uses distance screen-door fade. Near interactions are bounded to5actors. A256m R8 suppression window (64KiB) covers the maximum foliage envelope with positional hysteresis. Far ocean is one16km two-triangle plane, independent of gameplay boundaries.
+
+`WorldSession.graphics_metrics()` reports profile, native data/mesh slots, actual voxel buffer bytes, generation/meshing queues, foliage resident instances/batches, near resource adapters, mob actors, active physics bodies, dirty terrain chunks, frame/draw/memory monitors. Data slots are metadata, not proof of allocated voxel buffers. Debug panel updates only when visible; normal HUD has no performance labels. Actual FPS/budgets require runtime measurements and physical Android/iOS testing.

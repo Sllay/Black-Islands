@@ -15,6 +15,10 @@ var _autosaving := false
 func configure(player: PlayerActor, storage: PlayerSaveStore) -> void:
 	actor = player
 	store = storage
+	if actor.terrain != null:
+		var surface := actor.terrain.field.top_surface(actor.global_position.x,actor.global_position.z)
+		if is_finite(surface):
+			_safe_feet = Vector3(actor.global_position.x,surface+.05,actor.global_position.z)
 	add_to_group("player_save_coordinators")
 	if not store.loaded.is_empty():
 		var data := store.loaded
