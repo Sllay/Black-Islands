@@ -33,7 +33,7 @@ static func build(recipe: RecipeDefinition, scope: ResourceScope, drops: WorldDr
 		if left > 0:
 			plan.error = ERR_UNAVAILABLE
 			return plan
-	var overflow: InventoryState
+	var overflow: InventoryState = null
 	for output: CraftOutput in recipe.outputs:
 		var left := output.quantity
 		for store: InventoryState in scope.destinations:

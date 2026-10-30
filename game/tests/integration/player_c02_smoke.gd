@@ -22,11 +22,15 @@ func _run() -> void:
 	add_child(panel)
 	_check(not panel.visible and not panel.is_processing(), "closed inventory has no processing loop")
 	player.inventory.toggle()
-	_check(panel.visible and panel.find_child("InventoryGrid", true, false).get_child_count() == 20, "visible inventory exactly 5x4")
-	_check(panel._gear.size() == 5, "five equipment slots")
+	var grid := panel.find_child("PlayerGrid",true,false) as GridContainer
+	_check(panel.visible and grid != null and grid.columns == 5 and grid.get_child_count() == 20,"visible inventory exactly5x4")
+	var equipment_count := 0
+	for slot: InventorySlotView in panel.cells:
+		equipment_count += int(slot.kind == "equipment")
+	_check(equipment_count == 5,"five equipment slots")
 	player.inventory.toggle()
-	_check(not panel.visible, "inventory closes")
-	print("P03_C02 PASS failures=", failures, " cache=", LPCCompositionCache.report())
+	_check(not panel.visible,"inventory closes")
+	print("P03_C02 PASS failures=",failures," cache=",LPCCompositionCache.report())
 	get_tree().quit(1 if failures else 0)
 
 func _inventory() -> void:

@@ -31,7 +31,7 @@ func _ready() -> void:
 	_tap.one_shot = true
 	_tap.wait_time = float(tuning.double_tap_seconds)
 	_tap.timeout.connect(func() -> void:
-		if is_instance_valid(pending):
+		if is_instance_valid(pending) and pending.row.get("stack_uid","") == pending_uid:
 			tap.emit(pending)
 		pending = null)
 	add_child(_tap)

@@ -107,13 +107,13 @@ func refresh() -> void:
 		var value := service.availability(recipe,context)
 		recipe_buttons[id].modulate = Color.WHITE if value.quantity > 0 else ShellUI.MUTED
 	craft.disabled = selected.is_empty() or service.queue.jobs.size() >= CraftQueue.CAPACITY
-	var recipe := service.catalog.resolve(selected)
-	if recipe == null:
+	var chosen := service.catalog.resolve(selected)
+	if chosen == null:
 		return
-	var available := service.availability(recipe,context)
-	var text := "%s • %.1fs • disponíveis: %d\n"%[recipe.title,recipe.duration,available.quantity]
-	for id: String in recipe.costs():
-		text += "%s %d/%d   "%[ItemCatalog.resolve(id).title,available.counts.get(id,0),recipe.costs()[id]]
+	var available := service.availability(chosen,context)
+	var text := "%s • %.1fs • disponíveis: %d\n"%[chosen.title,chosen.duration,available.quantity]
+	for id: String in chosen.costs():
+		text += "%s %d/%d   "%[ItemCatalog.resolve(id).title,available.counts.get(id,0),chosen.costs()[id]]
 	details.text = text
 func _progress() -> void:
 	if runtime.service.queue.jobs.is_empty():
