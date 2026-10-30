@@ -183,6 +183,7 @@ func _open_changed(open: bool) -> void:
 		if control != null:
 			control.visible = not open
 	if open:
+		_build_panes()
 		_fresh.start()
 		_changed(0)
 	else:
