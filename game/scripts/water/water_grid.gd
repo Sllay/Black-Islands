@@ -40,6 +40,7 @@ func ensure_tile(coord: Vector2i) -> WaterTile:
 			var water: Dictionary = {"kind":"dry","level":0}
 			if initial_water.is_valid():
 				water = initial_water.call(point)
+			tile.rest_level[i] = float(water.level)
 			tile.kind[i] = 2 if water.kind == "ocean" and tile.ground[i] < 0 else (3 if water.kind == "river" else (1 if water.kind == "lake" else 0))
 			tile.depth[i] = maxf(0,float(water.level)-tile.ground[i]) if tile.kind[i] != 0 else 0.0
 			tile.previous[i] = tile.depth[i]

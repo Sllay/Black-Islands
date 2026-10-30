@@ -4,6 +4,7 @@ extends RefCounted
 enum Activity { INACTIVE, SLEEPING, ACTIVE }
 var coord: Vector2i
 var side: int
+var rest_level := PackedFloat32Array()
 var ground := PackedFloat32Array()
 var depth := PackedFloat32Array()
 var previous := PackedFloat32Array()
@@ -17,6 +18,7 @@ var revision := 0
 func _init(address: Vector2i, size: int) -> void:
 	coord = address
 	side = size
+	rest_level.resize(size*size)
 	ground.resize(size*size)
 	depth.resize(size*size)
 	previous.resize(size*size)
@@ -28,4 +30,4 @@ func wake() -> void:
 	activity = Activity.ACTIVE
 	quiet = 0
 func bytes_used() -> int:
-	return side*side*(6*4+1)
+	return side*side*(7*4+1)

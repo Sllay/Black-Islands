@@ -1,6 +1,10 @@
 shader_type spatial;
 render_mode cull_disabled;
 uniform bool ocean = false;
+uniform bool grid_surface = false;
+uniform sampler2D state_map : filter_nearest, repeat_disable;
+uniform sampler2D motion_map : filter_nearest, repeat_disable;
+uniform float tile_side = 32.0;
 uniform float blend = 1.0;
 uniform float wave_amplitude = 0.04;
 uniform float foam_strength = 0.4;
@@ -11,7 +15,15 @@ varying vec3 location;
 void vertex() {
  depth = ocean ? 12.0 : UV.x;
  flow = ocean ? vec2(0.2,0.05) : UV2;
- VERTEX.y += ocean ? 0.0 : UV.y*(1.0-blend);
+ if (grid_surface) {
+  vec2 state_uv = (UV+vec2(0.5))/(tile_side+1.0);
+  vec4 state = textureLod(state_map,state_uv,0.0);
+  depth = state.b;
+  flow = textureLod(motion_map,state_uv,0.0).rg;
+  VERTEX.y = mix(state.g,state.r,blend)+0.025;
+ } else {
+  VERTEX.y += ocean ? 0.0 : UV.y*(1.0-blend);
+ }
  location = VERTEX;
  float wave = sin(VERTEX.x*1.7+TIME*1.6)+0.35*cos(VERTEX.z*2.3-TIME*2.0);
  VERTEX.y += wave*wave_amplitude*clamp(depth,0.0,1.0);

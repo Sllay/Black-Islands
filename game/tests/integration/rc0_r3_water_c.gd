@@ -24,6 +24,7 @@ func _run() -> void:
 	measurements.active_solver = _benchmark(false)
 	measurements.sleeping_solver = _benchmark(true)
 	_profiles()
+	_fairness()
 	domain = WaterDomain.new()
 	domain.name = "WaterDomain"
 	domain.grid.height_sample = _terrain_height
@@ -35,6 +36,7 @@ func _run() -> void:
 	renderer.domain = domain
 	add_child(renderer)
 	_create_view()
+	qa_quality(OS.get_environment("R3_WATER_QUALITY") if not OS.get_environment("R3_WATER_QUALITY").is_empty() else "Medium")
 	for frame: int in 120:
 		await get_tree().process_frame
 		if frame > 30:
@@ -42,6 +44,11 @@ func _run() -> void:
 	check(renderer.get_child_count() <= 4,"presentation is grouped by tile, not by cell")
 	check(domain.grid.side()*domain.grid.side() == 1024,"production 64m / 2m tile cell count")
 	measurements.rendering = performance_report()
+	measurements.renderer_off = await _render_pass(false)
+	measurements.renderer_on = await _render_pass(true)
+	if not OS.get_environment("R3_WATER_CAPTURE").is_empty() and DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png(OS.get_environment("R3_WATER_CAPTURE"))
 	print("R3_WATER_METRICS ",JSON.stringify(measurements))
 	print("R3_WATER_C ","PASS" if failures == 0 else "FAIL"," failures=",failures," rendering_method=",RenderingServer.get_current_rendering_method())
 	if not keep_open and OS.get_environment("R3_WATER_KEEP_OPEN") != "1":
@@ -133,7 +140,7 @@ func _terrain_height(point: Vector3) -> float:
 	if mode == "basin":
 		return 0.0
 	if barrier and point.x >= 30 and point.x <= 34:
-		return 4.0
+		return 7.0
 	return 3.0 if point.x < 24 else -1.0
 
 func qa_flow() -> void:
@@ -149,6 +156,7 @@ func qa_block() -> void:
 
 func qa_release() -> void:
 	barrier = false
+	_update_ground()
 	domain.grid.invalidate(AABB(Vector3(28,-10,0),Vector3(8,20,64)))
 
 func _reset_demo() -> void:
@@ -156,10 +164,11 @@ func _reset_demo() -> void:
 	var tile := domain.grid.ensure_tile(Vector2i.ZERO)
 	for i: int in tile.depth.size():
 		var x: float = (i%tile.side+.5)*domain.grid.tuning.cell_metres
-		tile.depth[i] = 1.5 if x < 24 else .15
+		tile.depth[i] = 0.0 if barrier and x >= 30 and x <= 34 else (1.5 if x < 24 else .15)
 		tile.previous[i] = tile.depth[i]
 	tile.revision += 1
 	tile.wake()
+	_update_ground()
 	for key: Variant in renderer.views:
 		renderer.views[key].revision = -1
 
@@ -185,3 +194,54 @@ func _node_count(node: Node) -> int:
 	for child: Node in node.get_children():
 		count += _node_count(child)
 	return count
+
+func _render_pass(enabled: bool) -> Dictionary:
+	renderer.visible = enabled
+	renderer.set_process(enabled)
+	Engine.max_fps = 0
+	for warm: int in 15:
+		await get_tree().process_frame
+	var values: Array[float] = []
+	for frame: int in 60:
+		await get_tree().process_frame
+		values.append(get_process_delta_time()*1000)
+	var result := _summary(values)
+	result.draw_calls = RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+	result.method = RenderingServer.get_current_rendering_method()
+	Engine.max_fps = 60
+	return result
+
+func _update_ground() -> void:
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for z: int in range(0,64,2):
+		for x: int in range(0,64,2):
+			for corner: Vector2 in [Vector2(x,z),Vector2(x,z+2),Vector2(x+2,z),Vector2(x+2,z),Vector2(x,z+2),Vector2(x+2,z+2)]:
+				var p := Vector3(corner.x,0,corner.y)
+				p.y = _terrain_height(p)-.1
+				tool.add_vertex(p)
+	tool.generate_normals()
+	$BasinGround.position = Vector3.ZERO
+	$BasinGround.mesh = tool.commit()
+
+func _fairness() -> void:
+	var test_domain := WaterDomain.new()
+	test_domain.grid.tuning.tile_metres = 8
+	test_domain.grid.tuning.cell_metres = 1
+	test_domain.grid.height_sample = func(_p: Vector3) -> float: return 0
+	test_domain.grid.initial_water = func(_p: Vector3) -> Dictionary: return {"kind":"lake","level":1}
+	var a := test_domain.grid.ensure_tile(Vector2i.ZERO)
+	var b := test_domain.grid.ensure_tile(Vector2i.RIGHT)
+	add_child(test_domain)
+	test_domain.set_process(false)
+	var view := WaterRenderer.new()
+	view.domain = test_domain
+	add_child(view)
+	view.set_process(false)
+	for tick: int in 8:
+		a.revision += 1
+		b.revision += 1
+		view._process(.016)
+	check(view.views.size() == 2 and view.views[Vector2i.ZERO].revision >= 7 and view.views[Vector2i.RIGHT].revision >= 7,"render budget cannot starve a later active tile")
+	view.free()
+	test_domain.free()

@@ -44,6 +44,12 @@ func _ready() -> void:
 	check(motion.swimming and body.velocity.x > 0 and body.velocity.x <= grid.tuning.max_current,"bounded current/swim")
 	motion.apply(body,{"depth":0,"level":-2,"current":Vector3.ZERO},.1,grid.tuning)
 	check(not motion.swimming,"exit water")
+	body.position = Vector3(0,0,0)
+	body.velocity = Vector3.ZERO
+	for tick: int in 600:
+		motion.apply(body,{"depth":5,"level":2,"current":Vector3.ZERO},1.0/60,grid.tuning)
+		body.position += body.velocity/60
+	check(absf(body.position.y-(2-float(grid.tuning.float_offset))) < .03,"buoyancy converges without gravity bias")
 	body.queue_free()
 	_saved_water()
 	_edges()
