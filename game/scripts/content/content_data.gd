@@ -14,19 +14,25 @@ static func all() -> Dictionary:
 				_cache[key] = parser.data
 			else:
 				_cache[key] = {"schema_version":-1}
-	return _cache
+	return _cache.duplicate(true)
 static func rows(section: String) -> Array:
-	return all().get(GROUPS.get(section,""),{}).get(section,[])
+	var group: Variant = all().get(GROUPS.get(section,""),{})
+	var value: Variant = group.get(section,[]) if group is Dictionary else []
+	return value if value is Array else []
 static func find(section: String, id: String) -> Dictionary:
-	for row: Dictionary in rows(section):
-		if row.get("id") == id:
+	for row: Variant in rows(section):
+		if row is Dictionary and row.get("id") == id:
 			return row
 	return {}
 static func reload() -> void:
 	_cache.clear()
 	revision += 1
 static func write_bundle(candidate: Dictionary, group: String) -> Error:
-	if not FILES.has(group) or ContentValidator.has_errors(ContentValidator.validate(candidate)):
+	if not FILES.has(group) or not candidate.get(group) is Dictionary:
+		return ERR_INVALID_DATA
+	var combined := all()
+	combined[group] = candidate[group].duplicate(true)
+	if ContentValidator.has_errors(ContentValidator.validate(combined)):
 		return ERR_INVALID_DATA
 	var path: String = FILES[group]
 	var file := FileAccess.open(path+".tmp",FileAccess.WRITE)

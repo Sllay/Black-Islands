@@ -82,6 +82,7 @@ func _field(parent: VBoxContainer, key: String, value: Variant, update: Callable
 			parent.add_child(pick)
 		else:
 			var text := LineEdit.new()
+			text.name = key
 			text.text = str(value)
 			text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			text.text_changed.connect(update)

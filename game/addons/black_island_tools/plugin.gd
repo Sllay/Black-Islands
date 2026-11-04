@@ -38,6 +38,8 @@ func _enter_tree() -> void:
 	validation.add_child(detail)
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL,dock)
 	validate_all()
+	if OS.get_environment("BI_CONTENT_EDITOR_QA") == "1":
+		load("res://tests/editor/content_editor_qa.gd").new().run.call_deferred(self)
 func validate_all() -> void:
 	ContentData.reload()
 	issues.clear()

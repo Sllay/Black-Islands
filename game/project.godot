@@ -36,7 +36,7 @@ window/size/mode.mobile=3
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+enabled=PackedStringArray("res://addons/black_island_tools/plugin.cfg", "res://addons/godot_mcp/plugin.cfg")
 
 [input]
 
@@ -203,3 +203,8 @@ pointing/emulate_touch_from_mouse=true
 3d_physics/layer_5="Interaction Queries"
 3d_physics/layer_6="Triggers"
 3d_physics/layer_7="Prop Blockers"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

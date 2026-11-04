@@ -1,12 +1,23 @@
 @tool
 class_name ContentValidator
 extends RefCounted
+const MAX_RECORDS := 4096
+const MAX_NODES := 256
+const MAX_EDGES := 1024
 static func has_errors(issues: Array) -> bool:
-	return issues.any(func(issue: Dictionary) -> bool: return issue.severity == "ERROR")
+	return issues.any(func(row: Dictionary) -> bool: return row.severity == "ERROR")
 static func issue(issues: Array, section: String, id: String, message: String, severity: String = "ERROR") -> void:
 	issues.append({"severity":severity,"section":section,"definition":id,"file":ContentData.FILES.get(ContentData.GROUPS.get(section,""),""),"message":message})
 static func numeric(value: Variant, minimum: float = 0.0, maximum: float = 1.0e9) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and value >= minimum and value <= maximum
+static func integer(value: Variant, minimum: int = 1, maximum: int = 999999) -> bool:
+	return numeric(value,minimum,maximum) and value == int(value)
+static func array(value: Variant) -> Array:
+	return value if value is Array else []
+static func dict(value: Variant) -> Dictionary:
+	return value if value is Dictionary else {}
+static func records(bundle: Dictionary, section: String) -> Array:
+	return array(dict(bundle.get(ContentData.GROUPS[section])).get(section))
 static func validate(bundle: Dictionary) -> Array:
 	var issues: Array = []
 	var ids := {}
@@ -15,23 +26,24 @@ static func validate(bundle: Dictionary) -> Array:
 			issue(issues,group,"","Unknown/missing catalog schema")
 	for section: String in ContentData.GROUPS:
 		ids[section] = {}
-		var records: Variant = bundle.get(ContentData.GROUPS[section],{}).get(section,[])
-		if not records is Array:
-			issue(issues,section,"","Expected record array")
+		var raw: Variant = dict(bundle.get(ContentData.GROUPS[section])).get(section,[])
+		if not raw is Array or raw.size() > MAX_RECORDS:
+			issue(issues,section,"","Invalid/oversized record array")
 			continue
-		for row: Variant in records:
-			if not row is Dictionary or not row.get("id") is String or row.id.is_empty():
+		for value: Variant in raw:
+			if not value is Dictionary or not value.get("id") is String or value.id.is_empty():
 				issue(issues,section,"","Missing stable ID")
 				continue
-			if ids[section].has(row.id):
-				issue(issues,section,row.id,"Duplicate ID")
-			ids[section][row.id] = row
+			var id: String = value.id
+			if ids[section].has(id): issue(issues,section,id,"Duplicate ID")
+			ids[section][id] = value
+			if not _safe_data(value): issue(issues,section,id,"Executable/oversized content data blocked")
 	for id: String in ids.items:
 		var row: Dictionary = ids.items[id]
-		if row.get("category") not in ContentSchema.CATEGORIES or not numeric(row.get("stack_limit",row.get("max_stack",1)),1,999999):
-			issue(issues,"items",id,"Invalid category/stack limit")
+		if row.get("category") not in ContentSchema.CATEGORIES or not integer(row.get("stack_limit",row.get("max_stack",1))): issue(issues,"items",id,"Invalid category/stack limit")
+		if not row.get("modules",[]) is Array: issue(issues,"items",id,"Invalid module array")
 		var types := {}
-		for module: Variant in row.get("modules",[]):
+		for module: Variant in array(row.get("modules",[])):
 			if not module is Dictionary or not ContentSchema.MODULES.has(module.get("type")):
 				issue(issues,"items",id,"Unknown item module")
 				continue
@@ -43,20 +55,20 @@ static func validate(bundle: Dictionary) -> Array:
 				"WeaponModule":
 					if not ids.weapons.has(module.get("weapon_id")): issue(issues,"items",id,"Missing weapon")
 				"HarvestToolModule":
-					if not numeric(module.get("power"),.001): issue(issues,"items",id,"Invalid harvest power")
-					for resource: String in module.get("resources",{}):
-						if not ids.items.has(resource): issue(issues,"items",id,"Invalid resource ID: "+resource)
-			for effect: String in module.get("effects",[]):
-				if not ids.effects.has(effect): issue(issues,"items",id,"Missing effect: "+effect)
+					if not numeric(module.get("power"),.001) or not module.get("resources",{}) is Dictionary or not module.get("targets",{}) is Dictionary: issue(issues,"items",id,"Invalid harvest profile")
+					for resource: Variant in dict(module.get("resources")):
+						if not ids.items.has(resource) or not numeric(module.resources[resource]): issue(issues,"items",id,"Invalid resource ID/affinity")
+				"WaterContainerModule":
+					if not numeric(module.get("capacity"),.001) or not numeric(module.get("watering_cost"),.001): issue(issues,"items",id,"Invalid water capacity/cost")
+			for effect: Variant in array(module.get("effects",[])):
+				if not ids.effects.has(effect): issue(issues,"items",id,"Missing effect")
 	for id: String in ids.recipes:
 		var row: Dictionary = ids.recipes[id]
 		if not numeric(row.get("craft_duration"),.001): issue(issues,"recipes",id,"Invalid duration")
 		for key: String in ["ingredients","outputs"]:
-			if not row.get(key) is Array or row[key].is_empty():
-				issue(issues,"recipes",id,"Missing "+key)
-				continue
-			for part: Variant in row[key]:
-				if not part is Dictionary or not ids.items.has(part.get("item_id")) or not numeric(part.get("quantity"),1) or part.quantity != int(part.quantity): issue(issues,"recipes",id,"Invalid "+key+" reference/quantity")
+			if not row.get(key) is Array or row[key].is_empty(): issue(issues,"recipes",id,"Missing "+key)
+			for part: Variant in array(row.get(key)):
+				if not part is Dictionary or not ids.items.has(part.get("item_id")) or not integer(part.get("quantity")): issue(issues,"recipes",id,"Invalid "+key+" reference/quantity")
 	for id: String in ids.weapons:
 		var row: Dictionary = ids.weapons[id]
 		if row.get("weapon_class") not in ContentSchema.WEAPON_CLASSES: issue(issues,"weapons",id,"Unknown weapon class")
@@ -64,56 +76,91 @@ static func validate(bundle: Dictionary) -> Array:
 		if not ids.visual_profiles.has(row.get("visual_profile_id")): issue(issues,"weapons",id,"Missing visual profile")
 		for key: String in ["base_damage","attack_speed","move_modifier","knockback","crit_chance","crit_multiplier"]:
 			if not numeric(row.get(key)): issue(issues,"weapons",id,"Invalid "+key)
-		for effect: String in row.get("effects",[]):
+		if not numeric(row.get("crit_chance"),0,1) or not numeric(row.get("attack_speed"),.01,10): issue(issues,"weapons",id,"Invalid critical/speed range")
+		for effect: Variant in array(row.get("effects",[])):
 			if not ids.effects.has(effect): issue(issues,"weapons",id,"Missing effect")
+	for id: String in ids.movesets:
+		if ids.movesets[id].get("template_id") != "sword.training.v1": issue(issues,"movesets",id,"Unknown reviewed moveset template")
 	for id: String in ids.visual_profiles:
-		var row: Dictionary = ids.visual_profiles[id]
-		if row.get("mode") not in ["LPC_LAYER","DETACHED_SPRITE"]: issue(issues,"visual_profiles",id,"Invalid visual mode")
-	for id: String in ids.effects:
-		validate_graph(ids.effects[id],ids,issues)
+		if ids.visual_profiles[id].get("mode") not in ["LPC_LAYER","DETACHED_SPRITE"]: issue(issues,"visual_profiles",id,"Invalid visual mode")
+	for id: String in ids.effects: validate_graph(ids.effects[id],ids,issues)
 	for id: String in ids.props:
 		if not ids.harvestables.has(ids.props[id].get("harvest")): issue(issues,"props",id,"Missing harvestable")
 	for id: String in ids.harvestables:
-		for resource: String in ids.harvestables[id].get("reserves",{}):
+		if not ids.harvestables[id].get("reserves") is Dictionary: issue(issues,"harvestables",id,"Invalid reserves")
+		for resource: Variant in dict(ids.harvestables[id].get("reserves")):
 			if not ids.items.has(resource): issue(issues,"harvestables",id,"Invalid resource ID")
 	for id: String in ids.spawn_tables:
-		for entry: Dictionary in ids.spawn_tables[id].get("entries",[]):
-			if not ids.props.has(entry.get("prop_definition")) or entry.get("domain") not in ["SURFACE","CAVE"] or not numeric(entry.get("weight"),.00001): issue(issues,"spawn_tables",id,"Invalid spawn entry reference/domain/weight")
+		for entry: Variant in array(ids.spawn_tables[id].get("entries")):
+			if not entry is Dictionary or not ids.props.has(entry.get("prop_definition")) or entry.get("domain") not in ["SURFACE","CAVE"] or not numeric(entry.get("weight"),.00001): issue(issues,"spawn_tables",id,"Invalid spawn reference/domain/weight")
 	if not has_errors(issues): issue(issues,"items","","All content references valid","INFO")
 	return issues
+static func _safe_data(value: Variant) -> bool:
+	var pending: Array = [value]
+	var visited := 0
+	while not pending.is_empty():
+		visited += 1
+		if visited > 20000: return false
+		var item: Variant = pending.pop_back()
+		if item is Dictionary:
+			for key: Variant in item:
+				if key in ["script_path","execute","expression","script","callable"]: return false
+				pending.append(item[key])
+		elif item is Array: pending.append_array(item)
+	return true
 static func validate_graph(graph: Dictionary, ids: Dictionary, issues: Array) -> void:
+	var id := str(graph.get("id",""))
+	if not graph.get("nodes") is Array or graph.nodes.is_empty() or graph.nodes.size() > MAX_NODES or not graph.get("triggers") is Dictionary:
+		issue(issues,"effects",id,"Invalid graph shape/size")
+		return
 	var nodes := {}
-	var id := str(graph.id)
-	for row: Variant in graph.get("nodes",[]):
-		if not row is Dictionary or not row.get("id") is String or nodes.has(row.id) or row.get("type") not in ContentSchema.EFFECT_TYPES:
+	var degrees := {}
+	var edges := 0
+	for row: Variant in graph.nodes:
+		if not row is Dictionary or not row.get("id") is String or row.id.is_empty() or nodes.has(row.id) or row.get("type") not in ContentSchema.EFFECT_TYPES or not row.get("next",[]) is Array or row.get("next",[]).size() > 16:
 			issue(issues,"effects",id,"Invalid/unknown/duplicate effect node")
 			continue
 		nodes[row.id] = row
-	for trigger: String in graph.get("triggers",{}):
+		degrees[row.id] = 0
+	for trigger: Variant in graph.triggers:
 		if trigger not in ContentSchema.TRIGGERS or not nodes.has(graph.triggers[trigger]): issue(issues,"effects",id,"Invalid trigger reference")
 	for node_id: String in nodes:
 		var row: Dictionary = nodes[node_id]
 		for next: Variant in row.get("next",[]):
-			if not nodes.has(next): issue(issues,"effects",id,"Missing node reference")
+			edges += 1
+			if not next is String or not nodes.has(next): issue(issues,"effects",id,"Missing node reference")
+			else: degrees[next] += 1
 		match row.type:
-			"Damage","ModifyStat":
-				if not numeric(row.get("amount"),-100000,100000): issue(issues,"effects",id,"Missing effect amount")
+			"Damage":
+				if not numeric(row.get("amount"),0,100000): issue(issues,"effects",id,"Invalid damage amount")
+			"ModifyStat":
+				if row.get("stat") not in ["health","stamina","mana"] or not numeric(row.get("amount"),-100000,100000): issue(issues,"effects",id,"Invalid stat/amount")
 			"GiveItem","RemoveItem":
-				if not ids.items.has(row.get("item_id")) or not numeric(row.get("quantity"),1): issue(issues,"effects",id,"Invalid item reference")
+				if not dict(ids.get("items")).has(row.get("item_id")) or not integer(row.get("quantity")): issue(issues,"effects",id,"Invalid item reference/quantity")
+			"ApplyStatus":
+				if row.get("status_id") != "bi.status.fire.test" or not numeric(row.get("duration"),.001,600): issue(issues,"effects",id,"Invalid registered status/duration")
+			"SpawnEntity":
+				if row.get("entity_id") != "bi.entity.qa_spark": issue(issues,"effects",id,"Invalid registered entity")
+			"PlayEffect":
+				if row.get("effect_id") != "bi.vfx.hit.test": issue(issues,"effects",id,"Invalid registered presentation effect")
 			"CheckCondition":
 				if row.get("condition") not in ["target_has_tag","player_health_below","random_chance"]: issue(issues,"effects",id,"Unknown condition")
-	var visiting := {}
-	var visited := {}
-	for node_id: String in nodes:
-		if _cycle(node_id,nodes,visiting,visited):
-			issue(issues,"effects",id,"Effect graph cycle")
-			break
-static func _cycle(id: String, nodes: Dictionary, visiting: Dictionary, visited: Dictionary) -> bool:
-	if visiting.has(id): return true
-	if visited.has(id) or not nodes.has(id): return false
-	visiting[id] = true
-	for next: String in nodes[id].get("next",[]):
-		if _cycle(next,nodes,visiting,visited): return true
-	visiting.erase(id)
-	visited[id] = true
-	return false
+				elif row.condition == "target_has_tag" and (not row.get("tag") is String or row.tag.is_empty()): issue(issues,"effects",id,"Missing condition tag")
+				elif row.condition == "player_health_below" and not numeric(row.get("threshold"),0,100000): issue(issues,"effects",id,"Invalid health threshold")
+				elif row.condition == "random_chance" and not numeric(row.get("chance"),0,1): issue(issues,"effects",id,"Invalid probability")
+	if edges > MAX_EDGES: issue(issues,"effects",id,"Too many graph edges")
+	var ready: Array[String] = []
+	var depth := {}
+	for key: String in degrees:
+		if degrees[key] == 0: ready.append(key)
+	var seen := 0
+	while not ready.is_empty():
+		var current := ready.pop_back() as String
+		seen += 1
+		if int(depth.get(current,0)) > 64: issue(issues,"effects",id,"Graph depth exceeds64")
+		for next: Variant in nodes[current].get("next",[]):
+			if degrees.has(next):
+				degrees[next] -= 1
+				depth[next] = maxi(int(depth.get(next,0)),int(depth.get(current,0))+1)
+				if degrees[next] == 0: ready.append(next)
+	if seen != nodes.size(): issue(issues,"effects",id,"Effect graph cycle")
