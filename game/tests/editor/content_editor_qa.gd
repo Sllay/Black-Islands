@@ -26,8 +26,9 @@ func run(plugin: EditorPlugin) -> void:
 	plugin.validate_all()
 	assert(not ContentValidator.has_errors(ContentValidator.validate(ContentData.all())))
 	print("CONTENT_EDITOR_QA PASS items=",ContentData.rows("items").size()," recipe=bi.recipe.foundation plugin_open=true")
+	await plugin.get_tree().create_timer(4).timeout
 	plugin.make_bottom_panel_item_visible(plugin.dock)
-	await plugin.get_tree().create_timer(2).timeout
+	await plugin.get_tree().create_timer(.5).timeout
 	for index: int in 4:
 		plugin.tabs.current_tab = index
 		await plugin.get_tree().process_frame
