@@ -28,8 +28,8 @@ case "$(uname -m)" in
   *) echo 'Unsupported validation architecture' >&2; exit 1 ;;
 esac
 printf '%s  %s\n' "$godot_sha" ".tools/cache/Godot_v${GODOT_VERSION}-stable_linux.${godot_arch}.zip" | sha256sum --check --status
-printf '%s  %s\n' "$VOXEL_TOOLS_SHA256" ".tools/cache/GodotVoxelExtension-${VOXEL_TOOLS_TAG}.zip" | sha256sum --check --status
-echo 'PASS pinned Godot and Voxel Tools archive SHA-256'
+python3 scripts/verify_runtime_dependencies.py
+echo 'PASS pinned Godot archive and vendored runtime SHA-256'
 
 run_check() {
   local name="$1"

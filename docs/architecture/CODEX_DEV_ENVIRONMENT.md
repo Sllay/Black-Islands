@@ -34,11 +34,11 @@ The bootstrap is intentionally Linux-first because Codex cloud environments are 
 2. installs `uv` if needed;
 3. installs the pinned Serena version;
 4. installs exact Godot 4.7.2 locally and verifies the release SHA-256;
-5. downloads the pinned Voxel Tools GDExtension release and verifies its SHA-256;
-6. installs the Voxel Tools addon contents into `game/addons/` locally;
+5. verifies the pinned Voxel Tools and LimboAI runtime payloads already versioned in Git;
+6. never downloads or overwrites those runtime addons;
 7. runs a basic headless Godot editor validation.
 
-`--mcp-only` skips the Voxel Tools step and is used automatically by MCP launcher wrappers so a fresh Codex session can start its tools first.
+`--mcp-only` skips full runtime/import validation and is used automatically by MCP launcher wrappers so a fresh Codex session can start its tools first.
 
 Downloaded tools and generated caches are local environment artifacts and must not be treated as game source.
 
