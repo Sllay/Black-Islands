@@ -89,14 +89,19 @@ func _run() -> void:
 	player.inventory.is_open = true
 	var revision := player.inventory.state.revision
 	Input.action_press("hotbar_8")
-	player._read_hotbar()
+	player.set_physics_process(true)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
 	check(player.inventory.state.revision == revision,"numeric UI entry cannot mutate hotbar/revision")
 	Input.action_release("hotbar_8")
+	await get_tree().physics_frame
 	player.inventory.is_open = false
 	Input.action_press("hotbar_8")
-	player._read_hotbar()
+	await get_tree().physics_frame
+	await get_tree().physics_frame
 	check(player.inventory.state.selected == 7,"hotbar gameplay shortcut remains functional")
 	Input.action_release("hotbar_8")
+	player.set_physics_process(false)
 	print("CONTENT_B ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures)
 	player.free()
 	target.free()

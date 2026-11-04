@@ -30,7 +30,9 @@ func _field(parent: VBoxContainer, key: String, value: Variant, update: Callable
 			add.text = "+ Reference"
 			add.pressed.connect(func() -> void:
 				var selected := selector.get_item_text(selector.selected)
-				if not value.has(selected): value[selected] = "start" if key == "triggers" else 1.0
+				if not value.has(selected):
+					if key == "triggers": value[selected] = "start"
+					else: value[selected] = 1.0
 				build(data))
 			entry.add_child(add)
 		return
