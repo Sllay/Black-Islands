@@ -1,0 +1,3 @@
+# Preserve official vendored payload bytes across checkout platforms.
+game/addons/zylann.voxel/** -text
+game/addons/limboai/** -text whitespace=cr-at-eol

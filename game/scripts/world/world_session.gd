@@ -36,7 +36,7 @@ func _ready() -> void:
 	if get_tree().has_meta("ui_only_smoke"):
 		return
 	_started = Time.get_ticks_msec()
-	var profile := Profiles.current_profile()
+	var profile: Dictionary = Profiles.current_profile()
 	if profile.is_empty():
 		return
 	if not WorldGenerationProfile.supported(int(profile.get("world_generation_version",0)),str(profile.get("world_profile",""))):
@@ -61,7 +61,7 @@ func _ready() -> void:
 		_show_load_error(error)
 		return
 	if frontend_save != null and not profile.generated:
-		var metadata := Profiles.library.document("world",Profiles.world_slot)
+		var metadata: AtomicDocument = Profiles.library.document("world",Profiles.world_slot)
 		error = metadata.read()
 		if error == OK:
 			metadata.loaded.generated = true
