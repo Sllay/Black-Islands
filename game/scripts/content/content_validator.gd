@@ -21,6 +21,7 @@ static func records(bundle: Dictionary, section: String) -> Array:
 static func validate(bundle: Dictionary) -> Array:
 	var issues: Array = []
 	var ids := {}
+	var global_ids := {}
 	for group: String in ContentData.FILES:
 		if not bundle.get(group) is Dictionary or bundle[group].get("schema_version") != 1:
 			issue(issues,group,"","Unknown/missing catalog schema")
@@ -35,6 +36,8 @@ static func validate(bundle: Dictionary) -> Array:
 				issue(issues,section,"","Missing stable ID")
 				continue
 			var id: String = value.id
+			if global_ids.has(id): issue(issues,section,id,"Duplicate ID across catalog")
+			global_ids[id] = section
 			if ids[section].has(id): issue(issues,section,id,"Duplicate ID")
 			ids[section][id] = value
 			if not _safe_data(value): issue(issues,section,id,"Executable/oversized content data blocked")
@@ -60,6 +63,7 @@ static func validate(bundle: Dictionary) -> Array:
 						if not ids.items.has(resource) or not numeric(module.resources[resource]): issue(issues,"items",id,"Invalid resource ID/affinity")
 				"WaterContainerModule":
 					if not numeric(module.get("capacity"),.001) or not numeric(module.get("watering_cost"),.001): issue(issues,"items",id,"Invalid water capacity/cost")
+			if not module.get("effects",[]) is Array: issue(issues,"items",id,"Invalid effect reference array")
 			for effect: Variant in array(module.get("effects",[])):
 				if not ids.effects.has(effect): issue(issues,"items",id,"Missing effect")
 	for id: String in ids.recipes:
@@ -87,12 +91,26 @@ static func validate(bundle: Dictionary) -> Array:
 	for id: String in ids.props:
 		if not ids.harvestables.has(ids.props[id].get("harvest")): issue(issues,"props",id,"Missing harvestable")
 	for id: String in ids.harvestables:
+		if not numeric(ids.harvestables[id].get("health"),.001,100000) or not numeric(ids.harvestables[id].get("resistance",0)): issue(issues,"harvestables",id,"Invalid health/resistance")
 		if not ids.harvestables[id].get("reserves") is Dictionary: issue(issues,"harvestables",id,"Invalid reserves")
 		for resource: Variant in dict(ids.harvestables[id].get("reserves")):
 			if not ids.items.has(resource): issue(issues,"harvestables",id,"Invalid resource ID")
 	for id: String in ids.spawn_tables:
-		for entry: Variant in array(ids.spawn_tables[id].get("entries")):
-			if not entry is Dictionary or not ids.props.has(entry.get("prop_definition")) or entry.get("domain") not in ["SURFACE","CAVE"] or not numeric(entry.get("weight"),.00001): issue(issues,"spawn_tables",id,"Invalid spawn reference/domain/weight")
+		var table: Dictionary = ids.spawn_tables[id]
+		if not integer(table.get("version"),1,1) or not integer(table.get("density"),1,64) or not table.get("entries") is Array or table.entries.is_empty() or table.entries.size() > 128: issue(issues,"spawn_tables",id,"Invalid table version/density/entries")
+		var entries := {}
+		for entry: Variant in array(table.get("entries")):
+			if not entry is Dictionary:
+				issue(issues,"spawn_tables",id,"Invalid spawn entry")
+				continue
+			if not entry.get("id") is String or entries.has(entry.get("id")): issue(issues,"spawn_tables",id,"Invalid/duplicate entry ID")
+			entries[entry.get("id")] = true
+			if not ids.props.has(entry.get("prop_definition")) or entry.get("domain") not in ["SURFACE","CAVE"] or not numeric(entry.get("weight"),.00001): issue(issues,"spawn_tables",id,"Invalid spawn reference/domain/weight")
+			if entry.get("rarity") not in ["Common","Uncommon","Rare","VeryRare"]: issue(issues,"spawn_tables",id,"Invalid rarity tier")
+			if not vector2(entry.get("water_distance")) or float(entry.water_distance[0]) > float(entry.water_distance[1]): issue(issues,"spawn_tables",id,"Invalid water-distance filter")
+			for key: String in ["min_height","max_height","min_slope","max_slope"]:
+				if not numeric(entry.get(key),-1000,1000): issue(issues,"spawn_tables",id,"Invalid terrain filter")
+			if not entry.get("biomes") is Array or not entry.get("materials") is Array: issue(issues,"spawn_tables",id,"Invalid biome/material filter")
 	if not has_errors(issues): issue(issues,"items","","All content references valid","INFO")
 	return issues
 static func _safe_data(value: Variant) -> bool:

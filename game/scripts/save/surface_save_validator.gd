@@ -15,6 +15,10 @@ static func validate(data: Dictionary, player_inventory: Dictionary) -> Error:
 	for key: String in ["clock","active_seconds"]:
 		if not number(data.get(key),0,1e12):
 			return ERR_INVALID_DATA
+	var versions: Variant = data.get("flags",{}).get("spawn_table_versions",{})
+	if not versions is Dictionary: return ERR_INVALID_DATA
+	for table: Dictionary in ContentData.rows("spawn_tables"):
+		if versions.has(table.id) and versions[table.id] != table.version: return ERR_UNAVAILABLE
 	var catalog := SurfaceCatalog.data()
 	for state: Variant in data.props.values():
 		if not state is Dictionary or not valid_harvest(state):

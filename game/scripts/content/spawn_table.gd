@@ -6,15 +6,15 @@ func _init() -> void:
 	tables = ContentData.rows("spawn_tables")
 func entries(table: Dictionary, domain: String) -> Array:
 	return table.get("entries",[]).filter(func(row: Dictionary) -> bool: return row.domain == domain)
-func choose(candidates: Array, rng: RandomNumberGenerator) -> Dictionary:
+func choose(pool: Array, rng: RandomNumberGenerator) -> Dictionary:
 	var total := 0.0
-	for row: Dictionary in candidates: total += float(row.weight)
+	for row: Dictionary in pool: total += float(row.weight)
 	if total <= 0: return {}
 	var target := rng.randf()*total
-	for row: Dictionary in candidates:
+	for row: Dictionary in pool:
 		target -= float(row.weight)
 		if target <= 0: return row
-	return candidates.back()
+	return pool.back()
 func candidates(field: IslandField, patch: Vector2i, biome_query: Callable, domain: String = "SURFACE") -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for table: Dictionary in tables:

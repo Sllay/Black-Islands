@@ -6,6 +6,8 @@ const FILES := {"items":"res://data/content/items.json","weapons":"res://data/co
 const GROUPS := {"items":"items","weapons":"weapons","visual_profiles":"weapons","movesets":"weapons","effects":"effects","props":"props","harvestables":"props","spawn_tables":"props","recipes":"recipes"}
 static var revision := 0
 static var _cache: Dictionary = {}
+static var _checked_revision := -1
+static var diagnostics: Array = []
 static func all() -> Dictionary:
 	if _cache.is_empty():
 		for key: String in FILES:
@@ -16,7 +18,12 @@ static func all() -> Dictionary:
 				_cache[key] = {"schema_version":-1}
 	return _cache.duplicate(true)
 static func rows(section: String) -> Array:
-	var group: Variant = all().get(GROUPS.get(section,""),{})
+	var bundle := all()
+	if _checked_revision != revision:
+		diagnostics = ContentValidator.validate(bundle)
+		_checked_revision = revision
+	if ContentValidator.has_errors(diagnostics): return []
+	var group: Variant = bundle.get(GROUPS.get(section,""),{})
 	var value: Variant = group.get(section,[]) if group is Dictionary else []
 	return value if value is Array else []
 static func find(section: String, id: String) -> Dictionary:

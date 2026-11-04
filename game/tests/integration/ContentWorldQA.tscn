@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://co7igcs4kgoxh"]
+
+[ext_resource type="Script" path="res://tests/integration/content_world_qa.gd" id="1_x4hhc"]
+
+[node name="ContentWorldQA" type="Node" unique_id=476709552]
+script = ExtResource("1_x4hhc")

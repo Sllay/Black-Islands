@@ -97,6 +97,9 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 		_definitions[row.id] = row
 	if not restored.is_empty():
 		assert(ledger.restore(restored) == OK)
+	if not ledger.flags.has("spawn_table_versions"):
+		ledger.flags.spawn_table_versions = {}
+		for table: Dictionary in ContentData.rows("spawn_tables"): ledger.flags.spawn_table_versions[table.id] = table.version
 	farms = FarmSystem.new(ledger)
 	farms.plots = restored.get("farms",{}).duplicate(true)
 	building = SupportGraph.new()
@@ -231,35 +234,48 @@ func qa_resource(kind: String, tool_id: String) -> Dictionary:
 			player.inventory.state.select_hotbar(4)
 	return {"id":chosen,"result":harvest_prop(chosen,player)}
 
-func harvest_prop(id: String, actor: PlayerActor) -> Dictionary:
+func harvest_prop(id: String, actor: PlayerActor, critical: bool = false) -> Dictionary:
 	var item := actor.inventory.state.active_definition()
 	if item == null or item.module("HarvestToolModule").is_empty() or not candidates.has(id):
-		message.emit("Escolha machado, picareta ou faca na hotbar.")
 		return {"error":ERR_INVALID_PARAMETER}
 	var row: Dictionary = candidates[id]
 	var location := Vector3(row.point[0],row.point[1],row.point[2])
-	if actor.global_position.distance_to(location) > 4:
-		return {"error":ERR_UNAUTHORIZED}
-	var tool: Dictionary = item.module("HarvestToolModule")
-	if not actor.state.consume(float(tool.stamina)):
-		return {"error":ERR_UNAVAILABLE}
+	if actor.global_position.distance_to(location) > 4: return {"error":ERR_UNAUTHORIZED}
+	var tool := item.module("HarvestToolModule")
+	if not actor.state.can_consume(float(tool.stamina)): return {"error":ERR_UNAVAILABLE}
 	var state: Dictionary = ledger.props.get(id,HarvestService.create(definition(row.definition).harvest))
-	var result := HarvestService.strike(state,tool,int(state.revision),ledger.new_id("strike"),false,float(tool.get("critical_multiplier",1.5)))
-	if result.error != OK:
-		return result
-	var output := InventoryTransactions.output(actor.inventory.state,result.outputs)
-	if output.error != OK:
-		return output
-	ledger.props[id] = result.state
-	ledger.props[id].position = [location.x,location.y,location.z]
-	ledger.changed.emit("props",id)
-	if not output.overflow.is_empty():
-		create_bag(location,output.overflow)
+	var revision := int(state.revision)
+	var command := ledger.new_id("strike")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = (str(terrain.field.world_seed)+":"+id+":"+command).hash()
+	var weapon := WeaponCatalog.for_item(item)
+	var chance := float(tool.get("critical_chance",weapon.crit_chance if weapon != null else 0.0))
+	var multiplier := float(tool.get("critical_multiplier",weapon.crit_multiplier if weapon != null else 1.5))
+	var result := HarvestService.strike(state,tool,revision,command,critical or rng.randf() < chance,multiplier)
+	if result.error != OK: return result
+	var plan := InventoryPlan.new()
+	var copy := plan.include(actor.inventory.state)
+	for output: String in result.outputs: InventoryCommands.output(copy,output,int(result.outputs[output]))
+	var context := EffectService.context_for(actor,copy,command)
+	context.stats.stamina -= float(tool.stamina)
+	context.tags = [SurfaceCatalog.data().harvestables[state.definition].tag]
+	for graph: String in tool.get("effects",[]):
+		plan.error = EffectGraph.prepare(graph,"OnHarvestHit",context)
+		if plan.error != OK: return {"error":plan.error}
+	plan.publications.append(EffectService.publication(actor,context))
+	var publication := InventoryPublication.new()
+	publication.validate = func() -> bool: return int(ledger.props.get(id,state).revision) == revision
+	publication.apply = func() -> void:
+		ledger.props[id] = result.state
+		ledger.props[id].position = [location.x,location.y,location.z]
+	publication.notify = func() -> void: ledger.changed.emit("props",id)
+	plan.publications.append(publication)
+	var error := plan.commit()
+	if error != OK: return {"error":error}
 	actor.visual.play_semantic(LPCActionResolver.MELEE_SLASH,.4)
-	var labels: PackedStringArray = []
-	for item_id: String in result.outputs:
-		labels.append("%s ×%d" % [ItemCatalog.resolve(item_id).title,result.outputs[item_id]])
-	message.emit("Coletado: "+", ".join(labels))
+	var labels := PackedStringArray()
+	for item_id: String in result.outputs: labels.append("%s ×%d"%[ItemCatalog.resolve(item_id).title,result.outputs[item_id]])
+	message.emit(", ".join(labels))
 	refresh(location)
 	return result
 

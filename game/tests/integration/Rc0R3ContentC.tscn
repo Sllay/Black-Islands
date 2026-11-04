@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://mb5xswfs162r"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r3_content_c.gd" id="1_4oboy"]
+
+[node name="ContentC" type="Node3D" unique_id=923042919]
+script = ExtResource("1_4oboy")

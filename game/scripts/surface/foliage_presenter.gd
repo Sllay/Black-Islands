@@ -214,11 +214,11 @@ func _modular_batch(root: Node3D, rows: Array, definition: Dictionary) -> void:
 		batch.instance_count = rows.size()
 		for index: int in rows.size():
 			var row: Dictionary = rows[index]
-			var basis := Basis(Vector3.UP,float(row.yaw)).scaled(Vector3.ONE*float(row.scale))
-			var transform := Transform3D(basis,Vector3(row.point[0],row.point[1],row.point[2])-root.position+basis*part.offset)
+			var mesh_basis := Basis(Vector3.UP,float(row.yaw)).scaled(Vector3.ONE*float(row.scale))
+			var mesh_transform := Transform3D(mesh_basis,Vector3(row.point[0],row.point[1],row.point[2])-root.position+mesh_basis*part.offset)
 			if not _batch_links.has(row.id): _batch_links[row.id] = []
-			_batch_links[row.id].append({"batch":batch,"index":index,"transform":transform})
-			batch.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),transform.origin) if actors.has(row.id) else transform)
+			_batch_links[row.id].append({"batch":batch,"index":index,"transform":mesh_transform})
+			batch.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),mesh_transform.origin) if actors.has(row.id) else mesh_transform)
 		var view := MultiMeshInstance3D.new()
 		view.name = definition.id+"_"+part.name
 		view.multimesh = batch
