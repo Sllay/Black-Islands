@@ -16,18 +16,22 @@ func _run() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 80803
 	var counts := {}
+	var selection_start := Time.get_ticks_usec()
 	for index: int in 10000:
 		var entry := table.choose(table.entries(row,"SURFACE"),rng)
 		counts[entry.prop_definition] = int(counts.get(entry.prop_definition,0))+1
+	var selection_ms := (Time.get_ticks_usec()-selection_start)/1000.0
 	check(counts["bi.prop.boulder.light"] > counts["bi.prop.boulder.dark"]*3,"surface dark less frequent")
 	var cave := table.entries(row,"CAVE")
 	check(cave[1].weight > cave[0].weight and cave[1].domain == "CAVE","domain weights independent of surface")
 	var field := PropField.new(WorldFieldV2.new(424242))
 	var first: Array = []
 	var second: Array = []
+	var placement_start := Time.get_ticks_usec()
 	for index: int in 20:
 		first.append_array(field.candidates(Vector2i(index-10,1),false))
 		second.append_array(field.candidates(Vector2i(index-10,1),false))
+	var placement_ms := (Time.get_ticks_usec()-placement_start)/1000.0
 	check(AtomicDocument.same_value(first,second) and not first.is_empty(),"seed deterministic placement")
 	var harvest := HarvestService.create("bi.harvest.boulder.iron")
 	var tool := ItemCatalog.resolve("bi.tool.stone_pick").module("HarvestToolModule")
@@ -97,6 +101,6 @@ func _run() -> void:
 	var data := inventory.snapshot()
 	data.slots[0].item_id = "bi.item.missing.after.update"
 	check(InventoryState.new().restore(data) == OK and ItemCatalog.resolve("bi.item.missing.after.update").missing,"missing definition preserves owned item")
-	print("CONTENT_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," distribution=",counts)
+	print("CONTENT_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," distribution=",counts," weighted10000_ms=",selection_ms," legacy_plus_new_40patches_ms=",placement_ms)
 	runtime.free()
 	get_tree().quit(1 if failures else 0)
