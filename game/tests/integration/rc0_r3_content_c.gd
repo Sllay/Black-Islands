@@ -102,7 +102,7 @@ func _run() -> void:
 	var data := inventory.snapshot()
 	data.slots[0].item_id = "bi.item.missing.after.update"
 	check(InventoryState.new().restore(data) == OK and ItemCatalog.resolve("bi.item.missing.after.update").missing,"missing definition preserves owned item")
-	var orphan := normal.state.duplicate(true)
+	var orphan: Dictionary = normal.state.duplicate(true)
 	orphan.definition = "bi.harvest.removed.after.update"
 	check(SurfaceSaveValidator.valid_harvest(orphan) and HarvestService.strike(orphan,tool,orphan.revision,"no-extraction").error == ERR_UNAVAILABLE,"orphan harvest preserved frozen without extraction")
 	print("CONTENT_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," distribution=",counts," weighted10000_ms=",selection_ms," legacy_plus_new_40patches_ms=",placement_ms)

@@ -109,6 +109,8 @@ static func validate(bundle: Dictionary) -> Array:
 			if not entry.get("id") is String or entries.has(entry.get("id")): issue(issues,"spawn_tables",id,"Invalid/duplicate entry ID")
 			entries[entry.get("id")] = true
 			if not ids.props.has(entry.get("prop_definition")) or entry.get("domain") not in ["SURFACE","CAVE"] or not numeric(entry.get("weight"),.00001): issue(issues,"spawn_tables",id,"Invalid spawn reference/domain/weight")
+			var cluster := dict(entry.get("cluster"))
+			if not integer(cluster.get("count"),1,8) or not numeric(cluster.get("radius"),0,8): issue(issues,"spawn_tables",id,"Invalid bounded cluster")
 			if entry.get("rarity") not in ["Common","Uncommon","Rare","VeryRare"]: issue(issues,"spawn_tables",id,"Invalid rarity tier")
 			if not vector2(entry.get("water_distance")) or float(entry.water_distance[0]) > float(entry.water_distance[1]): issue(issues,"spawn_tables",id,"Invalid water-distance filter")
 			for key: String in ["min_height","max_height","min_slope","max_slope"]:
