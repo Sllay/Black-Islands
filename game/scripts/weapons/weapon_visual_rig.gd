@@ -35,6 +35,8 @@ func _ready() -> void:
 func select(next: WeaponVisualProfile) -> void:
 	if _selected and profile == next: return
 	_selected = true
+	_material.albedo_texture = null
+	_trail_remaining = 0
 	profile = next
 	_textures.clear()
 	trail.visible = false
@@ -47,6 +49,7 @@ func select(next: WeaponVisualProfile) -> void:
 		if not path.is_empty(): _textures[key] = load(path)
 	trail_profile = WeaponTrailProfile.new(next.data.get("trail_profile",{}))
 	_material.albedo_color = trail_profile.color
+	if not trail_profile.texture.is_empty(): _material.albedo_texture = load(trail_profile.texture)
 func tick(direction: int, heading: float, next_phase: String, progress: float, delta: float = 1.0/60) -> void:
 	phase = next_phase
 	if profile == null or profile.mode != "DETACHED_SPRITE": return
@@ -61,7 +64,9 @@ func tick(direction: int, heading: float, next_phase: String, progress: float, d
 	sprite.render_priority = 1 if layer == "FRONT_CHARACTER" else -1
 	sprite.scale = Vector3.ONE*size
 	sprite.rotation.z = deg_to_rad(profile.sample("rotation_curve",progress,0)) if phase != "idle" else 0.0
-	sprite.offset = Vector2(profile.data.get("pivot",[16,16])[0],profile.data.get("pivot",[16,16])[1])-Vector2(16,16)
+	var pivot: Array = profile.data.get("pivot",[16,16])
+	var texture: Texture2D = _textures.get("attack_texture" if phase == "attack" else "idle_texture")
+	if texture != null: sprite.offset = Vector2(texture.get_width()*.5-float(pivot[0]),float(pivot[1])-texture.get_height()*.5)
 	sprite.texture = _textures.get("attack_texture" if phase == "attack" else "idle_texture")
 	_trail_remaining = trail_profile.duration if phase == "attack" else maxf(0,_trail_remaining-delta)
 	trail.visible = trail_profile.enabled and _trail_remaining > 0

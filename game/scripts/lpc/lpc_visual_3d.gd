@@ -11,6 +11,7 @@ var _pose := false
 var _time := 0.0
 var _forced_remaining := 0.0
 var _forced_action := ""
+var _forced_speed := 1.0
 @onready var sprite: Sprite3D = $Sprite3D
 
 func set_appearance(config: Dictionary) -> void:
@@ -23,7 +24,8 @@ func set_appearance(config: Dictionary) -> void:
 	action = ""
 	_set_action(previous if not previous.is_empty() else LPCActionResolver.IDLE)
 
-func play_semantic(semantic: String, duration: float = 0.5) -> void:
+func play_semantic(semantic: String, duration: float = 0.5, playback_speed: float = 1.0) -> void:
+	_forced_speed = maxf(.01,playback_speed)
 	_forced_action = semantic
 	_forced_remaining = maxf(duration, 0.0)
 	_set_action(semantic)
@@ -33,7 +35,7 @@ func tick(delta: float, world_direction: Vector3, heading: float, locomotion: St
 	_forced_remaining = maxf(0.0, _forced_remaining - delta)
 	_set_action(_forced_action if _forced_remaining > 0.0 else locomotion)
 	direction = LPCActionResolver.direction(world_direction, heading, direction)
-	_time += delta
+	_time += delta*(_forced_speed if _forced_remaining > 0 else 1.0)
 	var frame := 0
 	if not _pose:
 		var elapsed := int(_time * float(_clip.fps))

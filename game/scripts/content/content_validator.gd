@@ -82,7 +82,7 @@ static func validate(bundle: Dictionary) -> Array:
 	for id: String in ids.movesets:
 		if ids.movesets[id].get("template_id") != "sword.training.v1": issue(issues,"movesets",id,"Unknown reviewed moveset template")
 	for id: String in ids.visual_profiles:
-		if ids.visual_profiles[id].get("mode") not in ["LPC_LAYER","DETACHED_SPRITE"]: issue(issues,"visual_profiles",id,"Invalid visual mode")
+		validate_visual(ids.visual_profiles[id],issues)
 	for id: String in ids.effects: validate_graph(ids.effects[id],ids,issues)
 	for id: String in ids.props:
 		if not ids.harvestables.has(ids.props[id].get("harvest")): issue(issues,"props",id,"Missing harvestable")
@@ -164,3 +164,34 @@ static func validate_graph(graph: Dictionary, ids: Dictionary, issues: Array) ->
 				depth[next] = maxi(int(depth.get(next,0)),int(depth.get(current,0))+1)
 				if degrees[next] == 0: ready.append(next)
 	if seen != nodes.size(): issue(issues,"effects",id,"Effect graph cycle")
+
+static func validate_visual(row: Dictionary, issues: Array) -> void:
+	var id := str(row.id)
+	if row.get("mode") == "LPC_LAYER":
+		if row.get("lpc_asset_id") != "lpc.weapon.sword": issue(issues,"visual_profiles",id,"Missing accepted LPC weapon asset")
+		return
+	if row.get("mode") != "DETACHED_SPRITE":
+		issue(issues,"visual_profiles",id,"Invalid visual mode")
+		return
+	for key: String in ["idle_texture","attack_texture"]:
+		if not texture_path(row.get(key)): issue(issues,"visual_profiles",id,"Invalid image resource "+key)
+	if not vector2(row.get("pivot")): issue(issues,"visual_profiles",id,"Invalid pivot")
+	for key: String in ["rotation_curve","position_curve","scale_curve"]:
+		var points: Variant = row.get(key)
+		if not points is Array or points.is_empty() or points.size() > 16:
+			issue(issues,"visual_profiles",id,"Invalid bounded curve "+key)
+			continue
+		var last := -1.0
+		for point: Variant in points:
+			if not vector2(point) or not numeric(point[0],0,1) or float(point[0]) < last or not numeric(point[1],.01 if key == "scale_curve" else -720,720): issue(issues,"visual_profiles",id,"Invalid curve point")
+			else: last = float(point[0])
+	for direction: String in ["north","west","south","east"]:
+		if not vector2(dict(row.get("direction_offsets")).get(direction)): issue(issues,"visual_profiles",id,"Missing direction offset")
+		if dict(row.get("layer_behavior")).get(direction) not in ["FRONT_CHARACTER","BEHIND_CHARACTER"]: issue(issues,"visual_profiles",id,"Invalid semantic layer")
+	var trail := dict(row.get("trail_profile"))
+	if not numeric(trail.get("width"),.001,2) or not numeric(trail.get("duration"),.001,1): issue(issues,"visual_profiles",id,"Invalid trail profile")
+	if not str(trail.get("texture","")).is_empty() and not texture_path(trail.texture): issue(issues,"visual_profiles",id,"Invalid trail texture")
+static func vector2(value: Variant) -> bool:
+	return value is Array and value.size() == 2 and numeric(value[0],-10000,10000) and numeric(value[1],-10000,10000)
+static func texture_path(value: Variant) -> bool:
+	return value is String and value.begins_with("res://assets/") and value.get_extension() in ["png","svg","webp"] and FileAccess.file_exists(value)

@@ -1,481 +1,481 @@
 {
-  "schema_version": 1.0,
-  "items": [
-    {
-      "id": "bi.weapon.starter_sword",
-      "title": "Espada de treino",
-      "category": "WEAPON",
-      "icon": "⚔",
-      "moveset_id": "sword.training.v1",
-      "visual_id": "lpc.weapon.sword",
-      "name_key": "item.bi.weapon.starter_sword.name",
-      "description_key": "item.bi.weapon.starter_sword.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "WeaponModule",
-          "weapon_id": "bi.weapon.sword.basic"
-        }
-      ]
-    },
-    {
-      "id": "bi.tool.stone_pick",
-      "title": "Picareta",
-      "category": "TOOL",
-      "icon": "⛏",
-      "name_key": "item.bi.tool.stone_pick.name",
-      "description_key": "item.bi.tool.stone_pick.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "HarvestToolModule",
-          "power": 32.0,
-          "quality_power": 1.0,
-          "quality_yield": 1.0,
-          "efficiency": 1.0,
-          "targets": {
-            "ROCK": 1.0
-          },
-          "resources": {
-            "bi.resource.stone": 1.0,
-            "bi.resource.metal": 1.0
-          },
-          "stamina": 5.0,
-          "terrain_operation": {
-            "mode": "dig",
-            "radius": 1.0
-          }
-        }
-      ]
-    },
-    {
-      "id": "bi.food.coconut",
-      "title": "Coco",
-      "category": "CONSUMABLE",
-      "icon": "◉",
-      "use_effect": "restore_health",
-      "use_amount": 12.0,
-      "spoilage": {
-        "duration": 300.0,
-        "result_item_id": "bi.resource.spoiled_food"
-      },
-      "name_key": "item.bi.food.coconut.name",
-      "description_key": "item.bi.food.coconut.description",
-      "stack_limit": 32.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "ConsumableModule",
-          "effects": [],
-          "legacy_effect": "restore_health",
-          "amount": 12.0
-        },
-        {
-          "type": "SpoilageModule",
-          "duration": 300.0,
-          "result_item_id": "bi.resource.spoiled_food"
-        }
-      ]
-    },
-    {
-      "id": "bi.resource.stone",
-      "title": "Pedra",
-      "category": "RESOURCE",
-      "icon": "◆",
-      "name_key": "item.bi.resource.stone.name",
-      "description_key": "item.bi.resource.stone.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.build.foundation",
-      "title": "Fundação",
-      "category": "BUILDING_PIECE",
-      "icon": "▱",
-      "name_key": "item.bi.build.foundation.name",
-      "description_key": "item.bi.build.foundation.description",
-      "stack_limit": 12.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "BuildingItemModule",
-          "definition_id": "foundation"
-        }
-      ]
-    },
-    {
-      "id": "bi.ammo.arrow",
-      "title": "Flecha",
-      "category": "PROJECTILE",
-      "icon": "➶",
-      "name_key": "item.bi.ammo.arrow.name",
-      "description_key": "item.bi.ammo.arrow.description",
-      "stack_limit": 999.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "ProjectileModule",
-          "speed": 20.0
-        }
-      ]
-    },
-    {
-      "id": "bi.armor.fiber_hat",
-      "title": "Elmo de fibra",
-      "category": "ARMOR",
-      "icon": "♧",
-      "equipment_slots": [
-        "helmet"
-      ],
-      "defense": 3.0,
-      "name_key": "item.bi.armor.fiber_hat.name",
-      "description_key": "item.bi.armor.fiber_hat.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.armor.fiber_chest",
-      "title": "Peitoral de fibra",
-      "category": "ARMOR",
-      "icon": "▣",
-      "equipment_slots": [
-        "chest"
-      ],
-      "defense": 8.0,
-      "name_key": "item.bi.armor.fiber_chest.name",
-      "description_key": "item.bi.armor.fiber_chest.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.armor.fiber_legs",
-      "title": "Calças de fibra",
-      "category": "ARMOR",
-      "icon": "Π",
-      "equipment_slots": [
-        "legs"
-      ],
-      "defense": 5.0,
-      "name_key": "item.bi.armor.fiber_legs.name",
-      "description_key": "item.bi.armor.fiber_legs.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.accessory.shell_charm",
-      "title": "Amuleto de concha",
-      "category": "ACCESSORY",
-      "icon": "◇",
-      "equipment_slots": [
-        "accessory_1",
-        "accessory_2"
-      ],
-      "defense": 1.0,
-      "name_key": "item.bi.accessory.shell_charm.name",
-      "description_key": "item.bi.accessory.shell_charm.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.tool.axe",
-      "title": "Machado",
-      "category": "TOOL",
-      "icon": "♜",
-      "name_key": "item.bi.tool.axe.name",
-      "description_key": "item.bi.tool.axe.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "HarvestToolModule",
-          "power": 28.0,
-          "quality_power": 1.0,
-          "quality_yield": 1.0,
-          "efficiency": 1.0,
-          "targets": {
-            "TREE": 1.0,
-            "CORPSE": 0.7
-          },
-          "resources": {
-            "bi.resource.wood": 1.0,
-            "bi.resource.fiber": 0.5,
-            "bi.resource.sap": 1.0,
-            "bi.resource.meat": 1.0,
-            "bi.resource.light_hide": 0.2,
-            "bi.resource.heavy_hide": 0.2
-          },
-          "stamina": 5.0
-        }
-      ]
-    },
-    {
-      "id": "bi.tool.knife",
-      "title": "Faca",
-      "category": "TOOL",
-      "icon": "†",
-      "name_key": "item.bi.tool.knife.name",
-      "description_key": "item.bi.tool.knife.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "HarvestToolModule",
-          "power": 20.0,
-          "quality_power": 1.0,
-          "quality_yield": 1.0,
-          "efficiency": 1.0,
-          "targets": {
-            "CORPSE": 1.0
-          },
-          "resources": {
-            "bi.resource.light_hide": 1.0,
-            "bi.resource.heavy_hide": 1.0,
-            "bi.resource.meat": 0.3,
-            "bi.resource.rotten_flesh": 1.0
-          },
-          "stamina": 5.0
-        }
-      ]
-    },
-    {
-      "id": "bi.tool.hoe",
-      "title": "Enxada",
-      "category": "TOOL",
-      "icon": "⌁",
-      "name_key": "item.bi.tool.hoe.name",
-      "description_key": "item.bi.tool.hoe.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.tool.watering_can",
-      "title": "Regador",
-      "category": "TOOL",
-      "icon": "♒",
-      "name_key": "item.bi.tool.watering_can.name",
-      "description_key": "item.bi.tool.watering_can.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "WaterContainerModule",
-          "capacity": 8.0,
-          "watering_cost": 1.0,
-          "freshwater_only": true
-        }
-      ]
-    },
-    {
-      "id": "bi.tool.shovel",
-      "title": "Pá / caminho",
-      "category": "TOOL",
-      "icon": "♠",
-      "name_key": "item.bi.tool.shovel.name",
-      "description_key": "item.bi.tool.shovel.description",
-      "stack_limit": 1.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.wood",
-      "title": "Madeira",
-      "category": "RESOURCE",
-      "icon": "▥",
-      "name_key": "item.bi.resource.wood.name",
-      "description_key": "item.bi.resource.wood.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.fiber",
-      "title": "Fibra",
-      "category": "RESOURCE",
-      "icon": "≈",
-      "name_key": "item.bi.resource.fiber.name",
-      "description_key": "item.bi.resource.fiber.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.sap",
-      "title": "Seiva",
-      "category": "RESOURCE",
-      "icon": "●",
-      "name_key": "item.bi.resource.sap.name",
-      "description_key": "item.bi.resource.sap.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.metal",
-      "title": "Minério",
-      "category": "RESOURCE",
-      "icon": "◈",
-      "name_key": "item.bi.resource.metal.name",
-      "description_key": "item.bi.resource.metal.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.seed.turnip",
-      "title": "Semente de nabo",
-      "category": "CONSUMABLE",
-      "icon": "⋆",
-      "name_key": "item.bi.seed.turnip.name",
-      "description_key": "item.bi.seed.turnip.description",
-      "stack_limit": 32.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.food.turnip",
-      "title": "Nabo",
-      "category": "CONSUMABLE",
-      "icon": "◉",
-      "name_key": "item.bi.food.turnip.name",
-      "description_key": "item.bi.food.turnip.description",
-      "stack_limit": 32.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.meat",
-      "title": "Carne",
-      "category": "RESOURCE",
-      "icon": "▰",
-      "spoilage": {
-        "duration": 120.0,
-        "result_item_id": "bi.resource.rotten_flesh"
-      },
-      "name_key": "item.bi.resource.meat.name",
-      "description_key": "item.bi.resource.meat.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "SpoilageModule",
-          "duration": 120.0,
-          "result_item_id": "bi.resource.rotten_flesh"
-        }
-      ]
-    },
-    {
-      "id": "bi.resource.light_hide",
-      "title": "Couro leve",
-      "category": "RESOURCE",
-      "icon": "◇",
-      "name_key": "item.bi.resource.light_hide.name",
-      "description_key": "item.bi.resource.light_hide.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.heavy_hide",
-      "title": "Couro pesado",
-      "category": "RESOURCE",
-      "icon": "◆",
-      "name_key": "item.bi.resource.heavy_hide.name",
-      "description_key": "item.bi.resource.heavy_hide.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.feather",
-      "title": "Pena",
-      "category": "RESOURCE",
-      "icon": "⌁",
-      "name_key": "item.bi.resource.feather.name",
-      "description_key": "item.bi.resource.feather.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.rotten_flesh",
-      "title": "Carne pútrida",
-      "category": "RESOURCE",
-      "icon": "▰",
-      "name_key": "item.bi.resource.rotten_flesh.name",
-      "description_key": "item.bi.resource.rotten_flesh.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.resource.spoiled_food",
-      "title": "Restos estragados",
-      "category": "RESOURCE",
-      "icon": "·",
-      "description": "Restos de alimento que perderam o frescor.",
-      "name_key": "item.bi.resource.spoiled_food.name",
-      "description_key": "item.bi.resource.spoiled_food.description",
-      "stack_limit": 256.0,
-      "tags": [],
-      "modules": []
-    },
-    {
-      "id": "bi.build.ceiling",
-      "title": "Plataforma",
-      "category": "BUILDING_PIECE",
-      "icon": "▱",
-      "name_key": "item.bi.build.ceiling.name",
-      "description_key": "item.bi.build.ceiling.description",
-      "stack_limit": 12.0,
-      "tags": [],
-      "modules": [
-        {
-          "type": "BuildingItemModule",
-          "definition_id": "ceiling"
-        }
-      ]
-    },
-    {
-      "id": "bi.food.healing_fruit",
-      "title": "Healing fruit",
-      "name_key": "item.healing_fruit.name",
-      "description_key": "item.healing_fruit.description",
-      "category": "CONSUMABLE",
-      "icon": "✚",
-      "stack_limit": 32.0,
-      "world_visual_id": "",
-      "tags": [],
-      "modules": [
-        {
-          "type": "ConsumableModule",
-          "effects": [
-            "bi.effect.heal.basic"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "bi.weapon.test_blade",
-      "title": "Test blade",
-      "name_key": "item.test_blade.name",
-      "description_key": "item.test_blade.description",
-      "category": "WEAPON",
-      "icon": "⚔",
-      "stack_limit": 1,
-      "modules": [
-        {
-          "type": "WeaponModule",
-          "weapon_id": "bi.weapon.blade.detached"
-        }
-      ]
-    }
-  ]
+	"schema_version": 1.0,
+	"items": [
+		{
+			"id": "bi.weapon.starter_sword",
+			"title": "Espada de treino",
+			"category": "WEAPON",
+			"icon": "⚔",
+			"moveset_id": "sword.training.v1",
+			"visual_id": "lpc.weapon.sword",
+			"name_key": "item.bi.weapon.starter_sword.name",
+			"description_key": "item.bi.weapon.starter_sword.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "WeaponModule",
+					"weapon_id": "bi.weapon.sword.basic"
+				}
+			]
+		},
+		{
+			"id": "bi.tool.stone_pick",
+			"title": "Picareta",
+			"category": "TOOL",
+			"icon": "⛏",
+			"name_key": "item.bi.tool.stone_pick.name",
+			"description_key": "item.bi.tool.stone_pick.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "HarvestToolModule",
+					"power": 32.0,
+					"quality_power": 1.0,
+					"quality_yield": 1.0,
+					"efficiency": 1.0,
+					"targets": {
+						"ROCK": 1.0
+					},
+					"resources": {
+						"bi.resource.stone": 1.0,
+						"bi.resource.metal": 1.0
+					},
+					"stamina": 5.0,
+					"terrain_operation": {
+						"mode": "dig",
+						"radius": 1.0
+					}
+				}
+			]
+		},
+		{
+			"id": "bi.food.coconut",
+			"title": "Coco",
+			"category": "CONSUMABLE",
+			"icon": "◉",
+			"use_effect": "restore_health",
+			"use_amount": 12.0,
+			"spoilage": {
+				"duration": 300.0,
+				"result_item_id": "bi.resource.spoiled_food"
+			},
+			"name_key": "item.bi.food.coconut.name",
+			"description_key": "item.bi.food.coconut.description",
+			"stack_limit": 32.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "ConsumableModule",
+					"effects": [],
+					"legacy_effect": "restore_health",
+					"amount": 12.0
+				},
+				{
+					"type": "SpoilageModule",
+					"duration": 300.0,
+					"result_item_id": "bi.resource.spoiled_food"
+				}
+			]
+		},
+		{
+			"id": "bi.resource.stone",
+			"title": "Pedra",
+			"category": "RESOURCE",
+			"icon": "◆",
+			"name_key": "item.bi.resource.stone.name",
+			"description_key": "item.bi.resource.stone.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.build.foundation",
+			"title": "Fundação",
+			"category": "BUILDING_PIECE",
+			"icon": "▱",
+			"name_key": "item.bi.build.foundation.name",
+			"description_key": "item.bi.build.foundation.description",
+			"stack_limit": 12.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "BuildingItemModule",
+					"definition_id": "foundation"
+				}
+			]
+		},
+		{
+			"id": "bi.ammo.arrow",
+			"title": "Flecha",
+			"category": "PROJECTILE",
+			"icon": "➶",
+			"name_key": "item.bi.ammo.arrow.name",
+			"description_key": "item.bi.ammo.arrow.description",
+			"stack_limit": 999.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "ProjectileModule",
+					"speed": 20.0
+				}
+			]
+		},
+		{
+			"id": "bi.armor.fiber_hat",
+			"title": "Elmo de fibra",
+			"category": "ARMOR",
+			"icon": "♧",
+			"equipment_slots": [
+				"helmet"
+			],
+			"defense": 3.0,
+			"name_key": "item.bi.armor.fiber_hat.name",
+			"description_key": "item.bi.armor.fiber_hat.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.armor.fiber_chest",
+			"title": "Peitoral de fibra",
+			"category": "ARMOR",
+			"icon": "▣",
+			"equipment_slots": [
+				"chest"
+			],
+			"defense": 8.0,
+			"name_key": "item.bi.armor.fiber_chest.name",
+			"description_key": "item.bi.armor.fiber_chest.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.armor.fiber_legs",
+			"title": "Calças de fibra",
+			"category": "ARMOR",
+			"icon": "Π",
+			"equipment_slots": [
+				"legs"
+			],
+			"defense": 5.0,
+			"name_key": "item.bi.armor.fiber_legs.name",
+			"description_key": "item.bi.armor.fiber_legs.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.accessory.shell_charm",
+			"title": "Amuleto de concha",
+			"category": "ACCESSORY",
+			"icon": "◇",
+			"equipment_slots": [
+				"accessory_1",
+				"accessory_2"
+			],
+			"defense": 1.0,
+			"name_key": "item.bi.accessory.shell_charm.name",
+			"description_key": "item.bi.accessory.shell_charm.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.tool.axe",
+			"title": "Machado",
+			"category": "TOOL",
+			"icon": "♜",
+			"name_key": "item.bi.tool.axe.name",
+			"description_key": "item.bi.tool.axe.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "HarvestToolModule",
+					"power": 28.0,
+					"quality_power": 1.0,
+					"quality_yield": 1.0,
+					"efficiency": 1.0,
+					"targets": {
+						"TREE": 1.0,
+						"CORPSE": 0.7
+					},
+					"resources": {
+						"bi.resource.wood": 1.0,
+						"bi.resource.fiber": 0.5,
+						"bi.resource.sap": 1.0,
+						"bi.resource.meat": 1.0,
+						"bi.resource.light_hide": 0.2,
+						"bi.resource.heavy_hide": 0.2
+					},
+					"stamina": 5.0
+				}
+			]
+		},
+		{
+			"id": "bi.tool.knife",
+			"title": "Faca",
+			"category": "TOOL",
+			"icon": "†",
+			"name_key": "item.bi.tool.knife.name",
+			"description_key": "item.bi.tool.knife.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "HarvestToolModule",
+					"power": 20.0,
+					"quality_power": 1.0,
+					"quality_yield": 1.0,
+					"efficiency": 1.0,
+					"targets": {
+						"CORPSE": 1.0
+					},
+					"resources": {
+						"bi.resource.light_hide": 1.0,
+						"bi.resource.heavy_hide": 1.0,
+						"bi.resource.meat": 0.3,
+						"bi.resource.rotten_flesh": 1.0
+					},
+					"stamina": 5.0
+				}
+			]
+		},
+		{
+			"id": "bi.tool.hoe",
+			"title": "Enxada",
+			"category": "TOOL",
+			"icon": "⌁",
+			"name_key": "item.bi.tool.hoe.name",
+			"description_key": "item.bi.tool.hoe.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.tool.watering_can",
+			"title": "Regador",
+			"category": "TOOL",
+			"icon": "♒",
+			"name_key": "item.bi.tool.watering_can.name",
+			"description_key": "item.bi.tool.watering_can.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "WaterContainerModule",
+					"capacity": 8.0,
+					"watering_cost": 1.0,
+					"freshwater_only": true
+				}
+			]
+		},
+		{
+			"id": "bi.tool.shovel",
+			"title": "Pá / caminho",
+			"category": "TOOL",
+			"icon": "♠",
+			"name_key": "item.bi.tool.shovel.name",
+			"description_key": "item.bi.tool.shovel.description",
+			"stack_limit": 1.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.wood",
+			"title": "Madeira",
+			"category": "RESOURCE",
+			"icon": "▥",
+			"name_key": "item.bi.resource.wood.name",
+			"description_key": "item.bi.resource.wood.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.fiber",
+			"title": "Fibra",
+			"category": "RESOURCE",
+			"icon": "≈",
+			"name_key": "item.bi.resource.fiber.name",
+			"description_key": "item.bi.resource.fiber.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.sap",
+			"title": "Seiva",
+			"category": "RESOURCE",
+			"icon": "●",
+			"name_key": "item.bi.resource.sap.name",
+			"description_key": "item.bi.resource.sap.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.metal",
+			"title": "Minério",
+			"category": "RESOURCE",
+			"icon": "◈",
+			"name_key": "item.bi.resource.metal.name",
+			"description_key": "item.bi.resource.metal.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.seed.turnip",
+			"title": "Semente de nabo",
+			"category": "CONSUMABLE",
+			"icon": "⋆",
+			"name_key": "item.bi.seed.turnip.name",
+			"description_key": "item.bi.seed.turnip.description",
+			"stack_limit": 32.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.food.turnip",
+			"title": "Nabo",
+			"category": "CONSUMABLE",
+			"icon": "◉",
+			"name_key": "item.bi.food.turnip.name",
+			"description_key": "item.bi.food.turnip.description",
+			"stack_limit": 32.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.meat",
+			"title": "Carne",
+			"category": "RESOURCE",
+			"icon": "▰",
+			"spoilage": {
+				"duration": 120.0,
+				"result_item_id": "bi.resource.rotten_flesh"
+			},
+			"name_key": "item.bi.resource.meat.name",
+			"description_key": "item.bi.resource.meat.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "SpoilageModule",
+					"duration": 120.0,
+					"result_item_id": "bi.resource.rotten_flesh"
+				}
+			]
+		},
+		{
+			"id": "bi.resource.light_hide",
+			"title": "Couro leve",
+			"category": "RESOURCE",
+			"icon": "◇",
+			"name_key": "item.bi.resource.light_hide.name",
+			"description_key": "item.bi.resource.light_hide.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.heavy_hide",
+			"title": "Couro pesado",
+			"category": "RESOURCE",
+			"icon": "◆",
+			"name_key": "item.bi.resource.heavy_hide.name",
+			"description_key": "item.bi.resource.heavy_hide.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.feather",
+			"title": "Pena",
+			"category": "RESOURCE",
+			"icon": "⌁",
+			"name_key": "item.bi.resource.feather.name",
+			"description_key": "item.bi.resource.feather.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.rotten_flesh",
+			"title": "Carne pútrida",
+			"category": "RESOURCE",
+			"icon": "▰",
+			"name_key": "item.bi.resource.rotten_flesh.name",
+			"description_key": "item.bi.resource.rotten_flesh.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.resource.spoiled_food",
+			"title": "Restos estragados",
+			"category": "RESOURCE",
+			"icon": "·",
+			"description": "Restos de alimento que perderam o frescor.",
+			"name_key": "item.bi.resource.spoiled_food.name",
+			"description_key": "item.bi.resource.spoiled_food.description",
+			"stack_limit": 256.0,
+			"tags": [],
+			"modules": []
+		},
+		{
+			"id": "bi.build.ceiling",
+			"title": "Plataforma",
+			"category": "BUILDING_PIECE",
+			"icon": "▱",
+			"name_key": "item.bi.build.ceiling.name",
+			"description_key": "item.bi.build.ceiling.description",
+			"stack_limit": 12.0,
+			"tags": [],
+			"modules": [
+				{
+					"type": "BuildingItemModule",
+					"definition_id": "ceiling"
+				}
+			]
+		},
+		{
+			"id": "bi.food.healing_fruit",
+			"title": "Healing fruit",
+			"name_key": "item.healing_fruit.name",
+			"description_key": "item.healing_fruit.description",
+			"category": "CONSUMABLE",
+			"icon": "✚",
+			"stack_limit": 32.0,
+			"world_visual_id": "",
+			"tags": [],
+			"modules": [
+				{
+					"type": "ConsumableModule",
+					"effects": [
+						"bi.effect.heal.basic"
+					]
+				}
+			]
+		},
+		{
+			"id": "bi.weapon.test_blade",
+			"title": "Test blade",
+			"name_key": "item.test_blade.name",
+			"description_key": "item.test_blade.description",
+			"category": "WEAPON",
+			"icon": "⚔",
+			"stack_limit": 1.0,
+			"modules": [
+				{
+					"type": "WeaponModule",
+					"weapon_id": "bi.weapon.blade.detached"
+				}
+			]
+		}
+	]
 }

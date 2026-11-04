@@ -143,7 +143,8 @@ func _request_attack(input: String) -> void:
 	_combo_node = attack.id
 	_combo_until = _clock + attack.duration() + moveset.combo_timeout
 	_query.shape = attack.shape
-	actor.visual.play_semantic(attack.semantic_action,attack.duration())
+	var speed := weapon.attack_speed if weapon != null else 1.0
+	actor.visual.play_semantic(attack.semantic_action,attack.duration()/speed,speed)
 	attacks_started += 1
 	attack_started.emit(attack.id,_instance.sequence)
 

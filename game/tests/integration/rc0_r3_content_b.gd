@@ -38,6 +38,7 @@ func _run() -> void:
 	check(EffectGraph.prepare("bi.effect.heal.conditional","OnUse",context) == OK and context.stats.health == 50,"true condition")
 	context.stats.health = 80
 	check(EffectGraph.prepare("bi.effect.heal.conditional","OnUse",context) == OK and context.stats.health == 80,"false condition")
+	check(EffectService.context_for(player,null,"event1").rng.seed != EffectService.context_for(player,null,"event2").rng.seed,"event entropy independent of inventory revision")
 	var before := EffectGraph.compilations
 	EffectGraph.prepare("bi.effect.heal.conditional","OnUse",context)
 	check(EffectGraph.compilations == before,"compiled graph cache")
@@ -68,6 +69,9 @@ func _run() -> void:
 	check(not rig.trail.visible,"trail duration bounded")
 	rig.select(WeaponCatalog.visual("bi.visual.sword.lpc"))
 	check(not rig.sprite.visible and rig.sprite.texture == null and not rig.trail.visible and rig.get_child_count() == 2,"switch cleans previous visual")
+	rig.select(WeaponCatalog.visual("bi.visual.blade.detached"))
+	rig.tick(2,0,"idle",0)
+	check(not rig.trail.visible,"reselected detached has no orphan trail")
 	context = EffectContext.new()
 	context.damage_input = 20
 	check(EffectGraph.prepare("bi.effect.weapon.fire_test","OnHit",context) == OK and context.events.size() == 1,"registered status seam")
