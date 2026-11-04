@@ -58,6 +58,8 @@ static func validate(bundle: Dictionary) -> Array:
 				"WeaponModule":
 					if not ids.weapons.has(module.get("weapon_id")): issue(issues,"items",id,"Missing weapon")
 				"HarvestToolModule":
+					for tag: Variant in dict(module.get("targets")):
+						if tag not in ["ROCK","TREE","CORPSE"]: issue(issues,"items",id,"Invalid harvest target tag")
 					if not numeric(module.get("power"),.001) or not module.get("resources",{}) is Dictionary or not module.get("targets",{}) is Dictionary: issue(issues,"items",id,"Invalid harvest profile")
 					for resource: Variant in dict(module.get("resources")):
 						if not ids.items.has(resource) or not numeric(module.resources[resource]): issue(issues,"items",id,"Invalid resource ID/affinity")
@@ -91,6 +93,7 @@ static func validate(bundle: Dictionary) -> Array:
 	for id: String in ids.props:
 		if not ids.harvestables.has(ids.props[id].get("harvest")): issue(issues,"props",id,"Missing harvestable")
 	for id: String in ids.harvestables:
+		if ids.harvestables[id].get("tag") not in ["ROCK","TREE","CORPSE"]: issue(issues,"harvestables",id,"Invalid harvest target tag")
 		if not numeric(ids.harvestables[id].get("health"),.001,100000) or not numeric(ids.harvestables[id].get("resistance",0)): issue(issues,"harvestables",id,"Invalid health/resistance")
 		if not ids.harvestables[id].get("reserves") is Dictionary: issue(issues,"harvestables",id,"Invalid reserves")
 		for resource: Variant in dict(ids.harvestables[id].get("reserves")):

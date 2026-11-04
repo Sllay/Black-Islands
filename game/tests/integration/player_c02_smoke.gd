@@ -62,7 +62,7 @@ func _inventory() -> void:
 	_check(restored.hotbar_at(0).stack_uid == bag.slot_at(0).stack_uid, "hotbar references same stack UID after reload")
 	_check(restored.equipment_at("helmet").stack_uid == bag.slot_at(3).stack_uid, "equipment references same stack UID after reload")
 	var broken := snapshot.duplicate(true)
-	broken.slots[0].item_id = "unknown.asset"
+	broken.slots[0].quantity = -1
 	_check(restored.restore(broken) != OK and restored.active_definition().id == "bi.weapon.starter_sword", "invalid restore is atomic")
 	var detached := bag.slot_at(0)
 	detached.quantity = 100

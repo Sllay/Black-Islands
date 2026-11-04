@@ -40,7 +40,7 @@
       "id": "bi.harvest.boulder.light",
       "health": 100,
       "resistance": 0,
-      "tag": "rock",
+      "tag": "ROCK",
       "reserves": {
         "bi.resource.stone": 160
       }
@@ -49,7 +49,7 @@
       "id": "bi.harvest.boulder.dark",
       "health": 220,
       "resistance": 40,
-      "tag": "rock",
+      "tag": "ROCK",
       "reserves": {
         "bi.resource.stone": 200
       }
@@ -58,7 +58,7 @@
       "id": "bi.harvest.boulder.iron",
       "health": 180,
       "resistance": 20,
-      "tag": "rock",
+      "tag": "ROCK",
       "reserves": {
         "bi.resource.stone": 140,
         "bi.resource.metal": 90

@@ -4,7 +4,7 @@ extends RefCounted
 const CATEGORIES := ["RESOURCE","CONSUMABLE","WEAPON","TOOL","ARMOR","ACCESSORY","BUILDING_PIECE","PROJECTILE"]
 const MODULES := {
  "ConsumableModule":{"effects":[],"legacy_effect":"","amount":0.0},
- "HarvestToolModule":{"power":20.0,"quality_power":1.0,"efficiency":1.0,"quality_yield":1.0,"stamina":3.0,"targets":{"rock":1.0},"resources":{"bi.resource.stone":1.0},"critical_chance":0.0,"critical_multiplier":1.5},
+ "HarvestToolModule":{"power":20.0,"quality_power":1.0,"efficiency":1.0,"quality_yield":1.0,"stamina":3.0,"targets":{"ROCK":1.0},"resources":{"bi.resource.stone":1.0},"critical_chance":0.0,"critical_multiplier":1.5},
  "WeaponModule":{"weapon_id":"bi.weapon.sword.basic"},
  "SpoilageModule":{"duration":120.0,"result_item_id":"bi.resource.rotten_flesh"},
  "BuildingItemModule":{"definition_id":"foundation"},

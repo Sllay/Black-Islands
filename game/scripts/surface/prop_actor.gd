@@ -8,18 +8,28 @@ func _ready() -> void:
 	add_to_group("interactables")
 	collision_layer = CollisionLayers.PROP
 	collision_mask = 0
+	var modular := not definition_id.is_empty() and runtime.definition(definition_id).get("visual") is Dictionary
 	var collision := CollisionShape3D.new()
-	var shape := CapsuleShape3D.new()
-	shape.radius = .45
-	shape.height = 1.8
-	collision.position.y = .9
+	var shape: Shape3D
+	var elevation := .9
+	if modular:
+		var sphere := SphereShape3D.new()
+		sphere.radius = float(runtime.definition(definition_id).get("collision_radius",.9))
+		shape = sphere
+		elevation = .6
+	else:
+		var capsule := CapsuleShape3D.new()
+		capsule.radius = .45
+		capsule.height = 1.8
+		shape = capsule
+	collision.position.y = elevation
 	collision.shape = shape
 	add_child(collision)
 	var query := InteractionVolume.new()
-	query.position.y = .9
+	query.position.y = elevation
 	query.configure(self,shape)
 	add_child(query)
-	if not definition_id.is_empty() and runtime.definition(definition_id).get("visual") is Dictionary:
+	if modular:
 		PropVisual.attach(self,runtime.definition(definition_id))
 		name = "MineralRootActor" if runtime.definition(definition_id).kind == "MineralRoot" else "BoulderActor"
 
