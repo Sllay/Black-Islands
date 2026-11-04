@@ -36,9 +36,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("inventory"):
 		inventory.toggle()
-	for index: int in range(HOTBAR_ACTIONS.size()):
-		if Input.is_action_just_pressed(HOTBAR_ACTIONS[index]):
-			inventory.state.select_hotbar(index)
+	_read_hotbar()
 	var axis := Input.get_vector("move_left","move_right","move_up","move_down")
 	combat.tick(delta,axis,not inventory.is_open and Input.is_action_just_pressed("attack_primary"),not inventory.is_open and Input.is_action_just_released("attack_primary"),not inventory.is_open and Input.is_action_just_pressed("dodge"))
 	motor.movement_locked = inventory.is_open or combat.movement_locked()
@@ -87,3 +85,8 @@ func player_report() -> Dictionary:
 	return {"position": global_position, "velocity": velocity, "floor": is_on_floor(), "normal": get_floor_normal(),
 		"spawned": spawned, "stamina": state.current_stamina, "camera_build": camera_rig.build_mode,
 		"camera_blend": camera_rig.blend, "target": targeter.current.summary(), "probes": targeter.probes}
+
+func _read_hotbar() -> void:
+	if inventory.is_open: return
+	for index: int in HOTBAR_ACTIONS.size():
+		if Input.is_action_just_pressed(HOTBAR_ACTIONS[index]): inventory.state.select_hotbar(index)

@@ -86,6 +86,17 @@ func _run() -> void:
 	context = EffectContext.new()
 	context.damage_input = 20
 	check(EffectGraph.prepare("bi.effect.weapon.fire_test","OnHit",context) == OK and context.events.size() == 1,"registered status seam")
+	player.inventory.is_open = true
+	var revision := player.inventory.state.revision
+	Input.action_press("hotbar_8")
+	player._read_hotbar()
+	check(player.inventory.state.revision == revision,"numeric UI entry cannot mutate hotbar/revision")
+	Input.action_release("hotbar_8")
+	player.inventory.is_open = false
+	Input.action_press("hotbar_8")
+	player._read_hotbar()
+	check(player.inventory.state.selected == 7,"hotbar gameplay shortcut remains functional")
+	Input.action_release("hotbar_8")
 	print("CONTENT_B ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures)
 	player.free()
 	target.free()

@@ -41,10 +41,10 @@ func qa_focus_prop(definition: String) -> Dictionary:
 	var nearest := INF
 	var chosen := ""
 	for id: String in surface.candidates:
-		var row: Dictionary = surface.candidates[id]
-		if row.definition != definition or surface.destroyed(id): continue
-		var point := Vector3(row.point[0],row.point[1],row.point[2])
-		var distance := point.distance_squared_to(session.pawn.global_position)
+		var candidate: Dictionary = surface.candidates[id]
+		if candidate.definition != definition or surface.destroyed(id): continue
+		var candidate_point := Vector3(candidate.point[0],candidate.point[1],candidate.point[2])
+		var distance := candidate_point.distance_squared_to(session.pawn.global_position)
 		if distance < nearest:
 			nearest = distance
 			chosen = id

@@ -206,7 +206,7 @@ static func validate_visual(row: Dictionary, issues: Array) -> void:
 			continue
 		var last := -1.0
 		for point: Variant in points:
-			if not vector2(point) or not numeric(point[0],0,1) or float(point[0]) < last or not numeric(point[1],.01 if key == "scale_curve" else -720,720): issue(issues,"visual_profiles",id,"Invalid curve point")
+			if not vector2(point) or not numeric(point[0],0,1) or float(point[0]) < last or not numeric(point[1],.01 if key == "scale_curve" else -720.0,720): issue(issues,"visual_profiles",id,"Invalid curve point")
 			else: last = float(point[0])
 	for direction: String in ["north","west","south","east"]:
 		if not vector2(dict(row.get("direction_offsets")).get(direction)): issue(issues,"visual_profiles",id,"Missing direction offset")
