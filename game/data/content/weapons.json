@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "weapons": [
+    {
+      "id": "bi.weapon.sword.basic",
+      "weapon_class": "Sword",
+      "base_damage": 18,
+      "attack_speed": 1,
+      "move_modifier": 1,
+      "knockback": 2,
+      "crit_chance": 0,
+      "crit_multiplier": 1.5,
+      "moveset_id": "sword.training.v1",
+      "visual_profile_id": "bi.visual.sword.lpc",
+      "effects": []
+    }
+  ],
+  "visual_profiles": [
+    {
+      "id": "bi.visual.sword.lpc",
+      "mode": "LPC_LAYER",
+      "lpc_asset_id": "lpc.weapon.sword"
+    }
+  ],
+  "movesets": [
+    {
+      "id": "sword.training.v1",
+      "template_id": "sword.training.v1"
+    }
+  ]
+}
