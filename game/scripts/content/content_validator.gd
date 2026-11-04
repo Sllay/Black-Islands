@@ -63,8 +63,19 @@ static func validate(bundle: Dictionary) -> Array:
 					if not numeric(module.get("power"),.001) or not module.get("resources",{}) is Dictionary or not module.get("targets",{}) is Dictionary: issue(issues,"items",id,"Invalid harvest profile")
 					for resource: Variant in dict(module.get("resources")):
 						if not ids.items.has(resource) or not numeric(module.resources[resource]): issue(issues,"items",id,"Invalid resource ID/affinity")
+					for key: String in ["efficiency","quality_power","quality_yield","stamina"]:
+						if not numeric(module.get(key,1.0 if key != "efficiency" else null),0,10000): issue(issues,"items",id,"Invalid harvest "+key)
+					for affinity: Variant in dict(module.get("targets")).values():
+						if not numeric(affinity,0,10000): issue(issues,"items",id,"Invalid target affinity")
+					if not numeric(module.get("critical_chance",0),0,1) or not numeric(module.get("critical_multiplier",1.5),1,100): issue(issues,"items",id,"Invalid harvest critical range")
 				"WaterContainerModule":
 					if not numeric(module.get("capacity"),.001) or not numeric(module.get("watering_cost"),.001): issue(issues,"items",id,"Invalid water capacity/cost")
+				"ProjectileModule":
+					if not numeric(module.get("speed"),.001,10000): issue(issues,"items",id,"Invalid projectile speed")
+				"BuildingItemModule":
+					if not module.get("definition_id") is String or module.definition_id.is_empty(): issue(issues,"items",id,"Missing building identity")
+				"ConsumableModule":
+					if module.get("legacy_effect","") not in ["","restore_health","restore_stamina"] or not numeric(module.get("amount",0)): issue(issues,"items",id,"Invalid consumable config")
 			if not module.get("effects",[]) is Array: issue(issues,"items",id,"Invalid effect reference array")
 			for effect: Variant in array(module.get("effects",[])):
 				if not ids.effects.has(effect): issue(issues,"items",id,"Missing effect")
@@ -92,12 +103,15 @@ static func validate(bundle: Dictionary) -> Array:
 	for id: String in ids.effects: validate_graph(ids.effects[id],ids,issues)
 	for id: String in ids.props:
 		if not ids.harvestables.has(ids.props[id].get("harvest")): issue(issues,"props",id,"Missing harvestable")
+		var visual := dict(ids.props[id].get("visual"))
+		if visual.get("kind") not in ["BOULDER","MINERAL_ROOT"] or not visual.get("color") is String or not Color.html_is_valid(visual.color): issue(issues,"props",id,"Invalid prop visual/material")
+		if visual.get("kind") == "MINERAL_ROOT" and (not visual.get("ore_color") is String or not Color.html_is_valid(visual.ore_color)): issue(issues,"props",id,"Invalid ore material")
 	for id: String in ids.harvestables:
 		if ids.harvestables[id].get("tag") not in ["ROCK","TREE","CORPSE"]: issue(issues,"harvestables",id,"Invalid harvest target tag")
 		if not numeric(ids.harvestables[id].get("health"),.001,100000) or not numeric(ids.harvestables[id].get("resistance",0)): issue(issues,"harvestables",id,"Invalid health/resistance")
 		if not ids.harvestables[id].get("reserves") is Dictionary: issue(issues,"harvestables",id,"Invalid reserves")
 		for resource: Variant in dict(ids.harvestables[id].get("reserves")):
-			if not ids.items.has(resource): issue(issues,"harvestables",id,"Invalid resource ID")
+			if not ids.items.has(resource) or not integer(ids.harvestables[id].reserves[resource],0): issue(issues,"harvestables",id,"Invalid resource ID/reserve")
 	for id: String in ids.spawn_tables:
 		var table: Dictionary = ids.spawn_tables[id]
 		if not integer(table.get("version"),1,1) or not integer(table.get("density"),1,64) or not table.get("entries") is Array or table.entries.is_empty() or table.entries.size() > 128: issue(issues,"spawn_tables",id,"Invalid table version/density/entries")

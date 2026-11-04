@@ -50,5 +50,17 @@ func _init() -> void:
 				module.resources[renamed] = module.resources["bi.resource.wood"]
 				module.resources.erase("bi.resource.wood")
 	check(ContentData.write_bundle(copy,"items") != OK,"single-file save cannot rely on unsaved recipe changes")
+	for invalid_case: String in ["target_affinity","missing_efficiency","critical_range","prop_material","negative_reserve","spawn_reference","moveset_reference"]:
+		var bad_bundle := ContentData.all()
+		var bad_tool: Dictionary = bad_bundle.items.items.filter(func(item: Dictionary) -> bool: return item.id == "bi.tool.stone_pick")[0].modules[0]
+		match invalid_case:
+			"target_affinity": bad_tool.targets.ROCK = "not-a-number"
+			"missing_efficiency": bad_tool.erase("efficiency")
+			"critical_range": bad_tool.critical_chance = 4
+			"prop_material": bad_bundle.props.props[0].visual.color = []
+			"negative_reserve": bad_bundle.props.harvestables[0].reserves["bi.resource.stone"] = -1
+			"spawn_reference": bad_bundle.props.spawn_tables[0].entries[0].prop_definition = "missing.prop"
+			"moveset_reference": bad_bundle.weapons.weapons[0].moveset_id = "missing.moveset"
+		check(ContentValidator.has_errors(ContentValidator.validate(bad_bundle)),"invalid content rejected before runtime: "+invalid_case)
 	print("CONTENT_A ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures)
 	quit(1 if failures else 0)
