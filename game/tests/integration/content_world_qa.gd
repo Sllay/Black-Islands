@@ -27,6 +27,7 @@ func qa_equip(detached: bool = true) -> Dictionary:
 	var found := false
 	for slot: int in 20:
 		if inventory.slot_at(slot).get("item_id") == id: found = true
+	if not found and not inventory._slots.has(null): return {"error":"inventory full; recover the existing world drop or free a slot"}
 	if not found:
 		var plan := InventoryPlan.new()
 		InventoryCommands.output(plan.include(inventory),id,1)

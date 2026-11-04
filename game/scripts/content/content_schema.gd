@@ -18,7 +18,11 @@ static func prototype(section: String) -> Dictionary:
 		"items": return {"id":"bi.item.new","title":"","name_key":"item.new.name","description_key":"item.new.description","category":"RESOURCE","icon":"◆","stack_limit":256,"world_visual_id":"","tags":[],"modules":[]}
 		"recipes": return {"id":"bi.recipe.new","name":"","name_key":"recipe.new.name","icon":"◆","ingredients":[{"item_id":"bi.resource.wood","quantity":1}],"outputs":[{"item_id":"bi.build.foundation","quantity":1}],"craft_duration":1.0,"station_requirements":[]}
 		"weapons": return {"id":"bi.weapon.new","weapon_class":"Sword","base_damage":18.0,"attack_speed":1.0,"move_modifier":1.0,"knockback":2.0,"crit_chance":0.0,"crit_multiplier":1.5,"moveset_id":"sword.training.v1","visual_profile_id":"bi.visual.sword.lpc","effects":[]}
-		"visual_profiles": return {"id":"bi.visual.new","mode":"LPC_LAYER","lpc_asset_id":"lpc.weapon.sword"}
+		"visual_profiles":
+			var visual := ContentData.find("visual_profiles","bi.visual.blade.detached")
+			visual.merge({"id":"bi.visual.new","mode":"LPC_LAYER","lpc_asset_id":"lpc.weapon.sword"},true)
+			return visual
+		"movesets": return {"id":"bi.moveset.new","template_id":"sword.training.v1"}
 		"effects": return {"id":"bi.effect.new","triggers":{"OnConsume":"start"},"nodes":[{"id":"start","type":"ModifyStat","stat":"health","amount":20.0,"next":[]}]}
 	return {}
 static func array_default(key: String) -> Variant:

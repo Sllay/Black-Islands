@@ -19,6 +19,20 @@ func _field(parent: VBoxContainer, key: String, value: Variant, update: Callable
 		parent.add_child(nested)
 		for part: String in value:
 			_field(nested,part,value[part],func(next: Variant) -> void: value[part] = next)
+		if key in ["triggers","resources","targets"]:
+			var entry := HBoxContainer.new()
+			nested.add_child(entry)
+			var selector := OptionButton.new()
+			var options: Array = ContentSchema.TRIGGERS if key == "triggers" else (["ROCK","TREE","CORPSE"] if key == "targets" else ContentData.rows("items").map(func(row: Dictionary) -> String: return row.id))
+			for option: String in options: selector.add_item(option)
+			entry.add_child(selector)
+			var add := Button.new()
+			add.text = "+ Reference"
+			add.pressed.connect(func() -> void:
+				var selected := selector.get_item_text(selector.selected)
+				if not value.has(selected): value[selected] = "start" if key == "triggers" else 1.0
+				build(data))
+			entry.add_child(add)
 		return
 	if value is Array:
 		var rows := VBoxContainer.new()
