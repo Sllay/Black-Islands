@@ -4,8 +4,8 @@ set -euo pipefail
 # Black Island reproducible Codex/Linux development bootstrap.
 # Installs local tooling without requiring root and without silently changing pinned versions.
 # Usage:
-#   bash scripts/bootstrap_codex_env.sh            # full setup, including Voxel Tools
-#   bash scripts/bootstrap_codex_env.sh --mcp-only # MCP prerequisites only; skips Voxel Tools
+#   bash scripts/bootstrap_codex_env.sh            # development setup; runtime addons are in Git
+#   bash scripts/bootstrap_codex_env.sh --mcp-only # MCP prerequisites only
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -210,7 +210,7 @@ if [[ "$godot_version_output" != ${GODOT_VERSION}* ]]; then
   exit 1
 fi
 
-# MCP startup only needs Node, Serena and Godot. The full bootstrap also installs the voxel runtime dependency.
+# MCP startup only needs development tools. Full setup also verifies vendored runtime files.
 if [[ "$MODE" == "--mcp-only" ]]; then
   echo "Black Island MCP prerequisites ready."
   echo "Godot: $godot_version_output"
@@ -219,32 +219,8 @@ if [[ "$MODE" == "--mcp-only" ]]; then
   exit 0
 fi
 
-# ---- Voxel Tools GDExtension 1.7 ------------------------------------------
-VOXEL_ARCHIVE="$CACHE/GodotVoxelExtension-${VOXEL_TOOLS_TAG}.zip"
-VOXEL_STAMP="$TOOLS/voxel-tools-${VOXEL_TOOLS_TAG}.installed"
-
-if [[ ! -f "$VOXEL_STAMP" ]]; then
-  need_cmd unzip
-  fetch "$VOXEL_TOOLS_URL" "$VOXEL_ARCHIVE"
-  verify_sha256 "$VOXEL_ARCHIVE" "$VOXEL_TOOLS_SHA256"
-
-  tmp="$TOOLS/voxel-install-tmp"
-  rm -rf "$tmp"
-  mkdir -p "$tmp"
-  unzip -q -o "$VOXEL_ARCHIVE" -d "$tmp"
-
-  if [[ ! -d "$tmp/addons" ]]; then
-    echo "Unexpected Voxel Tools archive layout: addons/ not found." >&2
-    exit 1
-  fi
-
-  mkdir -p "$ROOT/game/addons"
-  cp -a "$tmp/addons/." "$ROOT/game/addons/"
-  rm -rf "$tmp"
-  printf '%s\n' "$VOXEL_TOOLS_SHA256" > "$VOXEL_STAMP"
-fi
-
-bash "$ROOT/scripts/install_limboai.sh"
+# Runtime dependencies are checked from Git, never installed or overwritten here.
+python3 "$ROOT/scripts/verify_runtime_dependencies.py"
 
 # ---- Basic validation -------------------------------------------------------
 if [[ ! -f "$ROOT/game/project.godot" ]]; then

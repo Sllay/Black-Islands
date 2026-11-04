@@ -1,0 +1,981 @@
+{
+  "schema_version": 1,
+  "dependencies": [
+    {
+      "addon": "zylann.voxel",
+      "archive": "GodotVoxelExtension-v1.7x.zip",
+      "archive_sha256": "600737572a5e25541ba6f503e842a3717ba19afafa5474510a6ceff995a1d2d8",
+      "total_bytes": 134335779,
+      "files": [
+        {
+          "path": "game/addons/zylann.voxel/LICENSE.md",
+          "bytes": 1075,
+          "sha256": "3a1f742145830b5702fe9e7aa2566c5896012a88fb3f70a00d6fd64e9cc203ee"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/liblibvoxel.windows.template_release.x86_64.a",
+          "bytes": 1916,
+          "sha256": "63fcd4587d2da25c7430afa561599a27775030d0bd170ea53b794dc11bfb9c29"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/liblibvoxel.windows.editor.x86_64.a",
+          "bytes": 1814,
+          "sha256": "50a8814bbe43fa4b361fb53f10d7ff58b4f737a70dddbf8592b5759ad83b5c2b"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.android.editor.arm64.so",
+          "bytes": 9031288,
+          "sha256": "641f87ad6e0402d47240a4d3344fead59f72537230abbc4d98ab7ef962dc225a"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.android.editor.x86_64.so",
+          "bytes": 9177136,
+          "sha256": "1143c0f4aaa00db96d8d696cdfe9b39895651d8641a8966730875e03a6664dff"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.android.template_release.arm64.so",
+          "bytes": 7301800,
+          "sha256": "09d696b76112fbd0445a07d0ccc08fede1dee606d827a98611e5f4c1e12e79ec"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.android.template_release.x86_64.so",
+          "bytes": 7523376,
+          "sha256": "c2de6c79edbe34fb74702cac83804b2af6a1c902d39783e51590f41c6b4d4825"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.ios.editor.arm64.dylib",
+          "bytes": 6074760,
+          "sha256": "e229db24a8aac94173f7b1aeddd14fc26dd170696a5869668e6f7ff77da21c04"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.ios.template_release.arm64.dylib",
+          "bytes": 5207400,
+          "sha256": "8a7483f10375978d46301c1c29fb1d71ea9e9812577104c4b903d3d64595cc9e"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.linux.editor.arm64.so",
+          "bytes": 12179248,
+          "sha256": "410af7575e17ca36502516c225a40fd168f9d794c12a906c2ddf6b4a80a3c0d7"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.linux.editor.x86_64.so",
+          "bytes": 11788856,
+          "sha256": "09abf6e0979f8a8cdfb5abf448710ab49a3a4bed87cd2131759e12a522a9154c"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.linux.template_release.arm64.so",
+          "bytes": 10101416,
+          "sha256": "a324578faf85d428c0756c843079828f535ce32118f322e4b6db61ab8035baf1"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.linux.template_release.x86_64.so",
+          "bytes": 10366328,
+          "sha256": "080c58503114400aafb9c8d43583f72609a819def121052bd83f02ffe27bd245"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.macos.editor.universal.framework/libvoxel.macos.editor.universal",
+          "bytes": 12899248,
+          "sha256": "8607ba5e6daeae23c0b4ddf78160b33e7cf6f81dea89abfbdab96f549bd07b01"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.macos.template_release.universal.framework/libvoxel.macos.template_release.universal",
+          "bytes": 11142104,
+          "sha256": "3c3c13069e729bbbf3743a90564cdfdac3e2c6ff612b2341c88929492b2fe4cc"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.windows.editor.x86_64.dll",
+          "bytes": 11337216,
+          "sha256": "e7191869989607805660de8f54c3aa2ab2e3ab08902bdd6976ac8aa6b3fe07ad"
+        },
+        {
+          "path": "game/addons/zylann.voxel/bin/libvoxel.windows.template_release.x86_64.dll",
+          "bytes": 10173952,
+          "sha256": "cff4fdefa8d3348860bc241ed9eb86f96d31c2e6e7da8a304c890ec018115bf0"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelBlockyLibrary.svg",
+          "bytes": 3204,
+          "sha256": "3f51eb273c452d165d38b4ce04886e092b4021b2f0484835980ebb72cd30f6aa"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/FastNoise2.svg",
+          "bytes": 408,
+          "sha256": "1544bd25ce89a2563a4f827c8c0d560965ce45b29a86360b6add2b720db2dbbe"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelBlockyModel.svg",
+          "bytes": 1711,
+          "sha256": "85d5e768c039c0e8d161fd99fb934655859088b46ce060a44c5c025a651279dc"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelInstanceLibrary.svg",
+          "bytes": 2766,
+          "sha256": "00f23474cdf889a936d8962c5c2a4d21cced913a4aca8c7e173796b45950bfd6"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelInstanceLibraryItem.svg",
+          "bytes": 1259,
+          "sha256": "be92931beff468eb71d79c98e7baad4408089393f8eaf3e5409c5d049a751ad1"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelInstanceLibraryMultiMeshItem.svg",
+          "bytes": 1259,
+          "sha256": "be92931beff468eb71d79c98e7baad4408089393f8eaf3e5409c5d049a751ad1"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelInstanceLibrarySceneItem.svg",
+          "bytes": 1259,
+          "sha256": "be92931beff468eb71d79c98e7baad4408089393f8eaf3e5409c5d049a751ad1"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelInstancer.svg",
+          "bytes": 3271,
+          "sha256": "40b3effa68620a76ac80439f6251ec93d970fa2cc6a2d3e2cef4270a400b7333"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelLodTerrain.svg",
+          "bytes": 351,
+          "sha256": "5b34e318060307911bf83447d8957ccf1f0e0501c696cb45d0bbffe7d1b18262"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelMesher.svg",
+          "bytes": 4088,
+          "sha256": "2981db0e9db0900664a4919a8d996908946051505cd2068a26bad49070da15a2"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelNode.svg",
+          "bytes": 351,
+          "sha256": "5b34e318060307911bf83447d8957ccf1f0e0501c696cb45d0bbffe7d1b18262"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelTerrain.svg",
+          "bytes": 351,
+          "sha256": "5b34e318060307911bf83447d8957ccf1f0e0501c696cb45d0bbffe7d1b18262"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelTerrainLarge.svg",
+          "bytes": 993,
+          "sha256": "1014aad59777a303b6b3d54b23cb7c9142356f821ad610ad5a0ed043e182829c"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/VoxelViewer.svg",
+          "bytes": 2998,
+          "sha256": "df56b7190b9f1bc251f64f2f0c6a3e22faddfb3143dfbf5dedd1f93fccc2a150"
+        },
+        {
+          "path": "game/addons/zylann.voxel/editor/icons/ZN_FastNoiseLite.svg",
+          "bytes": 408,
+          "sha256": "1544bd25ce89a2563a4f827c8c0d560965ce45b29a86360b6add2b720db2dbbe"
+        },
+        {
+          "path": "game/addons/zylann.voxel/voxel.gdextension",
+          "bytes": 2149,
+          "sha256": "353b33a3b5631803785a7fb28810c8dee2ff97bc0a1675d80e1b7b28b7101770"
+        },
+        {
+          "path": "game/addons/zylann.voxel/voxel.gdextension.uid",
+          "bytes": 20,
+          "sha256": "a8e4b703888c739acb5e37f4a0819b8945b0245b7dee91c7190e921149af4f3a"
+        }
+      ]
+    },
+    {
+      "addon": "limboai",
+      "archive": "limboai-v1.8.1-gdextension-4.6.zip",
+      "archive_sha256": "0910411f8dbc0da8920f6c8bbbb6397c347cd9f2f193942468a702dfb11d5f0e",
+      "total_bytes": 91280106,
+      "files": [
+        {
+          "path": "game/addons/limboai/LICENSE.md",
+          "bytes": 1103,
+          "sha256": "1b2d39c48e02b683abfafa1187de21e75796cd54cd18f6f60ddf369529ee8240"
+        },
+        {
+          "path": "game/addons/limboai/LOGO_LICENSE.md",
+          "bytes": 216,
+          "sha256": "b3cf21d09f7e2191aed99ae8e3f57e8006bda915f489a732b160bb3fa83e9d31"
+        },
+        {
+          "path": "game/addons/limboai/README.md",
+          "bytes": 11917,
+          "sha256": "994e172a5abf8df5412a6d5184e89467bd8d01218bb65541e8719c915c791f0c"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.editor.arm32.so",
+          "bytes": 3770624,
+          "sha256": "62ce86e60785ed3d99750c37202cd9f2a2ec5c6d26cbadc7467fbf6fbae68d2c"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.editor.arm64.so",
+          "bytes": 3877648,
+          "sha256": "948a2ba1121c877147845f9bea35aa36ebb4d71b9553cef1311a46d9cd2e6448"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.editor.x86_32.so",
+          "bytes": 4052028,
+          "sha256": "df130e1afd99b979b9dc79cebb6e8db76f3d9ef2d9bc166cf95359b54f6de2d6"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.editor.x86_64.so",
+          "bytes": 3810272,
+          "sha256": "25aaece70ee23771ef9065b0f06dc3a9b25c2e83eaf79482e519bdba87ff0d98"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.template_release.arm32.so",
+          "bytes": 1962764,
+          "sha256": "994ac88dda9e50ef4a5b3dbb2c64c5cc7f3f4d91719595dd1c1bc96d03e0fca8"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.template_release.arm64.so",
+          "bytes": 2247768,
+          "sha256": "d54ee93d965e125a79b01446e2d9a86bfed7d8234f56e8f605206d8aba354e2f"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.template_release.x86_32.so",
+          "bytes": 2393592,
+          "sha256": "314eae1c0cb78f946497610c42c6cda9f300952b02fac4352771b2e1558c8c0e"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.android.template_release.x86_64.so",
+          "bytes": 2179400,
+          "sha256": "af1b290929e54d1f5d30b1d85f9c59d7ecef5b089ec32373309312628e2b911e"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.ios.editor.arm64.dylib",
+          "bytes": 3466880,
+          "sha256": "64816361ccb8a63aaedabc3ba48acfd8f87a51ca4f3ddbb5dc9f5770c1dba452"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.ios.editor.universal.simulator.dylib",
+          "bytes": 7426192,
+          "sha256": "049bf09957acdf5c4440aab48242481889e1b1c389acd644f1d80911af309fae"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.ios.template_release.arm64.dylib",
+          "bytes": 1907440,
+          "sha256": "8469e715c2424bd0956db96c9b1bb16d3a86e594947262b89507b4e7a4d6bf62"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.ios.template_release.universal.simulator.dylib",
+          "bytes": 4068824,
+          "sha256": "ce254f1438a01d28d6f2e2b09ecd18b999f50cabf513a4d2df8c9c35a4e72b69"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.linux.editor.arm64.so",
+          "bytes": 5960088,
+          "sha256": "926866f927036a0d9f734694005595be7d4235447e43b4b3f8c1a33008f3353c"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.linux.template_release.arm64.so",
+          "bytes": 4006352,
+          "sha256": "87d37f1279c8096468ba38d7bf3f883dcc0469627fd21548133eacc7fdd430fe"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.linux.editor.x86_64.so",
+          "bytes": 6050136,
+          "sha256": "48bf57a5b1c05288ea07e7809bfafd8fe77534ccd432b38167829235b1c3585c"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.linux.template_release.x86_64.so",
+          "bytes": 4059544,
+          "sha256": "693c244c66d41c2d5c073a557b67ed2b267013fd0b3728c01754cf9c1f74b405"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.macos.editor.framework/liblimboai.macos.editor",
+          "bytes": 7406856,
+          "sha256": "bb440496a738242d0ca6e3b306da192510dcbdcc125077cd4289d1e4e80a4159"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.macos.template_release.framework/liblimboai.macos.template_release",
+          "bytes": 4050368,
+          "sha256": "c4c8b03f0fdababe06a541918a7f9c0b02d3f5f5e6959a0bb3a222cc5bec8c9e"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.web.editor.wasm32.nothreads.wasm",
+          "bytes": 2706111,
+          "sha256": "b09c7a6dfff073febce95a14a79c30f5a0ad59c7d742a168cc11e65f9d9a76a7"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.web.editor.wasm32.wasm",
+          "bytes": 2785943,
+          "sha256": "50f80a36fe51429357b76adfd8f332fc79e8c2cd83a14313d0a0b9d5f7d023e5"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.web.template_release.wasm32.nothreads.wasm",
+          "bytes": 1986024,
+          "sha256": "4c99344e9bf154a2d6239777c93dcd50cb6f7939ee2456ce57871b2933aa1a9f"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.web.template_release.wasm32.wasm",
+          "bytes": 2055115,
+          "sha256": "0774b34f28a872a68a5cd5f1dfabdf354244bb05dc0d5eea2ecbe316b1d6f04e"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.windows.editor.x86_64.dll",
+          "bytes": 5430784,
+          "sha256": "f9e758ebf088da12e71dbe330572fb55f186619bda8b144b4d8e822569161b97"
+        },
+        {
+          "path": "game/addons/limboai/bin/liblimboai.windows.template_release.x86_64.dll",
+          "bytes": 3500544,
+          "sha256": "5095e3e3daff5f441f58afb3b482de839c2b6d00b30668c59b3003848234f4c2"
+        },
+        {
+          "path": "game/addons/limboai/bin/limboai.gdextension",
+          "bytes": 6639,
+          "sha256": "e616dece245ad0e8b8d7403e681a52e142b2d94fdd850fa5eb24a06976170ee9"
+        },
+        {
+          "path": "game/addons/limboai/bin/limboai.gdextension.uid",
+          "bytes": 19,
+          "sha256": "55d390448eb45a6b3785082e6e65252fd734ba9aad1f975523e3dba4e600e594"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAction.svg",
+          "bytes": 281,
+          "sha256": "5d47249ea1f0a61d71c61d910f1bedb577840f7788d38eab7ba9bbafceec3d59"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAction.svg.import",
+          "bytes": 1044,
+          "sha256": "a3f3365661145db72dc7fef4f51a115662d516d781fea5bc15688f6b538870cf"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAlwaysFail.svg",
+          "bytes": 242,
+          "sha256": "2bda450b498b29e11f8b8e1c097bd1a67a05ecd41734bf03b75b1ec337de03ad"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAlwaysFail.svg.import",
+          "bytes": 1056,
+          "sha256": "fe09d60f6ba316335a5f561dc680212c4941891b63d0de8a1dd26e22bdc12760"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAlwaysSucceed.svg",
+          "bytes": 265,
+          "sha256": "257ef5d753b6e3d973a56f84a9b49f67a260555dd9eccd1931690c0127f1725e"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAlwaysSucceed.svg.import",
+          "bytes": 1064,
+          "sha256": "d736380c8be8f314d6243496d6ee64dc5c5e678132bd39383b5f6c8718120fd5"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAwaitAnimation.svg",
+          "bytes": 710,
+          "sha256": "8119166b8d243ccc31437c567dfd256b585fa97789742a6bf0753ad0fa63ba39"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTAwaitAnimation.svg.import",
+          "bytes": 1068,
+          "sha256": "d692a1c956fe93af2072ae87dd06a8f9758e653d0d6d50cee28731f67e6f15b7"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCallMethod.svg",
+          "bytes": 524,
+          "sha256": "5e7bdd71517d70cc5420af81192c2c3fe539b23b83efe1c456b0a08ec33e0e0c"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCallMethod.svg.import",
+          "bytes": 1056,
+          "sha256": "698526d19cfdce7d070f98af98cfa081b5d48ab984f58aa1cc1f11c569cbe508"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCheckAgentProperty.svg",
+          "bytes": 594,
+          "sha256": "f53d7f34646786d43ece3f47925bf4379a3e5b8d06d755bd368a7e41f7df6c74"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCheckAgentProperty.svg.import",
+          "bytes": 1080,
+          "sha256": "1fab79f65446e2526dd96b4689f574109d871589c15274612793b11d80904599"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCheckTrigger.svg",
+          "bytes": 561,
+          "sha256": "d6897c829b0d02b3e903910335dad9993a756517380cb7862503de4765484e2d"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCheckVar.svg",
+          "bytes": 603,
+          "sha256": "e10ba8c356f2ab83a8f5097ab5776b21bd61fd5fe0c8799fa0e3c3d0525a93ef"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCheckTrigger.svg.import",
+          "bytes": 1062,
+          "sha256": "6569cbd8e38716574cc34431507bbc8c728442db7184875dad5dd985f2ccca54"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCheckVar.svg.import",
+          "bytes": 1050,
+          "sha256": "38f45c2845cd5c48e5e1ad9c51dc934c4015839c04b1fa68f617ecadab854d89"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTComment.svg",
+          "bytes": 364,
+          "sha256": "34908fbec35dafe90f9b98e4b695507b2979396dd9838fb66ba947b749da483e"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTComment.svg.import",
+          "bytes": 1046,
+          "sha256": "6ac4e1238ad72ecafa295318f3720997428c4d0ff6e8467cb9bd73930cd04eff"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCondition.svg",
+          "bytes": 487,
+          "sha256": "2edf72c55afd83b689f7b7ec9ef764eb02f8937d5f2a5aae8e62fcc72e9827dd"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCondition.svg.import",
+          "bytes": 1053,
+          "sha256": "722309eb4cc8f5c2f65d64a715fa1a5d1dad8fb7cd8d465a2921c57e87d83541"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTConsolePrint.svg",
+          "bytes": 600,
+          "sha256": "aa47753f47dd34eb8da23475767714dee78b56c3b7013c9183a60f8c2139c11f"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCooldown.svg",
+          "bytes": 421,
+          "sha256": "c0046aa5d70909df613b49929a2313b6f52ab78fab6bca23233653ceb114c4df"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTConsolePrint.svg.import",
+          "bytes": 1061,
+          "sha256": "2c56bbef35a8e1bd14ae8a30f02e627bf8a50a41d30ffa97e3739c8b99fea55f"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTCooldown.svg.import",
+          "bytes": 1050,
+          "sha256": "30432af8614104e3bf042dd3b84fe87759372b60608b11db6e9676a552860c56"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDecorator.svg",
+          "bytes": 268,
+          "sha256": "4ebcf16697cf8354ae6ce75f401b2189fc0ec7a16bb8d023479448f32d6f42be"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDecorator.svg.import",
+          "bytes": 1053,
+          "sha256": "16dad05a2ecffe891c3389692927cead41b6c9ff22792be732f896d07eaee09d"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDelay.svg",
+          "bytes": 421,
+          "sha256": "c0046aa5d70909df613b49929a2313b6f52ab78fab6bca23233653ceb114c4df"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDelay.svg.import",
+          "bytes": 1041,
+          "sha256": "c9ff36e4c10271f5aed891aeffc0712850689d0ef1128e80decc0fa8328d8b37"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDynamicSelector.svg.import",
+          "bytes": 1071,
+          "sha256": "b331dfda62449cd8a4b817da214555a9ca675d8f748c802ee4ac7da97dd85ed3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDynamicSelector.svg",
+          "bytes": 661,
+          "sha256": "ee22dc455b4db6744033c2675629dfc590b7c2df40ac88a218e2a28bd66fdfd9"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDynamicSequence.svg",
+          "bytes": 296,
+          "sha256": "53bd04771cd04766d28f17ec0c4fa61431dae1bbc064fe52df3e3ad2357793e7"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTDynamicSequence.svg.import",
+          "bytes": 1071,
+          "sha256": "e7f30fd9fbbc1514b8ee2f9d0f52154bf14a7d92439f0850511b64e9aeeddb03"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTEvaluateExpression.svg",
+          "bytes": 621,
+          "sha256": "f40482e50144761e7741a33db4510b9b889d81c8d4216e4af643e84f892ef81a"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTEvaluateExpression.svg.import",
+          "bytes": 1080,
+          "sha256": "6d415ae68313939349ca5dfb7da8968a2ed2285778ea16ceca79af5630bc39ef"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTFail.svg",
+          "bytes": 242,
+          "sha256": "2bda450b498b29e11f8b8e1c097bd1a67a05ecd41734bf03b75b1ec337de03ad"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTFail.svg.import",
+          "bytes": 1038,
+          "sha256": "708e83b8eb6f4b527240969eeb8f147a6565828c50ca330959e1e5c76df5673e"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTForEach.svg",
+          "bytes": 313,
+          "sha256": "2c92ff2e5837357de0a4869f69fe8b5120001aadabcbfe229ee070f4651608b5"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTForEach.svg.import",
+          "bytes": 1047,
+          "sha256": "a8e7e401e12d5aa05b33e4e296c088df7b7b2056ab24312508d9d9f867809b74"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTInvert.svg",
+          "bytes": 230,
+          "sha256": "4e3e706f1d0fd9cd7625c82617451d441028d35090ef5bd09255fec3ff295b05"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTInvert.svg.import",
+          "bytes": 1044,
+          "sha256": "c04aa956768cd3adaf71fe7679253082bc141d79ba181d0e7417de9015ee332d"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTNewScope.svg",
+          "bytes": 503,
+          "sha256": "a104005afb8440f6a891aa75c9289a52f117de0c4acb80947ce9324faadd7cad"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTNewScope.svg.import",
+          "bytes": 1050,
+          "sha256": "d7b753d7d9ea9eaea3da05b0f77b7e293d620e49fea81defe872a4a3e5399037"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTParallel.svg",
+          "bytes": 415,
+          "sha256": "4c889298879ba9f2e989cb4616df3ce8521586ce1a4ffef701476f765471a1fa"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTPauseAnimation.svg",
+          "bytes": 368,
+          "sha256": "d41a4f1b40316fba2a54c5aa3ae072b5eb7215fa76b5a80bb0dacb67fe85a900"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTParallel.svg.import",
+          "bytes": 1049,
+          "sha256": "4b069467df3ffd70dc9320f886330be8e492f722c3e4d9225d13cb26806c39a5"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTPauseAnimation.svg.import",
+          "bytes": 1067,
+          "sha256": "02eebc6357334e4cb7fbcf556c9a845e42bb9ddfa05c559344418ddd636314d7"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTPlayAnimation.svg",
+          "bytes": 368,
+          "sha256": "75cc3e60f3a854800f4210422e5c6e162f711b0fe56acdbe7ce7d19971073cde"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTPlayAnimation.svg.import",
+          "bytes": 1065,
+          "sha256": "285e242e6bb4a0caa81033807928587351aae1660f6c10ef295432d0f073ef31"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTPlayer.svg",
+          "bytes": 301,
+          "sha256": "44b7fc7a0f81e730bda1523f012f251d217c1d1370fd09cb293a4a86bd2aa889"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTPlayer.svg.import",
+          "bytes": 1044,
+          "sha256": "62dd11765a4caca224ff24a34bf00cafcb5cbed28bcd1cd05ce7466fd074beef"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTProbability.svg",
+          "bytes": 686,
+          "sha256": "5f4d6491c58dc273f488ef71cea9fb2d0580571b0b6b28dbb9aff61e249a2ad3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTProbability.svg.import",
+          "bytes": 1059,
+          "sha256": "d0f28068a7f9f98fffc63c4169b6855b2aa2ca20a2b0a1adf3a15eff7b587f00"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTProbabilitySelector.svg",
+          "bytes": 747,
+          "sha256": "31a2f1d76c81e597d365b675ca8778bcf8a6bcff9184fb9fadae6eec5f6ded70"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTProbabilitySelector.svg.import",
+          "bytes": 1083,
+          "sha256": "a2c04421ba123cf9d98ee56b2082dd5b3738ae35af0f317982604bfa77fd36b9"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRandomSelector.svg",
+          "bytes": 750,
+          "sha256": "807fd6120dd74bd2ea89c568d464e495293c77dbb3300e975757ec9838d1533f"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRandomSelector.svg.import",
+          "bytes": 1068,
+          "sha256": "9d8124d100f62f39ee5f00ac4ab91814419dd2b2786ed0ded243d5eeb0cc3923"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRandomSequence.svg",
+          "bytes": 377,
+          "sha256": "c26f9e3a33db4b70359aabfa745e7a0afff9499a0b6c6fae9e92d888325b77ad"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRandomSequence.svg.import",
+          "bytes": 1068,
+          "sha256": "7b01195e158962b8293881450160216da6c9a50b09e26f4a5736eda86991a1c4"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRandomWait.svg",
+          "bytes": 421,
+          "sha256": "ef7e0408c99a08f5b5bd07f1ff7c2418a9bfe7c2c57d3b9d4919429f0aa11ce3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRandomWait.svg.import",
+          "bytes": 1055,
+          "sha256": "92985d914029d3f9341246291d07bed4f5955eb0565b8aadcd6648c1c12cd0d3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRepeat.svg",
+          "bytes": 561,
+          "sha256": "f012386c3caa191fc063812a58d6e932c1be001a48cdb89ec6bbc9f17f961224"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRepeat.svg.import",
+          "bytes": 1044,
+          "sha256": "3616287a2a975bfe4a5553b51f57a7d59f7bc2b923f8682204b03deb3cb8ddaa"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRepeatUntilFailure.svg.import",
+          "bytes": 1079,
+          "sha256": "a2b04415542eb06d8be85dad2c231a39b5a7ed99b5f5dad11a93e825056f8184"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRepeatUntilFailure.svg",
+          "bytes": 561,
+          "sha256": "3f46bc229fc74773a72caa24b84734f9b983601449f78472d7b69372f1daca5c"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRepeatUntilSuccess.svg",
+          "bytes": 561,
+          "sha256": "8761b6c2173cc74d09daf5d7a503096de4fa0bd49fa00f79579c705c2e9848da"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRepeatUntilSuccess.svg.import",
+          "bytes": 1080,
+          "sha256": "194fcf40a64a28877ba551c3de7a84f142dc7323084a345faf8ba0deefdc0afa"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRunLimit.svg",
+          "bytes": 520,
+          "sha256": "36c13503eba9430b6333a856e276ab733ebea07c93a4aa1c8233a8ab0beba1ce"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTRunLimit.svg.import",
+          "bytes": 1050,
+          "sha256": "f30b6908cfa1152e0fce6499d6082a636657b3869c9d042a139f350aade1e7bd"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSelector.svg",
+          "bytes": 449,
+          "sha256": "6a0a9a52b04e511f86093137f1576c0ab3f041ebd0ac42ba99e4c94447d7c3c7"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSelector.svg.import",
+          "bytes": 1050,
+          "sha256": "90bd21dfd78e484920aadc5921a7dc6ddcc4415f4ece39cd45c48a8ead6d2cc1"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSequence.svg",
+          "bytes": 215,
+          "sha256": "79a748044dcb03d7d7e51a5cc6e9dd8ca2ee51725794ce591747c4825b5a1495"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSequence.svg.import",
+          "bytes": 1050,
+          "sha256": "769b923017e36417347939c43679cdaf3e0d898a28f0fc6c4f2f69d9eeec10c2"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSetAgentProperty.svg",
+          "bytes": 392,
+          "sha256": "ecae28420d9eb603e09247d845b93005c545fbb1b88af79bbb35656ebc3baa71"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSetAgentProperty.svg.import",
+          "bytes": 1073,
+          "sha256": "6b035a2e0f5a3a92a9521567a7cd3078218367496184ef8fee45f07e639f1bf3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSetVar.svg",
+          "bytes": 510,
+          "sha256": "88ed587f462cf7e3d2be631cf2f942d8188d4c94190ac2702507ecaadcd0bbe2"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSetVar.svg.import",
+          "bytes": 1044,
+          "sha256": "1b6e5f1c22b0d910c6d2b4efc93a64758bd26e8ce23f600ab60f9f79d00bab48"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTState.svg",
+          "bytes": 301,
+          "sha256": "44b7fc7a0f81e730bda1523f012f251d217c1d1370fd09cb293a4a86bd2aa889"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTState.svg.import",
+          "bytes": 1041,
+          "sha256": "09eb55ee2ba9c92076f0285a3a909c3e3a477618515e46b7c40c410b5753ab9b"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTStopAnimation.svg",
+          "bytes": 344,
+          "sha256": "b3f5149c376dcae633b4e00760b46dac98ea863ef09d043385168c0249e374fc"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTStopAnimation.svg.import",
+          "bytes": 1065,
+          "sha256": "39154614d00d2b4616e48676a8a1930b65a41cf482ddae3f1c057203d2d4c1e5"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSubtree.svg.import",
+          "bytes": 1047,
+          "sha256": "8c3ce08a7b92b88f990a923bde67fa5ecda695a0e5f2bba0762aab6781a733e3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTTimeLimit.svg",
+          "bytes": 421,
+          "sha256": "c0046aa5d70909df613b49929a2313b6f52ab78fab6bca23233653ceb114c4df"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTTimeLimit.svg.import",
+          "bytes": 1053,
+          "sha256": "6608aabdf95392483b7bf7ce62c67ebe878e38d03d894c109403b3855eb11669"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTSubtree.svg",
+          "bytes": 225,
+          "sha256": "e020e485afc173511b3d8647e715014ceb5ddbc0d4c4ee24eda3d98aeb676e8d"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTWait.svg",
+          "bytes": 421,
+          "sha256": "ef7e0408c99a08f5b5bd07f1ff7c2418a9bfe7c2c57d3b9d4919429f0aa11ce3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTWait.svg.import",
+          "bytes": 1038,
+          "sha256": "0b64641d024e90c19f8a44a0f5b2a4ad012112a7e0d7dd769d5ebda62d9770b9"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTWaitTicks.svg",
+          "bytes": 421,
+          "sha256": "ef7e0408c99a08f5b5bd07f1ff7c2418a9bfe7c2c57d3b9d4919429f0aa11ce3"
+        },
+        {
+          "path": "game/addons/limboai/icons/BTWaitTicks.svg.import",
+          "bytes": 1052,
+          "sha256": "cc8ab2586255eaeec1610efda1fc1bbd81adce2d281fb6d789bd22b4c952478f"
+        },
+        {
+          "path": "game/addons/limboai/icons/BehaviorTree.svg",
+          "bytes": 225,
+          "sha256": "e020e485afc173511b3d8647e715014ceb5ddbc0d4c4ee24eda3d98aeb676e8d"
+        },
+        {
+          "path": "game/addons/limboai/icons/BehaviorTree.svg.import",
+          "bytes": 1056,
+          "sha256": "1aeb0ea87f828261f6a39ba1d2a601ce288e7851ca89861b2b569ce523380421"
+        },
+        {
+          "path": "game/addons/limboai/icons/BehaviorTreeView.svg",
+          "bytes": 556,
+          "sha256": "8008acc6183d763b731ad8fda2e1edfbd0a3f8b800bfa2196336ed7b9acdf72e"
+        },
+        {
+          "path": "game/addons/limboai/icons/BehaviorTreeView.svg.import",
+          "bytes": 1068,
+          "sha256": "11879c80409b5d3e29f9c818110c8ef3ae9376d1e27395f864c6670bb27c9ccd"
+        },
+        {
+          "path": "game/addons/limboai/icons/BlackboardPlan.svg",
+          "bytes": 686,
+          "sha256": "dec782c6014739bb72f6c9533e2faaff73f1efca5e4030893aac747b076fd897"
+        },
+        {
+          "path": "game/addons/limboai/icons/BlackboardPlan.svg.import",
+          "bytes": 1062,
+          "sha256": "77dba6d1336caf4272089ac59c052b3050cadf2b31bbd5120943765f507501e0"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboAI.svg",
+          "bytes": 776,
+          "sha256": "fbc1a1895ba928e31156365bdf6193f522e8c62ce4eb74c8f7181bce23d5b87e"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboAI.svg.import",
+          "bytes": 1041,
+          "sha256": "2e535b3a420e05dee63886e7ffdfe2988843c2d1b84a9e8b6630531de5c5bc84"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboDeselectAll.svg",
+          "bytes": 713,
+          "sha256": "bce3d966aac4b9ece174c4641911de58b95908272f448b902ad3a9e3c5cf55fa"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboDeselectAll.svg.import",
+          "bytes": 1068,
+          "sha256": "aa45953a784f344fc9e4f13248b2b5e6d9f6f01b8e7c379faec9a979e7ea2e08"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboEditBlackboard.svg",
+          "bytes": 686,
+          "sha256": "134556c0da98ecc5230363e02b7e1ee4d48d595c647b7599b4234beea435ec30"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboEditBlackboard.svg.import",
+          "bytes": 1077,
+          "sha256": "df305aa2634f813116d13e9a3fd083a7e42fe4fff99ccdede1c4a98a0f5ac9a2"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtraBlackboard.svg",
+          "bytes": 510,
+          "sha256": "88ed587f462cf7e3d2be631cf2f942d8188d4c94190ac2702507ecaadcd0bbe2"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtraBlackboard.svg.import",
+          "bytes": 1080,
+          "sha256": "38fb5241111baffc36496964e7d4263d0728509f91b61552a81f6d3d182f41fe"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtraClock.svg",
+          "bytes": 951,
+          "sha256": "7b7409d0029b8db9ffb8699bdb60811542393b71cfd45edd1825b01e185ac01a"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtraClock.svg.import",
+          "bytes": 1065,
+          "sha256": "116c80af0bf06bf84f8d4e971556abd428f9c9cc1704027b9117be852868c2db"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtraVariable.svg",
+          "bytes": 565,
+          "sha256": "40440d093be7cd50b571f04f8098452ac02d0f4e48e6345e2fffec58f0074f17"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtraVariable.svg.import",
+          "bytes": 1074,
+          "sha256": "16f7bf86e0a0c504c7ae40cdf4ed6d4954c815c88e685cd7f7da945a7d67167e"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtractSubtree.svg",
+          "bytes": 546,
+          "sha256": "ef520e6adf26e7b46e106010ffaedfc03c0290b0bb744f6a817c4e3c8229f2b5"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboExtractSubtree.svg.import",
+          "bytes": 1077,
+          "sha256": "ba2cb5a147879fb7ccc324d4d95ea82f364fae0c4b6da90d9ba3bcfd20bdc3e0"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboHSM.svg",
+          "bytes": 375,
+          "sha256": "02af1b87bc21486f4c9eacb7c728375d1cffdfd05c827f1ded11ed859ad26602"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboHSM.svg.import",
+          "bytes": 1044,
+          "sha256": "6f041e616c1ae9a23e6e66c614b9a5ef28cfcfed694c642da5aeddd7b6c650c9"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboPercent.svg",
+          "bytes": 686,
+          "sha256": "ae27ffb42bf56d2d0fbb3814440b9691d44171e5ebd712c1e14ce4d953b2f8d1"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboSelectAll.svg",
+          "bytes": 832,
+          "sha256": "71403cd70ed7586f0f1cd37de23f50b5698ae826d1b11fa1cb0cd592567c476c"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboPercent.svg.import",
+          "bytes": 1055,
+          "sha256": "81c717efc4b765a5f67da26dc248c8648a02e9e313557f45aa665e438eabb97b"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboSelectAll.svg.import",
+          "bytes": 1061,
+          "sha256": "2bd5bf2ef721503b164f8880de81c61ea8a6a2c76f726d0a53774cd62834f6f2"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboState.svg",
+          "bytes": 141,
+          "sha256": "92a9d6b1df412852395747cdfd189a548ab2208d0241cbc70ad0b1ecdcee0208"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboState.svg.import",
+          "bytes": 1050,
+          "sha256": "7f57f83438daf48c9b4f3d3358fab52f70ce9f8fa1f664b52238ab5f43294bde"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarAdd.svg",
+          "bytes": 606,
+          "sha256": "eeb166d249b84daa632d1fe5feb3f961a7cc18ccaf12099160c41fe0d20139ad"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarAdd.svg.import",
+          "bytes": 1053,
+          "sha256": "4e639cd3c17f7015ad7a55923f9c650fd818ca00ce425ffed9eeca7a9f459d37"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarEmpty.svg",
+          "bytes": 380,
+          "sha256": "2134d6152ed4062152bb5a060a5078f7bb8b93ec18d9f4a5494a4ad1b26394f9"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarEmpty.svg.import",
+          "bytes": 1058,
+          "sha256": "3cb394bd3fb7229dab1515a4766ea4e1b20a2fb0b70b80ad160d02752031b03d"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarError.svg",
+          "bytes": 760,
+          "sha256": "dce719983ffbd1ffa3d99d04882f7da0949cfc673e7db8d2ca6ab1a2ac59befc"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarError.svg.import",
+          "bytes": 1059,
+          "sha256": "0e0da39dcf8dffe92444651bb81761f8287317f2c267bd47646d57f5a8b75079"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarExists.svg",
+          "bytes": 747,
+          "sha256": "499a97cdd74c33a82621e5b7da8f99d214e49596b984093e93c967098ae379f4"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarExists.svg.import",
+          "bytes": 1061,
+          "sha256": "9cc2007dabcf1f12c5087dac9ba17b8e6f3a4408d26cb3da5e5a4c1ddf1690e8"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarNotFound.svg",
+          "bytes": 387,
+          "sha256": "0ac1d6e6a9b7a2816c214df8e54d67b16a03651561084fcc51d5cf2b803c1535"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarNotFound.svg.import",
+          "bytes": 1068,
+          "sha256": "dd752b7a14ed90b141ef4a3f7da4b05b3b51511b43a687142abb05cb5870e53d"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarPrivate.svg",
+          "bytes": 487,
+          "sha256": "c07d4697a8d2f497b97f5dd486a39816913611fc4a34748bf688082337a48988"
+        },
+        {
+          "path": "game/addons/limboai/icons/LimboVarPrivate.svg.import",
+          "bytes": 1065,
+          "sha256": "0094ae81b8040ba1bc1535de16e889aa02f0abdc75baadeff30775595341c095"
+        },
+        {
+          "path": "game/addons/limboai/version.txt",
+          "bytes": 7,
+          "sha256": "e3a34f9ee8d597da57740e425c1dd60c35ef7d1756d703163d3fa484094a492f"
+        }
+      ]
+    }
+  ]
+}

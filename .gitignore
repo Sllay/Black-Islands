@@ -15,9 +15,9 @@ game/.mono/
 game/.serena/*
 !game/.serena/project.yml
 
-# Voxel Tools GDExtension binaries are fetched from the pinned release by bootstrap.
-game/addons/zylann.voxel/
-game/addons/limboai/
+# Runtime addons are versioned. Ignore only regenerated import sidecars.
+game/addons/zylann.voxel/**/*.import
+game/addons/limboai/**/*.import
 
 # Pinned development-only MCP bridge, installed through godot_addon_install.
 game/addons/godot_mcp/
