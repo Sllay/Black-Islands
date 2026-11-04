@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bqgtnobj0lbch"]
+
+[ext_resource type="Script" path="res://tests/editor/authoring_preview.gd" id="1_dqouy"]
+
+[node name="ContentToolsPreview" type="Control" unique_id=2086966780]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_dqouy")

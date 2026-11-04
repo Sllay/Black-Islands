@@ -72,6 +72,17 @@ func _run() -> void:
 	rig.select(WeaponCatalog.visual("bi.visual.blade.detached"))
 	rig.tick(2,0,"idle",0)
 	check(not rig.trail.visible,"reselected detached has no orphan trail")
+	var pivot_profile := WeaponVisualProfile.new(WeaponCatalog.visual("bi.visual.blade.detached").data)
+	pivot_profile.data.pivot = [10,12]
+	pivot_profile.data.trail_profile.texture = "res://assets/content/test_blade.svg"
+	rig.select(pivot_profile)
+	rig._textures.idle_texture = ImageTexture.create_from_image(Image.create_empty(64,32,false,Image.FORMAT_RGBA8))
+	rig.tick(2,0,"idle",0)
+	check(rig.sprite.offset == Vector2(22,-4) and rig._material.albedo_texture != null,"real texture pivot and trail texture")
+	for speed: float in [.5,2.0]:
+		player.visual.play_semantic(LPCActionResolver.MELEE_SLASH,1.0/speed,speed)
+		player.visual.tick(.1,Vector3.BACK,0,LPCActionResolver.IDLE)
+		check(is_equal_approx(player.visual._time,.1*speed),"LPC authored attack speed")
 	context = EffectContext.new()
 	context.damage_input = 20
 	check(EffectGraph.prepare("bi.effect.weapon.fire_test","OnHit",context) == OK and context.events.size() == 1,"registered status seam")

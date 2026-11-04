@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://1mqcxn2xv4ht"]
+
+[ext_resource type="Script" path="res://tests/integration/content_visual_qa.gd" id="1_1wrjn"]
+
+[node name="ContentVisualQA" type="Node3D" unique_id=504408950]
+script = ExtResource("1_1wrjn")
