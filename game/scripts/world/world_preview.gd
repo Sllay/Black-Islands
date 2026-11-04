@@ -33,7 +33,7 @@ func capture() -> Error:
 	viewport.queue_free()
 	if image == null or image.get_size() != SIZE:
 		return ERR_CANT_CREATE
-	var directory := Profiles.library.world_directory(Profiles.current_profile())
+	var directory: String = Profiles.library.world_directory(Profiles.current_profile())
 	DirAccess.make_dir_recursive_absolute(directory)
 	var error := image.save_jpg(directory.path_join("preview.jpg.tmp"),.78)
 	if error == OK:
