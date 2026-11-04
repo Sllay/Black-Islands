@@ -64,7 +64,7 @@ static func validate(bundle: Dictionary) -> Array:
 					for resource: Variant in dict(module.get("resources")):
 						if not ids.items.has(resource) or not numeric(module.resources[resource]): issue(issues,"items",id,"Invalid resource ID/affinity")
 					for key: String in ["efficiency","quality_power","quality_yield","stamina"]:
-						if not numeric(module.get(key,1.0 if key != "efficiency" else null),0,10000): issue(issues,"items",id,"Invalid harvest "+key)
+						if not numeric(module.get(key),0,10000): issue(issues,"items",id,"Invalid harvest "+key)
 					for affinity: Variant in dict(module.get("targets")).values():
 						if not numeric(affinity,0,10000): issue(issues,"items",id,"Invalid target affinity")
 					if not numeric(module.get("critical_chance",0),0,1) or not numeric(module.get("critical_multiplier",1.5),1,100): issue(issues,"items",id,"Invalid harvest critical range")

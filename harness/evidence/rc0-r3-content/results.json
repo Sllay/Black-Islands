@@ -1,0 +1,114 @@
+{
+  "phase": "S01-RC0-R3 C03",
+  "base_sha": "5f63eb28e0da23f3733161b72c70fdc0995e3bb1",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "platform": "DESKTOP PROXY ONLY",
+  "physical_mobile_performance": "NOT VALIDATED",
+  "checkpoints": {
+    "A": "31d402e",
+    "B": "ef0f8b7",
+    "C": "closing feature commit; see build log"
+  },
+  "tests": {
+    "content_validator": "PASS",
+    "A": {
+      "assertions": 23,
+      "failures": 0
+    },
+    "B": {
+      "assertions": 25,
+      "failures": 0
+    },
+    "C": {
+      "assertions": 26,
+      "failures": 0
+    }
+  },
+  "regressions": {
+    "SurfaceC01Smoke": "PASS",
+    "PlayerC02Smoke": "PASS",
+    "PlayerC03Smoke": "PASS",
+    "PlayerSaveSmoke": "PASS",
+    "Rc0C03Smoke": "PASS",
+    "Rc0R3Craft": "PASS"
+  },
+  "lsp": {
+    "changed_scripts": 44,
+    "errors": 0,
+    "warnings": 0
+  },
+  "synthetic": {
+    "seed": 80803,
+    "weighted_selections": 10000,
+    "distribution": {
+      "light": 7106,
+      "dark": 1100,
+      "iron": 1794
+    },
+    "weighted_selection_ms": 36.885,
+    "candidate_patch_calls": 40,
+    "candidate_generation_ms": 9.901
+  },
+  "presentation_sample": {
+    "regions": 9,
+    "resource_batches": 72,
+    "resource_instances_including_legacy": 1171,
+    "active_adapters": 3,
+    "rig_children": 2,
+    "effect_scene_nodes": 0
+  },
+  "mcp": {
+    "world_seed": 424242,
+    "generator": "VoxelGeneratorGraph",
+    "profile": "chapter1_native_960m_v2",
+    "harvest_run": "0ed57402",
+    "weapon_attack_run": "3e08a29e",
+    "project_errors": 0,
+    "project_warnings": 0,
+    "environment_diagnostics": 3,
+    "dark_boulder": {
+      "stone_output": 20,
+      "remaining_hp": 197.142857
+    },
+    "iron_mineral_root": {
+      "actual_critical_damage": 40,
+      "stone_output": 31,
+      "metal_output": 20,
+      "remaining_hp": 140,
+      "remaining_reserves": {
+        "stone": 109,
+        "metal": 70
+      }
+    },
+    "detached_attack": {
+      "mode": "DETACHED_SPRITE",
+      "visible": true,
+      "attacks_started": 1
+    }
+  },
+  "save": {
+    "player_profile_schema": 2,
+    "world_manifest_schema": 2,
+    "inventory_schema": 2,
+    "content_schema": 1,
+    "root_schema_migration": "not required",
+    "existing_ids_preserved": true,
+    "real_disk_hp_reserves_reload": "PASS"
+  },
+  "known_external_warning": "Tried to save instance block, but VoxelStreamScript does not support them.",
+  "screenshots": [
+    "boulder-dark.png",
+    "boulder-light.png",
+    "detached-world.png",
+    "harvest-result.png",
+    "inventory-authoring-item.png",
+    "mineral-root.png",
+    "tools-items.png",
+    "tools-recipes.png",
+    "tools-validation.png",
+    "tools-weapons.png",
+    "weapons-runtime.png"
+  ],
+  "C04": "NOT STARTED",
+  "season_2": "NOT STARTED"
+}
