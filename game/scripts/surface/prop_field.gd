@@ -3,8 +3,10 @@ extends RefCounted
 ## Pure deterministic candidate strata, independent of presentation/stream order.
 const PATCH := 16.0
 var field: IslandField
+var spawn_table: SpawnTable
 func _init(source: IslandField) -> void:
 	field = source
+	spawn_table = SpawnTable.new()
 
 func biome(point: Vector3) -> String:
 	var beach_height: float = field.profile.biomes.beach_max_height if field is WorldFieldV2 else 5.0
@@ -17,6 +19,7 @@ func biome(point: Vector3) -> String:
 func candidates(patch: Vector2i, include_decorative: bool = true) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for definition: Dictionary in SurfaceCatalog.data().props:
+		if definition.get("visual") is Dictionary: continue
 		if not include_decorative and definition.harvest.is_empty():
 			continue
 		var rng := RandomNumberGenerator.new()
@@ -51,4 +54,5 @@ func candidates(patch: Vector2i, include_decorative: bool = true) -> Array[Dicti
 				continue # Spawn corridor and sleeping lake exclusion.
 			result.append({"id":"p%d:%d:%d:%d:%s:%d" % [field.generation_version,field.world_seed,patch.x,patch.y,definition.id,index],
 				"definition":definition.id,"point":[x,y,z],"yaw":rng.randf_range(-PI,PI),"scale":rng.randf_range(0.85,1.15),"biome":region})
+	result.append_array(spawn_table.candidates(field,patch,biome))
 	return result

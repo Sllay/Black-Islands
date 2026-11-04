@@ -18,13 +18,13 @@ func primary() -> void:
 	if item.category == "BUILDING_PIECE":
 		build_at(snap_cell(target),selected_support)
 		return
-	if item.id in SurfaceCatalog.data().tools:
+	if not item.module("HarvestToolModule").is_empty():
 		if target.entity is PropActor:
 			runtime.harvest_prop(target.entity.spawn_id,runtime.player)
 		elif is_instance_valid(target.entity) and target.entity.has_method("harvest"):
 			target.entity.harvest()
 		elif target.kind in [TargetResult.Kind.TERRAIN,TargetResult.Kind.BUILD_GRID]:
-			var operation: Dictionary = SurfaceCatalog.data().tools[item.id].get("terrain_operation",{})
+			var operation: Dictionary = item.module("HarvestToolModule").get("terrain_operation",{})
 			if operation.get("mode") == "dig":
 				var error := runtime.session.edits.request(target.world_position,float(operation.radius),false,2,runtime.player)
 				if error == OK:

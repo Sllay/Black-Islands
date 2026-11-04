@@ -7,13 +7,14 @@ static func create(definition: String) -> Dictionary:
 	return {"definition":definition,"base_health":data.health,"health":data.health,
 		"reserves":data.reserves.duplicate(),"carry":{},"revision":0,"last_strike":""}
 
-static func strike(state: Dictionary, profile: Dictionary, revision: int, command: String) -> Dictionary:
+static func strike(state: Dictionary, profile: Dictionary, revision: int, command: String, critical: bool = false, critical_multiplier: float = 1.0) -> Dictionary:
 	if state.revision != revision or state.last_strike == command or command.is_empty() or state.health <= 0:
 		return {"error":ERR_ALREADY_IN_USE}
 	var next := state.duplicate(true)
 	var definition: Dictionary = SurfaceCatalog.data().harvestables[state.definition]
 	var affinity := float(profile.get("targets",{}).get(definition.tag,0.15))
 	var requested := float(profile.power)*float(profile.get("quality_power",1.0))*affinity
+	requested *= (maxf(1.0,critical_multiplier) if critical else 1.0)*100.0/(100.0+maxf(0,float(definition.get("resistance",0))))
 	var actual := minf(maxf(0,requested),float(state.health))
 	var outputs: Dictionary = {}
 	for id: String in state.reserves:
@@ -28,4 +29,4 @@ static func strike(state: Dictionary, profile: Dictionary, revision: int, comman
 	next.health = maxf(0,float(next.health)-actual)
 	next.revision += 1
 	next.last_strike = command
-	return {"error":OK,"state":next,"outputs":outputs,"actual_damage":actual,"requested_damage":requested}
+	return {"error":OK,"state":next,"outputs":outputs,"actual_damage":actual,"requested_damage":requested,"critical":critical}

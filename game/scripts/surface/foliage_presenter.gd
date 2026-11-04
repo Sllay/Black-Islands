@@ -86,6 +86,7 @@ func _reconcile() -> void:
 			if not _desired.has(key):
 				for row: Dictionary in generated[key]:
 					runtime.candidates.erase(row.id)
+					_batch_links.erase(row.id)
 				patches[key].queue_free()
 				patches.erase(key)
 				generated.erase(key)
@@ -103,11 +104,17 @@ func _reconcile() -> void:
 				var actor := PropActor.new()
 				actor.runtime = runtime
 				actor.spawn_id = row.id
+				actor.definition_id = row.definition
+				if runtime.definition(row.definition).get("visual") is Dictionary:
+					actor.rotation.y = float(row.yaw)
+					actor.scale = Vector3.ONE*float(row.scale)
 				actor.position = location
 				add_child(actor)
 				actors[row.id] = actor
+				_batch_visible(row.id,false)
 	for id: String in actors.keys():
 		if not near.has(id):
+			_batch_visible(id,not runtime.destroyed(id))
 			actors[id].queue_free()
 			actors.erase(id)
 
@@ -120,6 +127,7 @@ func invalidate(area: AABB) -> void:
 
 func _build(key: Vector2i, rows: Array[Dictionary]) -> void:
 	if patches.has(key):
+		for row: Dictionary in generated.get(key,[]): _batch_links.erase(row.id)
 		patches[key].queue_free()
 	var root := Node3D.new()
 	root.visible = presentation_enabled
@@ -143,6 +151,9 @@ func _build(key: Vector2i, rows: Array[Dictionary]) -> void:
 			grouped[row.definition] = []
 		grouped[row.definition].append(row)
 	for id: String in grouped:
+		if runtime.definition(id).get("visual") is Dictionary:
+			_modular_batch(root,grouped[id],runtime.definition(id))
+			continue
 		var batch := MultiMesh.new()
 		batch.transform_format = MultiMesh.TRANSFORM_3D
 		batch.mesh = load("res://resources/surface/"+str(runtime.definition(id).visual)+".res")
@@ -193,3 +204,29 @@ func cut(point: Vector3, radius: float) -> void:
 func _exit_tree() -> void:
 	if _task >= 0:
 		WorkerThreadPool.wait_for_task_completion(_task)
+
+var _batch_links: Dictionary = {}
+func _modular_batch(root: Node3D, rows: Array, definition: Dictionary) -> void:
+	for part: Dictionary in PropVisual.parts(definition):
+		var batch := MultiMesh.new()
+		batch.transform_format = MultiMesh.TRANSFORM_3D
+		batch.mesh = part.mesh
+		batch.instance_count = rows.size()
+		for index: int in rows.size():
+			var row: Dictionary = rows[index]
+			var basis := Basis(Vector3.UP,float(row.yaw)).scaled(Vector3.ONE*float(row.scale))
+			var transform := Transform3D(basis,Vector3(row.point[0],row.point[1],row.point[2])-root.position+basis*part.offset)
+			if not _batch_links.has(row.id): _batch_links[row.id] = []
+			_batch_links[row.id].append({"batch":batch,"index":index,"transform":transform})
+			batch.set_instance_transform(index,Transform3D(Basis.from_scale(Vector3.ZERO),transform.origin) if actors.has(row.id) else transform)
+		var view := MultiMeshInstance3D.new()
+		view.name = definition.id+"_"+part.name
+		view.multimesh = batch
+		view.material_override = PropVisual.material(part.color)
+		view.visibility_range_end = prop_distance+24
+		view.visibility_range_end_margin = 12
+		view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(view)
+func _batch_visible(id: String, enabled: bool) -> void:
+	for link: Dictionary in _batch_links.get(id,[]):
+		link.batch.set_instance_transform(link.index,link.transform if enabled else Transform3D(Basis.from_scale(Vector3.ZERO),link.transform.origin))

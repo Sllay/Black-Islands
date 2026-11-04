@@ -183,6 +183,7 @@ func restore(data: Dictionary) -> Error:
 		if not row is Dictionary or not row.get("item_id") is String or not row.get("stack_uid") is String or row.stack_uid.is_empty() or ids.has(row.stack_uid):
 			return ERR_INVALID_DATA
 		var definition := ItemCatalog.resolve(row.item_id)
+		if definition == null: definition = ItemCatalog.orphan(row.item_id)
 		var count: Variant = row.get("quantity")
 		if definition == null or not (count is float or count is int) or count < 1 or count > definition.max_stack or count != int(count) or not row.get("instance_data", {}) is Dictionary:
 			return ERR_INVALID_DATA
@@ -203,7 +204,7 @@ func restore(data: Dictionary) -> Error:
 		if not uid is String:
 			return ERR_INVALID_DATA
 		var stack := candidate._by_uid(uid)
-		if not uid.is_empty() and (stack == null or not ItemCatalog.resolve(stack.item_id).hotbar_allowed()):
+		if not uid.is_empty() and (stack == null or not ItemCatalog.resolve(stack.item_id).hotbar_allowed() and not ItemCatalog.resolve(stack.item_id).missing):
 			return ERR_INVALID_DATA
 		candidate._hotbar[index] = uid
 	var equipped: Dictionary = {}
@@ -212,7 +213,7 @@ func restore(data: Dictionary) -> Error:
 		if not uid is String:
 			return ERR_INVALID_DATA
 		var stack := candidate._by_uid(uid)
-		if not uid.is_empty() and (stack == null or slot not in ItemCatalog.resolve(stack.item_id).equipment_slots or equipped.has(uid)):
+		if not uid.is_empty() and (stack == null or slot not in ItemCatalog.resolve(stack.item_id).equipment_slots and not ItemCatalog.resolve(stack.item_id).missing or equipped.has(uid)):
 			return ERR_INVALID_DATA
 		if not uid.is_empty():
 			equipped[uid] = true

@@ -233,18 +233,18 @@ func qa_resource(kind: String, tool_id: String) -> Dictionary:
 
 func harvest_prop(id: String, actor: PlayerActor) -> Dictionary:
 	var item := actor.inventory.state.active_definition()
-	if item == null or not SurfaceCatalog.data().tools.has(item.id) or not candidates.has(id):
+	if item == null or item.module("HarvestToolModule").is_empty() or not candidates.has(id):
 		message.emit("Escolha machado, picareta ou faca na hotbar.")
 		return {"error":ERR_INVALID_PARAMETER}
 	var row: Dictionary = candidates[id]
 	var location := Vector3(row.point[0],row.point[1],row.point[2])
 	if actor.global_position.distance_to(location) > 4:
 		return {"error":ERR_UNAUTHORIZED}
-	var tool: Dictionary = SurfaceCatalog.data().tools[item.id]
+	var tool: Dictionary = item.module("HarvestToolModule")
 	if not actor.state.consume(float(tool.stamina)):
 		return {"error":ERR_UNAVAILABLE}
 	var state: Dictionary = ledger.props.get(id,HarvestService.create(definition(row.definition).harvest))
-	var result := HarvestService.strike(state,tool,int(state.revision),ledger.new_id("strike"))
+	var result := HarvestService.strike(state,tool,int(state.revision),ledger.new_id("strike"),false,float(tool.get("critical_multiplier",1.5)))
 	if result.error != OK:
 		return result
 	var output := InventoryTransactions.output(actor.inventory.state,result.outputs)

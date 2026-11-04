@@ -1,6 +1,275 @@
 {
   "schema_version": 1,
-  "props": [],
-  "harvestables": [],
-  "spawn_tables": []
+  "props": [
+    {
+      "id": "bi.prop.boulder.light",
+      "kind": "Boulder",
+      "visual": {
+        "kind": "BOULDER",
+        "color": "a9aaa0",
+        "ore_color": "8ca4ac"
+      },
+      "harvest": "bi.harvest.boulder.light",
+      "persistent": true
+    },
+    {
+      "id": "bi.prop.boulder.dark",
+      "kind": "Boulder",
+      "visual": {
+        "kind": "BOULDER",
+        "color": "434456",
+        "ore_color": "8ca4ac"
+      },
+      "harvest": "bi.harvest.boulder.dark",
+      "persistent": true
+    },
+    {
+      "id": "bi.prop.mineral_root.iron",
+      "kind": "MineralRoot",
+      "visual": {
+        "kind": "MINERAL_ROOT",
+        "color": "666475",
+        "ore_color": "8ca4ac"
+      },
+      "harvest": "bi.harvest.boulder.iron",
+      "persistent": true
+    }
+  ],
+  "harvestables": [
+    {
+      "id": "bi.harvest.boulder.light",
+      "health": 100,
+      "resistance": 0,
+      "tag": "rock",
+      "reserves": {
+        "bi.resource.stone": 160
+      }
+    },
+    {
+      "id": "bi.harvest.boulder.dark",
+      "health": 220,
+      "resistance": 40,
+      "tag": "rock",
+      "reserves": {
+        "bi.resource.stone": 200
+      }
+    },
+    {
+      "id": "bi.harvest.boulder.iron",
+      "health": 180,
+      "resistance": 20,
+      "tag": "rock",
+      "reserves": {
+        "bi.resource.stone": 140,
+        "bi.resource.metal": 90
+      }
+    }
+  ],
+  "spawn_tables": [
+    {
+      "id": "bi.spawn.boulders",
+      "version": 1,
+      "density": 1,
+      "entries": [
+        {
+          "id": "bi.prop.boulder.light.surface",
+          "prop_definition": "bi.prop.boulder.light",
+          "domain": "SURFACE",
+          "biomes": [
+            "BEACH",
+            "TROPICAL_PLAINS",
+            "TROPICAL_HILLS",
+            "CENTRAL_FOREST"
+          ],
+          "materials": [
+            1,
+            2,
+            3
+          ],
+          "min_height": 1,
+          "max_height": 100,
+          "min_slope": 0,
+          "max_slope": 32,
+          "water_distance": [
+            1,
+            10000
+          ],
+          "rarity": "Common",
+          "weight": 12,
+          "cluster": {
+            "count": 1,
+            "radius": 0
+          },
+          "conditions": {
+            "dry_land": true
+          }
+        },
+        {
+          "id": "bi.prop.boulder.dark.surface",
+          "prop_definition": "bi.prop.boulder.dark",
+          "domain": "SURFACE",
+          "biomes": [
+            "BEACH",
+            "TROPICAL_PLAINS",
+            "TROPICAL_HILLS",
+            "CENTRAL_FOREST"
+          ],
+          "materials": [
+            1,
+            2,
+            3
+          ],
+          "min_height": 1,
+          "max_height": 100,
+          "min_slope": 0,
+          "max_slope": 32,
+          "water_distance": [
+            1,
+            10000
+          ],
+          "rarity": "Uncommon",
+          "weight": 2,
+          "cluster": {
+            "count": 1,
+            "radius": 0
+          },
+          "conditions": {
+            "dry_land": true
+          }
+        },
+        {
+          "id": "bi.prop.mineral_root.iron.surface",
+          "prop_definition": "bi.prop.mineral_root.iron",
+          "domain": "SURFACE",
+          "biomes": [
+            "BEACH",
+            "TROPICAL_PLAINS",
+            "TROPICAL_HILLS",
+            "CENTRAL_FOREST"
+          ],
+          "materials": [
+            1,
+            2,
+            3
+          ],
+          "min_height": 1,
+          "max_height": 100,
+          "min_slope": 0,
+          "max_slope": 32,
+          "water_distance": [
+            1,
+            10000
+          ],
+          "rarity": "Rare",
+          "weight": 3,
+          "cluster": {
+            "count": 1,
+            "radius": 0
+          },
+          "conditions": {
+            "dry_land": true
+          }
+        },
+        {
+          "id": "bi.prop.boulder.light.cave",
+          "prop_definition": "bi.prop.boulder.light",
+          "domain": "CAVE",
+          "biomes": [
+            "BEACH",
+            "TROPICAL_PLAINS",
+            "TROPICAL_HILLS",
+            "CENTRAL_FOREST"
+          ],
+          "materials": [
+            1,
+            2,
+            3
+          ],
+          "min_height": 1,
+          "max_height": 100,
+          "min_slope": 0,
+          "max_slope": 32,
+          "water_distance": [
+            1,
+            10000
+          ],
+          "rarity": "Common",
+          "weight": 2,
+          "cluster": {
+            "count": 1,
+            "radius": 0
+          },
+          "conditions": {
+            "dry_land": true
+          }
+        },
+        {
+          "id": "bi.prop.boulder.dark.cave",
+          "prop_definition": "bi.prop.boulder.dark",
+          "domain": "CAVE",
+          "biomes": [
+            "BEACH",
+            "TROPICAL_PLAINS",
+            "TROPICAL_HILLS",
+            "CENTRAL_FOREST"
+          ],
+          "materials": [
+            1,
+            2,
+            3
+          ],
+          "min_height": 1,
+          "max_height": 100,
+          "min_slope": 0,
+          "max_slope": 32,
+          "water_distance": [
+            1,
+            10000
+          ],
+          "rarity": "Uncommon",
+          "weight": 12,
+          "cluster": {
+            "count": 1,
+            "radius": 0
+          },
+          "conditions": {
+            "dry_land": true
+          }
+        },
+        {
+          "id": "bi.prop.mineral_root.iron.cave",
+          "prop_definition": "bi.prop.mineral_root.iron",
+          "domain": "CAVE",
+          "biomes": [
+            "BEACH",
+            "TROPICAL_PLAINS",
+            "TROPICAL_HILLS",
+            "CENTRAL_FOREST"
+          ],
+          "materials": [
+            1,
+            2,
+            3
+          ],
+          "min_height": 1,
+          "max_height": 100,
+          "min_slope": 0,
+          "max_slope": 32,
+          "water_distance": [
+            1,
+            10000
+          ],
+          "rarity": "Rare",
+          "weight": 8,
+          "cluster": {
+            "count": 1,
+            "radius": 0
+          },
+          "conditions": {
+            "dry_land": true
+          }
+        }
+      ]
+    }
+  ]
 }

@@ -36,6 +36,7 @@ static func freshness(row: Dictionary, now: float) -> float:
 		return 1
 	return clampf(remaining(row.instance_data,definition,now)/float(definition.spoilage.duration),0,1)
 static func valid(definition: ItemDefinition, data: Dictionary) -> bool:
+	if definition.missing: return true
 	if data.has("spoilage"):
 		if definition.spoilage.is_empty() or not data.spoilage is Dictionary:
 			return false

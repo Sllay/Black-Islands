@@ -3,6 +3,7 @@ extends RefCounted
 ## Immutable catalog data. Legacy fields remain adapters; saves own only IDs/state.
 const STACK_LIMITS := {"RESOURCE":256,"CONSUMABLE":32,"TOOL":1,"WEAPON":1,"ARMOR":1,"ACCESSORY":1,"BUILDING_PIECE":12,"PROJECTILE":999}
 const HOTBAR_CATEGORIES := ["WEAPON","TOOL","CONSUMABLE","BUILDING_PIECE"]
+var missing := false
 var id: String
 var title: String
 var name_key: String
@@ -23,6 +24,7 @@ var droppable := true
 var use_effect: String
 var use_amount: float
 func _init(record: Dictionary) -> void:
+	missing = bool(record.get("missing",false))
 	id = record.id
 	name_key = record.get("name_key","")
 	description_key = record.get("description_key","")
