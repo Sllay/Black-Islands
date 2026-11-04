@@ -3,11 +3,14 @@ extends RefCounted
 ## Same extraction algorithm for props and corpses. Candidate state is committed
 ## with output by the caller; expected revision/strike prevent duplicate callbacks.
 static func create(definition: String) -> Dictionary:
+	if not SurfaceCatalog.data().harvestables.has(definition):
+		return {"definition":definition,"base_health":1,"health":0,"reserves":{},"carry":{},"revision":0,"last_strike":"","missing":true}
 	var data: Dictionary = SurfaceCatalog.data().harvestables[definition]
 	return {"definition":definition,"base_health":data.health,"health":data.health,
 		"reserves":data.reserves.duplicate(),"carry":{},"revision":0,"last_strike":""}
 
 static func strike(state: Dictionary, profile: Dictionary, revision: int, command: String, critical: bool = false, critical_multiplier: float = 1.0) -> Dictionary:
+	if not SurfaceCatalog.data().harvestables.has(state.get("definition")): return {"error":ERR_UNAVAILABLE}
 	if state.revision != revision or state.last_strike == command or command.is_empty() or state.health <= 0:
 		return {"error":ERR_ALREADY_IN_USE}
 	var next := state.duplicate(true)

@@ -65,6 +65,13 @@ static func validate(data: Dictionary, player_inventory: Dictionary) -> Error:
 	return OK
 
 static func valid_harvest(state: Dictionary) -> bool:
+	if state.get("definition") is String and not SurfaceCatalog.data().harvestables.has(state.definition):
+		if not number(state.get("base_health"),.001,100000) or not number(state.get("health"),0,float(state.base_health)) or not state.get("reserves") is Dictionary or not state.get("carry") is Dictionary or not state.get("last_strike") is String or not number(state.get("revision"),0,1e12): return false
+		for value: Variant in state.reserves.values():
+			if not number(value,0,1e9) or value != int(value): return false
+		for value: Variant in state.carry.values():
+			if not number(value,0,1): return false
+		return true # Frozen orphan state; strike refuses unavailable definitions.
 	if state.get("definition") not in SurfaceCatalog.data().harvestables or not number(state.get("base_health"),.001,100000) or not number(state.get("health"),0,float(state.base_health)) or not state.get("reserves") is Dictionary:
 		return false
 	var source: Dictionary = SurfaceCatalog.data().harvestables[state.definition]

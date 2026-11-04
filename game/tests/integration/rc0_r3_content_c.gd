@@ -33,6 +33,7 @@ func _run() -> void:
 		second.append_array(field.candidates(Vector2i(index-10,1),false))
 	var placement_ms := (Time.get_ticks_usec()-placement_start)/1000.0
 	check(AtomicDocument.same_value(first,second) and not first.is_empty(),"seed deterministic placement")
+	check(PropVisual.parts(ContentData.find("props","bi.prop.boulder.light"))[0].mesh == PropVisual.parts(ContentData.find("props","bi.prop.boulder.dark"))[0].mesh,"light dark share one base mesh")
 	var harvest := HarvestService.create("bi.harvest.boulder.iron")
 	var tool := ItemCatalog.resolve("bi.tool.stone_pick").module("HarvestToolModule")
 	var normal := HarvestService.strike(harvest,tool,0,"normal")
@@ -101,6 +102,9 @@ func _run() -> void:
 	var data := inventory.snapshot()
 	data.slots[0].item_id = "bi.item.missing.after.update"
 	check(InventoryState.new().restore(data) == OK and ItemCatalog.resolve("bi.item.missing.after.update").missing,"missing definition preserves owned item")
+	var orphan := normal.state.duplicate(true)
+	orphan.definition = "bi.harvest.removed.after.update"
+	check(SurfaceSaveValidator.valid_harvest(orphan) and HarvestService.strike(orphan,tool,orphan.revision,"no-extraction").error == ERR_UNAVAILABLE,"orphan harvest preserved frozen without extraction")
 	print("CONTENT_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," distribution=",counts," weighted10000_ms=",selection_ms," legacy_plus_new_40patches_ms=",placement_ms)
 	runtime.free()
 	get_tree().quit(1 if failures else 0)
