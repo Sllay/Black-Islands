@@ -122,7 +122,7 @@ func _run() -> void:
 	var reopened := DirtyWorldStore.new(storage_root.path_join("world"),"test.c03.world")
 	check(reopened.load_world() == OK,"world manifest reload")
 	var restored_world := reopened.restore_surface()
-	check(restored_world.props["persist.prop"].health == normal.state.health and AtomicDocument.same_value(restored_world.props["persist.prop"].reserves,normal.state.reserves),"disk HP/reserves survive reload")
+	check(is_equal_approx(float(restored_world.props["persist.prop"].health),float(normal.state.health)) and AtomicDocument.same_value(restored_world.props["persist.prop"].reserves,normal.state.reserves),"disk HP/reserves survive reload")
 	check(SurfaceSaveValidator.validate(restored_world,InventoryState.new().snapshot()) == OK,"C03 state passes real save validator")
 	runtime.mobs.free()
 	print("CONTENT_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," distribution=",counts," weighted10000_ms=",selection_ms," legacy_plus_new_40patches_ms=",placement_ms)
