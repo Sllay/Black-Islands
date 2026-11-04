@@ -5,6 +5,7 @@ var dock: VBoxContainer
 var tabs: TabContainer
 var issues: ItemList
 var detail: Label
+var qa_runner: RefCounted
 func _enter_tree() -> void:
 	dock = VBoxContainer.new()
 	dock.name = "BlackIslandTools"
@@ -39,7 +40,8 @@ func _enter_tree() -> void:
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL,dock)
 	validate_all()
 	if OS.get_environment("BI_CONTENT_EDITOR_QA") == "1":
-		load("res://tests/editor/content_editor_qa.gd").new().run.call_deferred(self)
+		qa_runner = load("res://tests/editor/content_editor_qa.gd").new()
+		qa_runner.run.call_deferred(self)
 func validate_all() -> void:
 	ContentData.reload()
 	issues.clear()

@@ -30,5 +30,5 @@ func run(plugin: EditorPlugin) -> void:
 		plugin.tabs.current_tab = index
 		await plugin.get_tree().process_frame
 		await plugin.get_tree().process_frame
-		var image := plugin.get_editor_interface().get_base_control().get_viewport().get_texture().get_image()
+		var image := EditorInterface.get_base_control().get_viewport().get_texture().get_image()
 		image.save_png("res://../harness/evidence/rc0-r3-content/tools-%s.png"%["items","weapons","recipes","validation"][index])
