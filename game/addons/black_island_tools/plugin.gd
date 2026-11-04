@@ -9,6 +9,7 @@ var qa_runner: RefCounted
 func _enter_tree() -> void:
 	dock = VBoxContainer.new()
 	dock.name = "BlackIslandTools"
+	dock.custom_minimum_size = Vector2(650,440)
 	var title := Label.new()
 	title.text = "BLACK ISLAND TOOLS"
 	dock.add_child(title)
@@ -37,7 +38,7 @@ func _enter_tree() -> void:
 	detail = Label.new()
 	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	validation.add_child(detail)
-	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL,dock)
+	add_control_to_bottom_panel(dock,"Black Island Tools")
 	validate_all()
 	if OS.get_environment("BI_CONTENT_EDITOR_QA") == "1":
 		qa_runner = load("res://tests/editor/content_editor_qa.gd").new()
@@ -50,5 +51,5 @@ func validate_all() -> void:
 		issues.set_item_metadata(index,issue)
 		issues.set_item_custom_fg_color(index,Color.CORAL if issue.severity == "ERROR" else (Color.GOLD if issue.severity == "WARNING" else Color.LIGHT_GREEN))
 func _exit_tree() -> void:
-	remove_control_from_docks(dock)
+	remove_control_from_bottom_panel(dock)
 	dock.queue_free()

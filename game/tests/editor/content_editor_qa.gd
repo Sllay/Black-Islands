@@ -26,9 +26,12 @@ func run(plugin: EditorPlugin) -> void:
 	plugin.validate_all()
 	assert(not ContentValidator.has_errors(ContentValidator.validate(ContentData.all())))
 	print("CONTENT_EDITOR_QA PASS items=",ContentData.rows("items").size()," recipe=bi.recipe.foundation plugin_open=true")
+	plugin.make_bottom_panel_item_visible(plugin.dock)
+	await plugin.get_tree().create_timer(2).timeout
 	for index: int in 4:
 		plugin.tabs.current_tab = index
 		await plugin.get_tree().process_frame
 		await plugin.get_tree().process_frame
+		await RenderingServer.frame_post_draw
 		var image := EditorInterface.get_base_control().get_viewport().get_texture().get_image()
 		image.save_png("res://../harness/evidence/rc0-r3-content/tools-%s.png"%["items","weapons","recipes","validation"][index])
