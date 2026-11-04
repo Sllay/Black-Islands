@@ -38,7 +38,14 @@ func _field(parent: VBoxContainer, key: String, value: Variant, update: Callable
 			line.add_child(remove)
 		var add := Button.new()
 		add.text = "+ " + key
-		if key == "modules":
+		if key == "nodes":
+			var types := OptionButton.new()
+			for type: String in ContentSchema.EFFECT_TYPES: types.add_item(type)
+			rows.add_child(types)
+			add.pressed.connect(func() -> void:
+				value.append(ContentSchema.effect_node(types.get_item_text(types.selected)))
+				build(data))
+		elif key == "modules":
 			var types := OptionButton.new()
 			for type: String in ContentSchema.MODULES: types.add_item(type)
 			rows.add_child(types)

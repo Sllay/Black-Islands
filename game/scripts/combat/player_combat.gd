@@ -10,6 +10,8 @@ var attacks_started := 0
 var hits := 0
 var dodges := 0
 var actor: PlayerActor
+var _critical := false
+var weapon: WeaponDefinition
 var moveset: MovesetDefinition
 var dodge: DodgeDefinition
 var _active_item := ""
@@ -42,7 +44,8 @@ func _refresh_weapon() -> void:
 	if id == _active_item:
 		return
 	_active_item = id
-	moveset = CombatCatalog.moveset(definition.moveset_id) if definition != null else null
+	weapon = WeaponCatalog.for_item(definition)
+	moveset = CombatCatalog.moveset(weapon.moveset_id if weapon != null else definition.moveset_id) if definition != null else null
 	cancel()
 
 func cancel() -> void:
@@ -102,7 +105,7 @@ func tick(delta: float, axis: Vector2, pressed: bool, released: bool, dodge_pres
 		_hitstop = maxf(0.0,_hitstop-delta)
 		return
 	var previous := _elapsed
-	_elapsed += delta
+	_elapsed += delta*(weapon.attack_speed if weapon != null and phase == Phase.ATTACK else 1.0)
 	if phase == Phase.ATTACK:
 		var attack := _instance.definition
 		if _elapsed >= attack.windup and previous < attack.windup + attack.active_duration:
@@ -134,6 +137,9 @@ func _request_attack(input: String) -> void:
 	phase = Phase.ATTACK
 	_elapsed = 0.0
 	_instance.begin(attack)
+	var critical_rng := RandomNumberGenerator.new()
+	critical_rng.seed = (actor.inventory.state.inventory_id+":"+str(_instance.sequence)+":"+_active_item).hash()
+	_critical = weapon != null and critical_rng.randf() < weapon.crit_chance
 	_combo_node = attack.id
 	_combo_until = _clock + attack.duration() + moveset.combo_timeout
 	_query.shape = attack.shape
@@ -151,12 +157,13 @@ func _hit_volume() -> void:
 			continue
 		if not actor.targeter.has_line_of_sight(target.global_position) or not _instance.accept(target,_elapsed):
 			continue
-		_hit.raw_damage = _instance.definition.damage
-		_hit.impulse = aim * _instance.definition.knockback
+		_hit.raw_damage = _instance.definition.damage*(weapon.base_damage/18.0 if weapon != null else 1.0)
+		if _critical: _hit.raw_damage *= weapon.crit_multiplier
+		_hit.impulse = aim * (_instance.definition.knockback*(weapon.knockback/2.0) if weapon != null else _instance.definition.knockback)
 		_hit.hitstop = _instance.definition.hitstop
 		_hit.attack_id = _instance.definition.id
 		_hit.attack_instance = _instance.sequence
-		var amount := float(target.receive_hit(_hit))
+		var amount := EffectService.hit(actor,target,_hit,weapon.effects if weapon != null else [])
 		if amount > 0:
 			hits += 1
 			_hitstop = _instance.definition.hitstop
@@ -203,3 +210,11 @@ func report() -> Dictionary:
 	return {"phase":Phase.keys()[phase], "attacks":attacks_started, "hits":hits, "dodges":dodges,
 		"elapsed":_elapsed, "invulnerable":invulnerable(), "aim":aim, "combo":_combo_node,
 		"buffer":_buffer, "moveset":moveset.id if moveset != null else "", "instance":_instance.sequence}
+
+func visual_phase() -> String:
+	if phase != Phase.ATTACK: return "idle"
+	if _elapsed < _instance.definition.windup: return "windup"
+	if _elapsed < _instance.definition.windup+_instance.definition.active_duration: return "attack"
+	return "recovery"
+func visual_progress() -> float:
+	return clampf(_elapsed/_instance.definition.duration(),0,1) if phase == Phase.ATTACK else 0.0

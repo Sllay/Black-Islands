@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dtsi1l02x5xki"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r3_content_b.gd" id="1_xxsmb"]
+
+[node name="ContentB" type="Node" unique_id=274202462]
+script = ExtResource("1_xxsmb")

@@ -13,6 +13,7 @@
 [ext_resource type="Material" uid="uid://cio8lw7noboiv" path="res://resources/combat/AimMaterial.tres" id="11_ov1oi"]
 [ext_resource type="BoxMesh" uid="uid://beub3u1ps0n8x" path="res://resources/combat/AimShaft.tres" id="12_rn7t0"]
 [ext_resource type="CylinderMesh" uid="uid://cenl1gvu8c210" path="res://resources/combat/AimTip.tres" id="13_8qjgm"]
+[ext_resource type="Script" uid="uid://dxnq3jt5t44r0" path="res://scripts/weapons/weapon_visual_rig.gd" id="14_ov1oi"]
 
 [node name="Player" type="CharacterBody3D" unique_id=382088037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
@@ -74,3 +75,6 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0
 material_override = ExtResource("11_ov1oi")
 cast_shadow = 0
 mesh = ExtResource("13_8qjgm")
+
+[node name="WeaponVisualRig" type="Node3D" parent="." unique_id=1544875121]
+script = ExtResource("14_ov1oi")

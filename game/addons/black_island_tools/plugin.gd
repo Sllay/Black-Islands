@@ -17,9 +17,9 @@ func _enter_tree() -> void:
 	tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	dock.add_child(tabs)
 	for section: String in ["items","weapons","recipes"]:
-		var tab := Tab.new()
+		var tab: Control = load("res://addons/black_island_tools/weapons_tab.gd").new() if section == "weapons" else Tab.new()
 		tab.name = section.capitalize()
-		tab.section = section
+		if section != "weapons": tab.section = section
 		tabs.add_child(tab)
 	var validation := VBoxContainer.new()
 	validation.name = "Validation"

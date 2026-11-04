@@ -1,4 +1,83 @@
 {
   "schema_version": 1,
-  "effects": []
+  "effects": [
+    {
+      "id": "bi.effect.heal.basic",
+      "triggers": {
+        "OnConsume": "heal"
+      },
+      "nodes": [
+        {
+          "id": "heal",
+          "type": "ModifyStat",
+          "stat": "health",
+          "amount": 20,
+          "next": []
+        }
+      ]
+    },
+    {
+      "id": "bi.effect.weapon.damage",
+      "triggers": {
+        "OnHit": "damage"
+      },
+      "nodes": [
+        {
+          "id": "damage",
+          "type": "Damage",
+          "amount": 0,
+          "use_weapon_damage": true,
+          "next": []
+        }
+      ]
+    },
+    {
+      "id": "bi.effect.heal.conditional",
+      "triggers": {
+        "OnUse": "condition"
+      },
+      "nodes": [
+        {
+          "id": "condition",
+          "type": "CheckCondition",
+          "condition": "player_health_below",
+          "threshold": 50,
+          "next": [
+            "heal"
+          ]
+        },
+        {
+          "id": "heal",
+          "type": "ModifyStat",
+          "stat": "health",
+          "amount": 10,
+          "next": []
+        }
+      ]
+    },
+    {
+      "id": "bi.effect.weapon.fire_test",
+      "triggers": {
+        "OnHit": "damage"
+      },
+      "nodes": [
+        {
+          "id": "damage",
+          "type": "Damage",
+          "amount": 0,
+          "use_weapon_damage": true,
+          "next": [
+            "status"
+          ]
+        },
+        {
+          "id": "status",
+          "type": "ApplyStatus",
+          "status_id": "bi.status.fire.test",
+          "duration": 2,
+          "next": []
+        }
+      ]
+    }
+  ]
 }

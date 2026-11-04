@@ -25,5 +25,11 @@ static func array_default(key: String) -> Variant:
 	match key:
 		"ingredients","outputs": return {"item_id":"bi.resource.wood","quantity":1}
 		"modules": return {"type":"ConsumableModule","effects":[]}
-		"nodes": return {"id":"new_node","type":"ModifyStat","stat":"health","amount":1.0,"next":[]}
+		"nodes": return effect_node("ModifyStat")
+	if key.ends_with("_curve"): return [0.0,0.0]
 	return ""
+
+static func effect_node(type: String) -> Dictionary:
+	var params: Dictionary = {"Damage":{"amount":18.0},"ModifyStat":{"stat":"health","amount":20.0},"ApplyStatus":{"status_id":"bi.status.fire.test","duration":2.0},"SpawnEntity":{"entity_id":"bi.entity.qa_spark"},"PlayEffect":{"effect_id":"bi.vfx.hit.test"},"GiveItem":{"item_id":"bi.resource.wood","quantity":1},"RemoveItem":{"item_id":"bi.resource.wood","quantity":1},"CheckCondition":{"condition":"player_health_below","threshold":50.0,"tag":"combat_targets","chance":0.5}}.get(type,{})
+	params.merge({"id":"new_node","type":type,"next":[]})
+	return params

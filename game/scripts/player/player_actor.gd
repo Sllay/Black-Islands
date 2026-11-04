@@ -18,6 +18,8 @@ var distance_travelled: float:
 
 @onready var visual: LPCVisual3D = $LPCVisual3D
 
+@onready var weapon_rig: WeaponVisualRig = $WeaponVisualRig
+
 @onready var combat: PlayerCombat = $PlayerCombat
 const HOTBAR_ACTIONS: Array[StringName] = [&"hotbar_1",&"hotbar_2",&"hotbar_3",&"hotbar_4",&"hotbar_5",&"hotbar_6",&"hotbar_7",&"hotbar_8"]
 
@@ -40,6 +42,7 @@ func _physics_process(delta: float) -> void:
 	var axis := Input.get_vector("move_left","move_right","move_up","move_down")
 	combat.tick(delta,axis,not inventory.is_open and Input.is_action_just_pressed("attack_primary"),not inventory.is_open and Input.is_action_just_released("attack_primary"),not inventory.is_open and Input.is_action_just_pressed("dodge"))
 	motor.movement_locked = inventory.is_open or combat.movement_locked()
+	motor.speed_modifier = combat.weapon.move_modifier if combat.weapon != null else 1.0
 	motor.tick(delta,axis,Input.is_action_pressed("run"))
 	camera_rig.tick(delta)
 	if spawned:
@@ -48,6 +51,7 @@ func _physics_process(delta: float) -> void:
 	if Vector2(velocity.x,velocity.z).length_squared() > 0.04:
 		locomotion = LPCActionResolver.RUN if motor.running else LPCActionResolver.MOVE
 	visual.tick(0.0 if combat.hitstopped() else delta,motor.facing,deg_to_rad(camera_rig.heading_degrees),locomotion)
+	weapon_rig.tick(visual.direction,deg_to_rad(camera_rig.heading_degrees),combat.visual_phase(),combat.visual_progress(),delta)
 	_surface_action()
 	if not inventory.is_open and not combat.movement_locked():
 		if Input.is_action_just_pressed("build_mode"):
@@ -66,8 +70,12 @@ func _surface_action() -> void:
 func _refresh_appearance() -> void:
 	var config := visual.configuration.duplicate(true) if not visual.configuration.is_empty() else LPCCatalog.default_appearance()
 	var definition := inventory.state.active_definition()
-	config.equipment_visuals = [definition.visual_id] if definition != null and not definition.visual_id.is_empty() else []
+	var weapon := WeaponCatalog.for_item(definition)
+	var profile := WeaponCatalog.visual(weapon.visual_profile_id) if weapon != null else null
+	var asset_id := str(profile.data.get("lpc_asset_id","")) if profile != null and profile.mode == "LPC_LAYER" else ""
+	config.equipment_visuals = [asset_id] if not asset_id.is_empty() and config.body_type in LPCCatalog.asset(asset_id).get("body_types",[]) else []
 	visual.set_appearance(config)
+	weapon_rig.select(profile)
 
 func inspect_at(point: Vector3) -> void:
 	motor.request_spawn(point)

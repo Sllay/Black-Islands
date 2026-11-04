@@ -5,7 +5,8 @@ static var _sword: MovesetDefinition
 static var _dodge: DodgeDefinition
 
 static func moveset(id: String) -> MovesetDefinition:
-	if id != "sword.training.v1":
+	var record := ContentData.find("movesets",id)
+	if record.is_empty() or record.get("template_id") != "sword.training.v1":
 		return null
 	if _sword == null:
 		_sword = load("res://resources/combat/SwordMoveset.tres")

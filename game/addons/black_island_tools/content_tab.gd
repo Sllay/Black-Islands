@@ -51,7 +51,13 @@ func reload_records() -> void:
 		form.build(ContentSchema.prototype(section))
 func select_record(id: String) -> void:
 	original_id = id
-	form.build(ContentData.find(section,id).duplicate(true))
+	var record := ContentData.find(section,id).duplicate(true)
+	if section == "visual_profiles":
+		var sample := ContentData.find("visual_profiles","bi.visual.blade.detached")
+		sample.erase("id")
+		sample.erase("mode")
+		record.merge(sample,false)
+	form.build(record)
 func candidate() -> Dictionary:
 	var result := ContentData.all().duplicate(true)
 	var rows: Array = result[ContentData.GROUPS[section]][section]

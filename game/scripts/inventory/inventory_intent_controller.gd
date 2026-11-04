@@ -31,6 +31,14 @@ func transfer(source: InventoryState, target: InventoryState, uid: String, quant
 	feedback.emit("%d transferidos."%plan.amount if error == OK else "Inventário mudou ou destino indisponível. Tente novamente.")
 	return error
 func consume(source: InventoryState, uid: String, revision: int) -> Error:
+	var record := source.record_by_uid(uid)
+	if record.is_empty() or not allowed(source):
+		return ERR_UNAVAILABLE
+	var graphs: Array = ItemCatalog.resolve(record.item_id).module("ConsumableModule").get("effects",[])
+	if not graphs.is_empty():
+		var effect_plan := EffectService.consume(actor,source,uid,revision,graphs)
+		guard(effect_plan)
+		return effect_plan.commit()
 	var plan := InventoryPlan.new()
 	var copy := plan.include(source)
 	plan.revisions[0] = revision
@@ -75,4 +83,6 @@ func unassign(source: InventoryState, target: int, equipment: String, revision: 
 func organize() -> Error:
 	return InventoryLayoutPolicy.compact(component.state,component.state.revision)
 func can_consume(row: Dictionary) -> bool:
-	return not row.is_empty() and ItemCatalog.resolve(row.item_id).use_effect == "restore_health"
+	if row.is_empty(): return false
+	var definition := ItemCatalog.resolve(row.item_id)
+	return definition.use_effect == "restore_health" or not definition.module("ConsumableModule").get("effects",[]).is_empty()

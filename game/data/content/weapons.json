@@ -12,7 +12,24 @@
       "crit_multiplier": 1.5,
       "moveset_id": "sword.training.v1",
       "visual_profile_id": "bi.visual.sword.lpc",
-      "effects": []
+      "effects": [
+        "bi.effect.weapon.damage"
+      ]
+    },
+    {
+      "id": "bi.weapon.blade.detached",
+      "weapon_class": "Sword",
+      "base_damage": 20,
+      "attack_speed": 1,
+      "move_modifier": 1,
+      "knockback": 2,
+      "crit_chance": 0.1,
+      "crit_multiplier": 1.5,
+      "moveset_id": "sword.training.v1",
+      "visual_profile_id": "bi.visual.blade.detached",
+      "effects": [
+        "bi.effect.weapon.fire_test"
+      ]
     }
   ],
   "visual_profiles": [
@@ -20,6 +37,94 @@
       "id": "bi.visual.sword.lpc",
       "mode": "LPC_LAYER",
       "lpc_asset_id": "lpc.weapon.sword"
+    },
+    {
+      "id": "bi.visual.blade.detached",
+      "mode": "DETACHED_SPRITE",
+      "idle_texture": "res://assets/content/test_blade.svg",
+      "attack_texture": "res://assets/content/test_blade.svg",
+      "pivot": [
+        16,
+        16
+      ],
+      "direction_offsets": {
+        "north": [
+          -0.35,
+          0.9
+        ],
+        "west": [
+          -0.55,
+          0.75
+        ],
+        "south": [
+          0.5,
+          0.75
+        ],
+        "east": [
+          0.55,
+          0.8
+        ]
+      },
+      "rotation_curve": [
+        [
+          0,
+          -65
+        ],
+        [
+          0.25,
+          -35
+        ],
+        [
+          0.6,
+          100
+        ],
+        [
+          1,
+          10
+        ]
+      ],
+      "scale_curve": [
+        [
+          0,
+          1
+        ],
+        [
+          0.4,
+          1.2
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "position_curve": [
+        [
+          0,
+          0
+        ],
+        [
+          0.5,
+          0.2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "trail_profile": {
+        "enabled": true,
+        "width": 0.15,
+        "duration": 0.12,
+        "color": "d9f3c8",
+        "texture": ""
+      },
+      "layer_behavior": {
+        "north": "BEHIND_CHARACTER",
+        "west": "BEHIND_CHARACTER",
+        "south": "FRONT_CHARACTER",
+        "east": "FRONT_CHARACTER"
+      },
+      "attack_layer": "FRONT_CHARACTER"
     }
   ],
   "movesets": [

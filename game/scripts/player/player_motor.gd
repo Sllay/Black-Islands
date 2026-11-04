@@ -15,6 +15,7 @@ var burst_velocity := Vector3.ZERO
 var external_impulse := Vector3.ZERO
 var facing := Vector3.FORWARD
 var running := false
+var speed_modifier := 1.0
 var distance_travelled := 0.0
 var _step_collision := KinematicCollision3D.new()
 
@@ -50,6 +51,7 @@ func tick(delta: float, axis: Vector2, run_requested: bool) -> void:
 		speed *= 0.55
 	if water != null and water_motion.swimming:
 		speed *= float(water.motion_tuning.swim_speed)
+	speed *= speed_modifier
 	var desired := direction * speed
 	if actor.is_on_floor() and actor.get_floor_normal().dot(Vector3.UP) > cos(actor.floor_max_angle):
 		desired = direction.slide(actor.get_floor_normal()).normalized() * direction.length() * speed
