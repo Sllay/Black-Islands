@@ -7,7 +7,7 @@
   "checkpoints": {
     "A": "31d402e",
     "B": "ef0f8b7",
-    "C": "closing feature commit; see build log"
+    "C": "2b8a112a55e76ba00280b5503c4557a2b417a9b9"
   },
   "tests": {
     "content_validator": "PASS",
