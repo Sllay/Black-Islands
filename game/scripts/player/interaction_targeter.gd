@@ -10,6 +10,8 @@ var current := TargetResult.new()
 var actor: CharacterBody3D
 var rig: PlayerCameraRig
 var probes := 0
+var aim_out_of_range := false
+var feedback := InteractionFeedback.State.DEFAULT
 var _elapsed := 0.0
 var _ray := PhysicsRayQueryParameters3D.new()
 var _near := PhysicsShapeQueryParameters3D.new()
@@ -45,9 +47,10 @@ func probe(facing: Vector3) -> TargetResult:
 	_ray.to = _ray.from+rig.camera.project_ray_normal(screen)*100.0
 	var space := actor.get_world_3d().direct_space_state
 	var hit := space.intersect_ray(_ray)
+	aim_out_of_range = not hit.is_empty() and actor.global_position.distance_to(hit.position) > maximum_distance
 	if not hit.is_empty() and actor.global_position.distance_to(hit.position) <= maximum_distance:
 		_set_hit(_subject(hit.collider),hit.position,hit.normal)
-	if not rig.build_mode:
+	if not rig.build_mode and rig.gameplay_mode == PlayerCameraRig.GameplayMode.OVERVIEW:
 		_near.transform = Transform3D(Basis.IDENTITY,actor.global_position+Vector3.UP*.8+facing)
 		for candidate: Dictionary in space.intersect_shape(_near,16):
 			var entity := _subject(candidate.collider)
@@ -59,6 +62,7 @@ func probe(facing: Vector3) -> TargetResult:
 				_set_hit(entity,point,Vector3.UP)
 	if current.kind != previous_kind or current.entity != previous_entity or previous_actions != current.available_actions:
 		target_changed.emit(current)
+	feedback = InteractionFeedback.resolve(actor as PlayerActor,get_tree().get_first_node_in_group("surface_runtime") as SurfaceRuntime) if actor is PlayerActor else InteractionFeedback.State.DEFAULT
 	return current
 
 func _subject(entity: Node3D) -> Node3D:

@@ -14,6 +14,7 @@
 [ext_resource type="BoxMesh" uid="uid://beub3u1ps0n8x" path="res://resources/combat/AimShaft.tres" id="12_rn7t0"]
 [ext_resource type="CylinderMesh" uid="uid://cenl1gvu8c210" path="res://resources/combat/AimTip.tres" id="13_8qjgm"]
 [ext_resource type="Script" uid="uid://dxnq3jt5t44r0" path="res://scripts/weapons/weapon_visual_rig.gd" id="14_ov1oi"]
+[ext_resource type="Script" path="res://scripts/ui/interaction_crosshair.gd" id="15_rn7t0"]
 
 [node name="Player" type="CharacterBody3D" unique_id=382088037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
@@ -78,3 +79,10 @@ mesh = ExtResource("13_8qjgm")
 
 [node name="WeaponVisualRig" type="Node3D" parent="." unique_id=1544875121]
 script = ExtResource("14_ov1oi")
+
+[node name="InteractionOverlay" type="CanvasLayer" parent="." unique_id=839303273]
+
+[node name="InteractionCrosshair" type="Control" parent="InteractionOverlay" unique_id=420498456]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("15_rn7t0")

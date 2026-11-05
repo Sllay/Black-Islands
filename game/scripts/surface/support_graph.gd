@@ -50,6 +50,19 @@ func place(id: String, definition: String, position: Vector3i, rotation: int = 0
 		return ERR_UNAVAILABLE
 	return OK
 
+func preview(definition: String, position: Vector3i, rotation: int = 0, tier: String = "wood") -> Error:
+	# Isolate only the connected candidates around the socket. Never publish views/signals.
+	var neighbors: Array = []
+	for y: int in [-2,0,2]:
+		for z: int in [-2,0,2]:
+			for x: int in [-2,0,2]: neighbors.append_array(_index.get(StructureModule.snap(position)+Vector3i(x,y,z),[]))
+	var local := component(neighbors)
+	var trial := SupportGraph.new()
+	trial.ground = ground
+	trial.foundation_ground = foundation_ground
+	for id: String in local: trial._insert(pieces[id].duplicate(true))
+	return trial.place("__preview__",definition,position,rotation,tier)
+
 func _insert(row: Dictionary) -> void:
 	pieces[row.id] = row
 	occupancy[row.occupancy] = row.id

@@ -112,23 +112,38 @@ func farm_interact(key: String) -> void:
 		runtime.message.emit("Nabo • crescimento %d%% • água %s" % [plot.growth_progress*100,"disponível" if plot.moisture_deadline > runtime.ledger.clock else "necessária"])
 	runtime.objects.reconcile()
 
+func preview(target: TargetResult) -> Error:
+	if target.kind == TargetResult.Kind.NONE or target.distance > runtime.player.targeter.maximum_distance: return ERR_UNAVAILABLE
+	var cell := snap_cell(target)
+	var costs: Dictionary = {"bi.resource.wood":8}
+	if selected_structure in ["chest","workbench"]:
+		if not container_location(cell,selected_support).valid: return ERR_UNAVAILABLE
+	else:
+		var result := runtime.building.preview(selected_structure,cell,rotation,tier)
+		if result != OK: return result
+		costs = SurfaceCatalog.data().structures[selected_structure].cost.duplicate()
+		for id: String in costs: costs[id] = ceili(float(costs[id])*float(SurfaceCatalog.data().tiers[tier].cost_multiplier))
+	return InventoryTransactions.pay(InventoryTransactions.clone(runtime.player.inventory.state),costs)
+
+func container_location(cell: Vector3i, support_id: String) -> Dictionary:
+	var point := StructureModule.center(cell)+Vector3.UP*.02
+	var supported := runtime.ground_contact(cell)
+	if support_id.is_empty():
+		var hit := runtime.terrain.surface_hit(point.x,point.z)
+		if not hit.is_empty(): point.y = hit.position.y+.02
+		else: supported = false
+	else:
+		var floor_row: Dictionary = runtime.building.pieces.get(support_id,{})
+		supported = not floor_row.is_empty() and floor_row.definition in ["foundation","ceiling"] and not runtime.building.candidates.get(support_id,{}).is_empty()
+		point.y += float(SurfaceCatalog.data().structures.foundation.dimensions[1])
+	return {"position":point,"valid":supported and runtime.containers.in_area(AABB(point-Vector3.ONE*.3,Vector3.ONE*.6)).is_empty()}
+
 func build_at(cell: Vector3i, support_id: String = "") -> Error:
 	cell = StructureModule.snap(cell)
 	if selected_structure in ["chest","workbench"]:
-		var point := StructureModule.center(cell)+Vector3.UP*.02
-		var supported := runtime.ground_contact(cell)
-		if support_id.is_empty():
-			var hit := runtime.terrain.surface_hit(point.x,point.z)
-			if not hit.is_empty():
-				point.y = hit.position.y+.02
-			else:
-				supported = false
-		if not support_id.is_empty():
-			var floor_row: Dictionary = runtime.building.pieces.get(support_id,{})
-			supported = not floor_row.is_empty() and floor_row.definition in ["foundation","ceiling"] and not runtime.building.candidates.get(support_id,{}).is_empty()
-			point.y += float(SurfaceCatalog.data().structures.foundation.dimensions[1])
-		if not supported or not runtime.containers.in_area(AABB(point-Vector3.ONE*.3,Vector3.ONE*.6)).is_empty():
-			return ERR_UNAVAILABLE
+		var location := container_location(cell,support_id)
+		if not location.valid: return ERR_UNAVAILABLE
+		var point: Vector3 = location.position
 		if InventoryTransactions.pay(runtime.player.inventory.state,{"bi.resource.wood":8}) != OK:
 			return ERR_UNAVAILABLE
 		var chest_id := runtime.ledger.new_id("chest")

@@ -8,7 +8,11 @@ signal mode_changed(build: bool)
 var build_mode := false
 var benchmark_legacy := false
 var overview := false
-var aim_screen := Vector2(0.5, 0.58)
+@export var aim_screen := Vector2(0.5, 0.58)
+@export var shoulder_offset := Vector3(1.4,0,0)
+@export var camera_distance := 4.6
+@export var camera_height := 2.1
+@export var camera_smoothing := 12.0
 var blend := 0.0
 var obstruction_count := 0
 var _anchor := Vector3.ZERO
@@ -55,10 +59,11 @@ func planar_direction(axis: Vector2) -> Vector3:
 func tick(delta: float) -> void:
 	var shoulder := build_mode or gameplay_mode == GameplayMode.SHOULDER
 	blend = move_toward(blend,1.0 if shoulder else 0.0,delta/transition_seconds)
-	_anchor = _anchor.lerp(actor.global_position+Vector3.UP,1.0-exp(-12.0*delta))
+	_anchor = _anchor.lerp(actor.global_position+Vector3.UP,1.0-exp(-camera_smoothing*delta))
 	var transition := smoothstep(0,1,blend)
-	var offset := Vector3(0,9,13).lerp(Vector3(.8,2.1,4.6),transition)
-	var look := _anchor+Vector3.FORWARD.rotated(Vector3.UP,deg_to_rad(heading_degrees))*lerpf(.8,2.5,transition)
+	var shoulder_position := Vector3(shoulder_offset.x,camera_height+shoulder_offset.y,camera_distance+shoulder_offset.z)
+	var offset := Vector3(0,9,13).lerp(shoulder_position,transition)
+	var look := _anchor+(Vector3.FORWARD*lerpf(.8,2.5,transition)+Vector3.RIGHT*shoulder_offset.x*transition).rotated(Vector3.UP,deg_to_rad(heading_degrees))
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	camera.fov = lerpf(45,60,transition)
 	if benchmark_legacy:
@@ -81,8 +86,7 @@ func tick(delta: float) -> void:
 	camera.look_at(look)
 	if _keep_aim and not camera.is_position_behind(_aim_anchor):
 		aim_screen = (camera.unproject_position(_aim_anchor)/get_viewport().get_visible_rect().size).clamp(Vector2(.05,.05),Vector2(.95,.95))
-	if is_equal_approx(blend,1.0 if shoulder else 0.0):
-		_keep_aim = false
+	if is_equal_approx(blend,1.0 if shoulder else 0.0): _keep_aim = false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("camera_mode"):
