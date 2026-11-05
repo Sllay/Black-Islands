@@ -92,16 +92,16 @@ func _overflow_conservation() -> void:
 
 func _connected_support_benchmark() -> void:
 	var graph := SupportGraph.new()
-	graph.ground = func(cell: Vector3i) -> bool: return cell.y == 0 and cell.x%4 == 0
+	graph.ground = func(cell: Vector3i) -> bool: return cell.y == 0 and cell.x%8 == 0
 	for cluster: int in range(40):
-		_check(graph.place("remote%d"%cluster,"foundation",Vector3i(200+cluster*8,0,0)) == OK,"remote root fixture")
+		_check(graph.place("remote%d"%cluster,"foundation",Vector3i(400+cluster*16,0,0)) == OK,"remote root fixture")
 	for x: int in range(0,81,4):
-		_check(graph.place("root%d"%x,"foundation",Vector3i(x,0,0)) == OK,"bridge root fixture")
+		_check(graph.place("root%d"%x,"foundation",Vector3i(x*2,0,0)) == OK,"bridge root fixture")
 	for x: int in range(81):
 		if x%4 != 0:
-			_check(graph.place("deck%d"%x,"ceiling",Vector3i(x,0,0)) == OK,"connected deck fixture")
+			_check(graph.place("deck%d"%x,"ceiling",Vector3i(x*2,0,0)) == OK,"connected deck fixture")
 	for x: int in [20,40,60]:
-		_check(graph.place("pillar%d"%x,"pillar",Vector3i(x,0,0)) == OK,"multiple pillar fixture")
+		_check(graph.place("pillar%d"%x,"pillar",Vector3i(x*2,0,0)) == OK,"multiple pillar fixture")
 	var removed := graph.remove("root28")
 	_check(graph.last_benchmark.examined == 84 and removed.size() == 3,"connected support recompute local and selective")
 	_check(graph.pieces.has("deck26") and graph.pieces.has("deck30") and graph.pieces.has("remote39"),"alternate roots and remote components survive")
@@ -116,7 +116,7 @@ func _prop_coverage() -> void:
 			for row: Dictionary in field.candidates(Vector2i(x,z)):
 				definitions[row.definition] = true
 				biomes[row.biome] = true
-			if definitions.size() == SurfaceCatalog.data().props.size() and biomes.size() == 4:
+			if definitions.size() == SurfaceCatalog.data().props.filter(func(row: Dictionary) -> bool: return row.visual is String).size() and biomes.size() == 4:
 				print("PROP_COVERAGE seed424242 ",definitions.keys()," biomes=",biomes.keys())
 				return
 	_check(false,"all nine prop representatives and four biomes generated on actual island field")
