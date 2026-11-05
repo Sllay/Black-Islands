@@ -79,6 +79,22 @@ func _run() -> void:
 	registry.create("other",Vector3.ZERO)
 	check(plan.commit() != OK and quantity(source,"bi.resource.wood") == 15 and not registry.records.has(draft.inventory_id),"stale publication has no source loss or visible bag")
 	check(not visual.is_processing(),"no idle chest process")
-	print("WORLD_CORE_B ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," operations_us=",Time.get_ticks_usec()-start)
+	var presentation_us := {}
+	for kind: String in ["LooseItemDrop","WorldDropBag","DeathBagInventory","Chest"]:
+		var benchmark_id := "benchmark:"+kind
+		registry.create(benchmark_id,Vector3.ZERO,kind)
+		var total := 0
+		var worst := 0
+		for sample: int in 10:
+			var began := Time.get_ticks_usec()
+			var view := ContainerVisual.new()
+			add_child(view)
+			view.configure(registry,benchmark_id)
+			var cost := Time.get_ticks_usec()-began
+			total += cost
+			worst = maxi(worst,cost)
+			view.free()
+		presentation_us[kind] = {"mean_us":total/10.0,"max_us":worst}
+	print("WORLD_CORE_B ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," operations_us=",Time.get_ticks_usec()-start," presentation=",presentation_us)
 	visual.free()
 	get_tree().quit(1 if failures else 0)

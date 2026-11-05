@@ -148,7 +148,13 @@ func _run() -> void:
 	var benchmark := WorldCore.new()
 	benchmark.configure("benchmark",11,0)
 	for tick: int in 10000: benchmark.advance(.016)
-	print("WORLD_CORE_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," pure10000_us=",Time.get_ticks_usec()-start," rain=",runtime.core.metrics," rain_result=",runtime.core.last_rain)
+	var pure_us := Time.get_ticks_usec()-start
+	var transition_start := Time.get_ticks_usec()
+	var transition_weather := WorldWeather.new()
+	transition_weather.configure("transitions",7,0,WorldCore.tuning)
+	for sample: int in 1000: transition_weather.set_state(["CLEAR","RAIN","THUNDERSTORM"][sample%3],sample)
+	var transition_us := Time.get_ticks_usec()-transition_start
+	print("WORLD_CORE_C ","PASS" if failures == 0 else "FAIL"," assertions=",assertions," failures=",failures," pure10000_us=",pure_us," transition1000_us=",transition_us," rain=",runtime.core.metrics," rain_result=",runtime.core.last_rain)
 	active.free()
 	runtime.player.free()
 	runtime.mobs.free()

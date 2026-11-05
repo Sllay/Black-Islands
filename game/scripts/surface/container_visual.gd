@@ -33,8 +33,8 @@ func configure(service: ContainerService, id: String) -> void:
 		if tuning.get("icon",false):
 			var icon := Label3D.new()
 			icon.name = "ItemIcon"
-			for stack: Dictionary in registry.inventories[id].snapshot().slots:
-				if not stack.is_empty():
+			for stack: Variant in registry.inventories[id].snapshot().slots:
+				if stack is Dictionary and not stack.is_empty():
 					icon.text = ItemCatalog.resolve(stack.item_id).icon
 					break
 			icon.pixel_size = .006
