@@ -2,7 +2,7 @@
   "phase": "S01-RC0-R3 C04",
   "engine": "4.7.2.stable.official.ed1daf0bf",
   "branch": "codex/s01-rc0-r3-c04-world-core",
-  "code_sha": "aa4788a3da4df7085ab474b7718d276cbb0a4b45",
+  "code_sha": "7f88d1a3a6543fbdba594c8f2bd5864ea2d34626",
   "platform": "Compatibility, Mesa llvmpipe, desktop proxy; PHYSICAL MOBILE PERFORMANCE NOT VALIDATED",
   "focused": {
     "A": 14,
@@ -274,5 +274,17 @@
     "message": "Tried to save instance block, but VoxelStreamScript does not support them.",
     "waiver": "unchanged; not investigated; not observed in this integrated run"
   },
-  "capture_notes": "See README.md for temporary presentation hiding in chest/bag inspection captures."
+  "capture_notes": "See README.md for temporary presentation hiding in chest/bag inspection captures.",
+  "clean_clone": {
+    "status": "PASS",
+    "validated_sha": "7f88d1a3a6543fbdba594c8f2bd5864ea2d34626",
+    "native_classes": 5,
+    "import": "empty cache",
+    "flow": "Boot -> MainMenu",
+    "project_errors": 0,
+    "project_warnings": 0,
+    "bootstrap": false,
+    "network_downloads": false,
+    "ignored_addon_payloads": false
+  }
 }
