@@ -48,7 +48,6 @@ func advance(active_seconds: float) -> void:
 		last_rain = {"cells":cells,"metres":metres,"farms":farms}
 		metrics.rain_us = Time.get_ticks_usec()-start
 		metrics.rain_pulses += 1
-	checkpoint()
 func checkpoint() -> void:
 	if runtime != null: runtime.ledger.flags.world_core = snapshot()
 func snapshot() -> Dictionary:

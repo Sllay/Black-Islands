@@ -128,6 +128,22 @@ func _run() -> void:
 		for step: int in 500: pure.advance(.1)
 		if baseline.is_empty(): baseline = pure.snapshot()
 		else: check(AtomicDocument.same_value(baseline,pure.snapshot()),"quality leaves world authority identical")
+	var foreign := WorldCore.new()
+	check(foreign.configure("other.world",99,0,surface.flags.world_core) == ERR_INVALID_DATA,"world calendar cannot travel with a player")
+	var sun := DirectionalLight3D.new()
+	sun.name = "Sun"
+	session.add_child(sun)
+	var sky := WorldEnvironment.new()
+	sky.name = "Environment"
+	sky.environment = Environment.new()
+	session.add_child(sky)
+	for quality: String in ["Low","Medium","High"]:
+		GameSettings.current.quality = quality
+		var presentation := WeatherPresentation.new()
+		add_child(presentation)
+		presentation.configure(runtime)
+		check(presentation.rain.multimesh.instance_count == int(WorldCore.tuning.presentation[quality.to_lower()].rain_instances),"rain batch profile "+quality)
+		presentation.free()
 	var start := Time.get_ticks_usec()
 	var benchmark := WorldCore.new()
 	benchmark.configure("benchmark",11,0)

@@ -113,6 +113,8 @@ func farm_interact(key: String) -> void:
 	runtime.objects.reconcile()
 
 func preview(target: TargetResult) -> Error:
+	var item := runtime.player.inventory.state.active_definition()
+	if item == null or item.category != "BUILDING_PIECE": return ERR_UNAVAILABLE
 	if target.kind == TargetResult.Kind.NONE or target.distance > runtime.player.targeter.maximum_distance: return ERR_UNAVAILABLE
 	var cell := snap_cell(target)
 	var costs: Dictionary = {"bi.resource.wood":8}

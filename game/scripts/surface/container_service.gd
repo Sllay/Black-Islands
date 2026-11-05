@@ -100,6 +100,12 @@ func is_open(id: String) -> bool:
 func retire(id: String) -> void:
 	for actor_id: String in open_sessions.keys():
 		if open_sessions[actor_id] == id: request_close(actor_id)
+	if records.has(id):
+		var point: Array = records[id].position
+		var region := Vector3i((Vector3(point[0],point[1],point[2])/64.0).floor())
+		if _regions.has(region):
+			_regions[region].erase(id)
+			if _regions[region].is_empty(): _regions.erase(region)
 	records.erase(id)
 	inventories.erase(id)
 	revision += 1

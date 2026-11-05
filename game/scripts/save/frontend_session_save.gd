@@ -127,6 +127,7 @@ func _update_cards(world: Dictionary) -> void:
 		doc.loaded.generated = true
 		doc.loaded.played_seconds = world.played_seconds
 		doc.loaded.world_clock = world.global.get("clock",0)
+		doc.loaded.world_day_seconds = world.global.get("flags",{}).get("world_core",{}).get("clock",{}).get("day_seconds",SurfaceLedger.DAY)
 		doc.commit(doc.loaded)
 	var player := library.document("player",player_slot)
 	if player.read() == OK:

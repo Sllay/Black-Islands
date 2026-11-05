@@ -98,7 +98,7 @@ func qa_target(id: String) -> Dictionary:
 	var view: SurfaceObject = session.surface.objects.views.get(id)
 	if view == null: return {"error":"view not resident","id":id}
 	var rig := session.pawn.camera_rig
-	rig.gameplay_mode = PlayerCameraRig.GameplayMode.SHOULDER
+	if rig.gameplay_mode != PlayerCameraRig.GameplayMode.SHOULDER: rig.toggle_view()
 	rig._keep_aim = false
 	rig.tick(1)
 	rig.aim_screen = rig.camera.unproject_position(view.global_position)/get_viewport().get_visible_rect().size

@@ -42,7 +42,7 @@ func _refresh() -> void:
 		title.clip_text = true
 		title.tooltip_text = row.data.display_name
 		info.add_child(title)
-		info.add_child(ShellUI.label_text("%s  •  %s  •  Dia %d" % [row.data.difficulty,duration(row.data.played_seconds),1+int(row.data.world_clock/SurfaceLedger.DAY)],18))
+		info.add_child(ShellUI.label_text("%s  •  %s  •  Dia %d" % [row.data.difficulty,duration(row.data.played_seconds),1+int(row.data.world_clock/maxf(60,float(row.data.get("world_day_seconds",SurfaceLedger.DAY))))],18))
 		action(body,"Excluir",confirm_delete.bind("world",row.slot,_refresh),"DeleteWorld%d"%row.slot)
 		action(body,"Editar",Flow.edit_world.bind(row.slot,true),"EditWorld%d"%row.slot)
 		action(body,"Jogar",_play.bind(row.slot),"PlayWorld%d"%row.slot)

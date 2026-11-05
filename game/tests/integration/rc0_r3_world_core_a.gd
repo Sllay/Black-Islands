@@ -62,6 +62,8 @@ func _run() -> void:
 	actor.targeter.current.world_position = Vector3.ZERO
 	actor.targeter.current.build_cell = Vector3i.ZERO
 	actor.targeter.current.distance = 2
+	check(InteractionFeedback.resolve(actor,surface) == InteractionFeedback.State.BUILD_INVALID,"non-building item cannot advertise placement")
+	actor.inventory.state.select_hotbar(3)
 	var revision := actor.inventory.state.revision
 	check(InteractionFeedback.resolve(actor,surface) == InteractionFeedback.State.BUILD_VALID,"real support/payment preview valid")
 	check(surface.building.pieces.is_empty() and actor.inventory.state.revision == revision,"preview has no domain side effect")
