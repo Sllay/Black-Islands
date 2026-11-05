@@ -2,7 +2,6 @@ class_name InteractionCrosshair
 extends Control
 ## One lightweight overlay; no query or input ownership.
 var actor: PlayerActor
-var surface: SurfaceRuntime
 var feedback := InteractionFeedback.State.DEFAULT
 var point := Vector2.ZERO
 func _ready() -> void:
@@ -13,7 +12,6 @@ func _process(_delta: float) -> void:
 	if actor == null: return
 	visible = not actor.inventory.is_open and InteractionFeedback.precision(actor)
 	if not visible: return
-	if surface == null: surface = get_tree().get_first_node_in_group("surface_runtime") as SurfaceRuntime
 	var next_point := actor.camera_rig.aim_screen*size
 	var next_feedback := actor.targeter.feedback
 	if next_point != point or next_feedback != feedback:

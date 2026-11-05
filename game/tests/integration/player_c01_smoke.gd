@@ -6,6 +6,8 @@ var player: PlayerActor
 
 class InteractableFixture extends StaticBody3D:
 	var uses := 0
+	func available_actions(_actor: Node3D) -> Array[String]:
+		return ["interact"]
 	func interact(_actor: Node3D) -> void:
 		uses += 1
 
@@ -88,10 +90,10 @@ func _run() -> void:
 	_check(player.camera_rig.obstruction_count > previous_count and player.camera_rig.camera.global_position.distance_to(player.global_position) < 12, "camera obstruction adjusts sightline")
 	obstruction.queue_free()
 	await _frames(3)
-	var marker := _target_fixture(Vector3(0,0,-2), "interactables", 4)
+	var marker := _target_fixture(Vector3(0,0,-2), "interactables", CollisionLayers.QUERY)
 	await _frames(3)
 	_check(player.targeter.probe(Vector3.FORWARD).kind == TargetResult.Kind.INTERACTABLE and player.targeter.interact() and marker.uses == 1, "central interactable authority")
-	var target := _target_fixture(Vector3(0,0,-3), "combat_targets", 8)
+	var target := _target_fixture(Vector3(0,0,-3), "combat_targets", CollisionLayers.MOB)
 	await _frames(3)
 	_check(player.targeter.probe(Vector3.FORWARD).kind == TargetResult.Kind.COMBAT_TARGET, "configurable combat target priority")
 	player.targeter.priorities["INTERACTABLE"] = 50

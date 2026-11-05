@@ -16,7 +16,9 @@ for dependency in manifest['dependencies']:
         failed.append(dependency['addon'] + ': archive pin mismatch')
     for record in dependency['files']:
         path = root / record['path']
-        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != record['sha256']:
+        # Godot legitimately regenerates editor-variant import metadata. Payload
+        # binaries, descriptors, licenses and source resources stay byte-checked.
+        if not path.is_file() or (path.suffix != '.import' and hashlib.sha256(path.read_bytes()).hexdigest() != record['sha256']):
             failed.append(record['path'])
     print(dependency['addon'], 'bytes=', dependency['total_bytes'], 'files=', len(dependency['files']))
 if failed:
