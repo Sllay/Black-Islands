@@ -12,6 +12,7 @@ var emitters: Array[Vector4] = []
 var falls: MeshInstance3D
 var _fall_tick := 0.0
 func _ready() -> void:
+	add_to_group("water_renderers")
 	material = ShaderMaterial.new()
 	material.shader = load("res://shaders/water_surface.gdshader")
 	apply_profile(GameSettings.effective())
@@ -20,6 +21,10 @@ func _ready() -> void:
 	falls.material_override = material
 	falls.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(falls)
+func set_weather_wind(strength: float) -> void:
+	if material == null: return
+	material.set_shader_parameter("weather_wind",clampf(strength,0,1))
+	for entry: Dictionary in views.values(): entry.material.set_shader_parameter("weather_wind",clampf(strength,0,1))
 func apply_profile(profile: Dictionary) -> void:
 	quality = str(profile.quality)
 	var visual: Dictionary = profile.get("water",{"wave":.04,"foam":.4,"ripples":2})

@@ -20,6 +20,19 @@ static func validate(data: Dictionary, player_inventory: Dictionary) -> Error:
 	for table: Dictionary in ContentData.rows("spawn_tables"):
 		if versions.has(table.id) and versions[table.id] != table.version: return ERR_UNAVAILABLE
 	var catalog := SurfaceCatalog.data()
+	var container_events: Variant = data.get("flags",{}).get("container_events",{})
+	if not container_events is Dictionary: return ERR_INVALID_DATA
+	for event_id: Variant in container_events:
+		if not event_id is String or not container_events[event_id] is String: return ERR_INVALID_DATA
+	var world_core: Variant = data.get("flags",{}).get("world_core",{})
+	if not world_core is Dictionary: return ERR_INVALID_DATA
+	if not world_core.is_empty():
+		var identity: Variant = world_core.get("clock",{}).get("world_id","") if world_core.get("clock") is Dictionary else null
+		if not identity is String or identity.is_empty(): return ERR_INVALID_DATA
+		if not world_core.get("clock") is Dictionary or not world_core.get("weather") is Dictionary: return ERR_INVALID_DATA
+		var domain := WorldCore.new()
+		var error := domain.configure(identity,0,0,world_core)
+		if error != OK: return error
 	for state: Variant in data.props.values():
 		if not state is Dictionary or not valid_harvest(state):
 			return ERR_INVALID_DATA

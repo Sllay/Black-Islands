@@ -10,6 +10,7 @@ uniform float near_distance = 22.0;
 uniform float far_distance = 36.0;
 uniform float interaction_radius = 2.0;
 uniform float wind_amplitude = 0.12;
+uniform vec2 weather_wind = vec2(0.0);
 uniform vec2 u_lod_fade = vec2(1.0); // Replaced by instance uniform on RD renderers.
 varying float coverage;
 varying float shade;
@@ -27,7 +28,7 @@ void vertex() {
 	float phase = dot(root.xz,vec2(0.31,0.19));
 	float wind = sin(TIME*1.6+phase);
 	if (detail > 0.0) { wind += 0.4*sin(TIME*2.1+phase*1.7)*detail; }
-	world_vertex.xz += vec2(wind,wind*0.4)*wind_amplitude*tip*tip*mix(0.25,1.0,detail);
+	world_vertex.xz += (vec2(1.0,0.4)+weather_wind*0.3)*wind*wind_amplitude*tip*tip*mix(0.25,1.0,detail);
 	if (detail > 0.0) { for (int i=0;i<5;i++) {
 		vec2 away = root.xz-actors[i].xz;
 		float dist = length(away);

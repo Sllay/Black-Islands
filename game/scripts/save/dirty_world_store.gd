@@ -143,6 +143,7 @@ func committed() -> void:
 	dirty.clear()
 
 static func global_state(surface: SurfaceRuntime) -> Dictionary:
+	if surface.core != null: surface.core.checkpoint()
 	var ledger := surface.ledger
 	return {"schema_version":1,"content_version":SurfaceCatalog.VERSION,"structure_module_version":2,
 		"bags":{},"clock":ledger.clock,"active_seconds":ledger.active_seconds,"sequence":ledger.sequence,"flags":ledger.flags.duplicate(true)}

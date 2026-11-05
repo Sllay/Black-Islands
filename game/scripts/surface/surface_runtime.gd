@@ -19,6 +19,8 @@ var building: SupportGraph
 var containers: ContainerService
 var objects: SurfaceObjects
 var actions: SurfaceActions
+var core: WorldCore
+var weather_view: WeatherPresentation
 
 func ground_contact(cell: Vector3i) -> bool:
 	return _ground_at(StructureModule.center(cell))
@@ -57,8 +59,19 @@ func interact_object(id: String, role: String) -> void:
 		actions.demolish(id)
 
 func qa_advance(days: float) -> void:
-	ledger.clock += maxf(days,0)*SurfaceLedger.DAY
+	ledger.clock += maxf(days,0)*ledger.day_seconds
+	if core != null:
+		core.clock.elapsed_game_seconds = ledger.clock
+		core.checkpoint()
 	_tick_domains()
+
+func qa_world_state(day_fraction: float, weather_id: String) -> void:
+	if not OS.is_debug_build() or core == null: return
+	core.clock.elapsed_game_seconds = floorf(core.clock.elapsed_game_seconds/core.clock.day_seconds)*core.clock.day_seconds+clampf(day_fraction,0,.999)*core.clock.day_seconds
+	core.clock.pending_seconds = 0
+	ledger.clock = core.clock.elapsed_game_seconds
+	core.weather.set_state(weather_id,ledger.clock)
+	core.checkpoint()
 
 func _tick_domains() -> void:
 	for key: String in farms.evaluate():
@@ -75,6 +88,7 @@ func _attach_qa() -> void:
 		return
 	var entries := [["P04 • cultivo / construção",qa.c02],["P04 • fauna",qa.c03],["P04 • combate / corpo",qa.combat_sample],["P04 • offscreen",qa.offscreen_sample],
 		["+1 dia (QA)",func() -> void: qa_advance(1)],["+6 dias / regrowth (QA)",func() -> void: qa_advance(6)]]
+	entries.append_array([["C04 • dia",func() -> void: qa_world_state(.25,"CLEAR")],["C04 • noite",func() -> void: qa_world_state(.8,"CLEAR")],["C04 • chuva",func() -> void: qa_world_state(.25,"RAIN")],["C04 • tempestade",func() -> void: qa_world_state(.55,"THUNDERSTORM")]])
 	for entry: Array in entries:
 		var button := ShellUI.button(entry[0],"SurfaceQA",Vector2(330,44))
 		button.pressed.connect(entry[1])
@@ -100,6 +114,12 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 		_definitions[row.id] = row
 	if not restored.is_empty():
 		assert(ledger.restore(restored) == OK)
+	core = WorldCore.new()
+	core.runtime = self
+	var world_id: String = str(session.store.identity.get("save_id",""))
+	if session.frontend_save != null: world_id = str(session.frontend_save.world_document.identity.world_id)
+	assert(core.configure(world_id,terrain.field.world_seed,ledger.clock,ledger.flags.get("world_core",{})) == OK)
+	ledger.day_seconds = core.clock.day_seconds
 	if not ledger.flags.has("spawn_table_versions"):
 		ledger.flags.spawn_table_versions = {}
 		for table: Dictionary in ContentData.rows("spawn_tables"): ledger.flags.spawn_table_versions[table.id] = table.version
@@ -136,6 +156,10 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 			var point := Vector3(row.position[0],row.position[1],row.position[2])
 			reconcile_container_support(AABB(point-Vector3.ONE,Vector3.ONE*2))
 	_configure_mobs(restored)
+	weather_view = WeatherPresentation.new()
+	weather_view.name = "WeatherPresentation"
+	add_child(weather_view)
+	weather_view.configure(self)
 	var ui: SurfaceUI = load("res://scenes/ui/SurfaceGameplayUI.tscn").instantiate()
 	ui.runtime = self
 	add_child(ui)
@@ -204,7 +228,7 @@ func _regrow() -> void:
 func _process(delta: float) -> void:
 	if player == null or not player.spawned or player.inventory.is_open:
 		return
-	ledger.clock += delta
+	core.advance(delta)
 	ledger.active_seconds += delta
 	_elapsed += delta
 	if _elapsed >= 1:
@@ -361,6 +385,7 @@ func reconcile_container_support(area: AABB) -> void:
 	objects.reconcile()
 
 func snapshot() -> Dictionary:
+	if core != null: core.checkpoint()
 	mobs.sync_positions()
 	var data := ledger.snapshot()
 	data.content_version = SurfaceCatalog.VERSION

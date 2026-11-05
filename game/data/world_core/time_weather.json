@@ -1,0 +1,10 @@
+{
+ "schema_version":1,"catalog_version":1,"day_seconds":600.0,"default_time_scale":1.0,"max_clock_step":30.0,"time_event_seconds":1.0,
+ "rain_radius":16.0,"rain_pulse_seconds":1.0,"rain_max_metres_per_pulse":0.02,"rain_cell_budget":2048,
+ "weather":[
+  {"id":"CLEAR","duration_range":[120,240],"transition_weight":5,"rain_intensity":0.0,"wind_intensity":0.25,"thunder_frequency":0.0,"visual_profile":"clear"},
+  {"id":"RAIN","duration_range":[60,120],"transition_weight":3,"rain_intensity":0.0001,"wind_intensity":0.6,"thunder_frequency":0.0,"visual_profile":"rain"},
+  {"id":"THUNDERSTORM","duration_range":[45,90],"transition_weight":1,"rain_intensity":0.0003,"wind_intensity":1.0,"thunder_frequency":0.05,"visual_profile":"storm"}
+ ],
+ "presentation":{"low":{"rain_instances":32,"flash":0.18},"medium":{"rain_instances":64,"flash":0.24},"high":{"rain_instances":128,"flash":0.3}}
+}

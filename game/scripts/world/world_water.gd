@@ -7,6 +7,11 @@ var domain: WaterDomain
 var terrain: VoxelTerrainAdapter
 var dirty_notifications := 0
 var last_dirty_area := AABB()
+var wind_direction := Vector2.RIGHT
+var wind_intensity := 0.0
+
+func add_precipitation(area: AABB, metres: float, cell_budget: int = 2048) -> int:
+	return domain.grid.add_precipitation(area,metres,cell_budget) if domain != null else 0
 
 func sample(point: Vector3) -> Dictionary:
 	if domain != null:

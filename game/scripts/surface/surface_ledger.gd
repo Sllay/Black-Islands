@@ -3,6 +3,7 @@ extends RefCounted
 signal changed(domain: String, id: String)
 ## Authoritative deltas only; no MultiMesh transforms or presentation nodes.
 const DAY := 600.0
+var day_seconds := DAY
 var props: Dictionary = {}
 var suppression: Dictionary = {}
 var bags: Dictionary = {}
@@ -32,7 +33,7 @@ func release(point: Vector3, reason: String) -> void:
 	var key := cell_key(point)
 	if suppression.has(key):
 		suppression[key].reasons.erase(reason)
-		suppression[key].regrow_at = clock+DAY*(3.0+float(posmod(key.hash(),3000))/1000.0)
+		suppression[key].regrow_at = clock+day_seconds*(3.0+float(posmod(key.hash(),3000))/1000.0)
 		changed.emit("suppression",key)
 
 func suppressed(point: Vector3, include_foliage_only: bool = true) -> bool:

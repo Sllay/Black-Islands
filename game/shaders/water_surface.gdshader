@@ -7,6 +7,7 @@ uniform sampler2D motion_map : filter_nearest, repeat_disable;
 uniform float tile_side = 32.0;
 uniform float blend = 1.0;
 uniform float wave_amplitude = 0.04;
+uniform float weather_wind = 0.0;
 uniform float foam_strength = 0.4;
 uniform vec4 emitters[4];
 varying float depth;
@@ -26,7 +27,7 @@ void vertex() {
  }
  location = VERTEX;
  float wave = sin(VERTEX.x*1.7+TIME*1.6)+0.35*cos(VERTEX.z*2.3-TIME*2.0);
- VERTEX.y += wave*wave_amplitude*clamp(depth,0.0,1.0);
+ VERTEX.y += wave*wave_amplitude*(1.0+weather_wind*0.3)*clamp(depth,0.0,1.0);
 }
 void fragment() {
  if (!ocean && depth < 0.008) { discard; }

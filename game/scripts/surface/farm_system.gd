@@ -37,23 +37,30 @@ func plant(key: String, inventory: InventoryState) -> Error:
 	return OK
 
 func water(key: String, days: float = 1.0) -> Error:
-	if not plots.has(key):
-		return ERR_DOES_NOT_EXIST
+	if not plots.has(key): return ERR_DOES_NOT_EXIST
 	evaluate()
+	_water_evaluated(key,days)
+	return OK
+
+func _water_evaluated(key: String, days: float) -> void:
 	var plot: Dictionary = plots[key]
-	plot.moisture_deadline = maxf(float(plot.moisture_deadline),ledger.clock+clampf(days,1,3)*SurfaceLedger.DAY)
+	plot.moisture_deadline = maxf(float(plot.moisture_deadline),ledger.clock+clampf(days,1,3)*ledger.day_seconds)
 	plot.dry_elapsed = 0
 	plot.dry_decay_deadline = ledger.active_seconds+1800
 	plot.soil_state = "TILLED_WET" if plot.seed_id.is_empty() else "GROWING"
 	plot.revision += 1
 	changed.emit(key)
-	return OK
 
-func rain(area: AABB, heavy: bool) -> void:
-	for key: String in plots.keys():
+func rain(area: AABB, heavy: bool) -> int:
+	evaluate()
+	var count := 0
+	for key: String in plots:
 		var point: Array = plots[key].position
 		if area.has_point(Vector3(point[0],point[1],point[2])):
-			water(key,3 if heavy else 1)
+			_water_evaluated(key,3 if heavy else 1)
+			count += 1
+
+	return count
 
 func evaluate() -> Array[String]:
 	var removed: Array[String] = []
@@ -61,13 +68,13 @@ func evaluate() -> Array[String]:
 		var plot: Dictionary = plots[key]
 		var wet_seconds := maxf(0,minf(ledger.clock,float(plot.moisture_deadline))-float(plot.last_clock))
 		if not plot.seed_id.is_empty():
-			plot.growth_progress = minf(1.0,float(plot.growth_progress)+wet_seconds*float(plot.fertilizer_multiplier)/(float(crop.growth_days)*SurfaceLedger.DAY))
+			plot.growth_progress = minf(1.0,float(plot.growth_progress)+wet_seconds*float(plot.fertilizer_multiplier)/(float(crop.growth_days)*ledger.day_seconds))
 			plot.growth_stage = mini(int(crop.growth_stages)-1,int(float(plot.growth_progress)*float(crop.growth_stages)))
 		if ledger.clock >= float(plot.moisture_deadline):
 			plot.dry_elapsed += maxf(0,ledger.active_seconds-float(plot.last_active))
 			plot.moisture = 0
 		else:
-			plot.moisture = clampf((float(plot.moisture_deadline)-ledger.clock)/SurfaceLedger.DAY,0,3)
+			plot.moisture = clampf((float(plot.moisture_deadline)-ledger.clock)/ledger.day_seconds,0,3)
 		plot.last_clock = ledger.clock
 		plot.last_active = ledger.active_seconds
 		changed.emit(key)

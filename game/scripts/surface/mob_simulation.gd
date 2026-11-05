@@ -84,7 +84,7 @@ func reconcile() -> void:
 				actors[id] = actor
 			var definition: Dictionary = SurfaceCatalog.data().mobs[state.definition]
 			var context := {"clock":runtime.ledger.clock,"distance":distance,"attacked":runtime.ledger.clock < state.attacked_until,"player_in_range":distance < 12,
-				"territory_violation":distance < float(definition.territory),"time_of_day":"NIGHT" if fmod(runtime.ledger.clock/SurfaceLedger.DAY,1) >= .5 else "DAY",
+				"territory_violation":distance < float(definition.territory),"time_of_day":runtime.core.clock.period if runtime.core != null else ("NIGHT" if fmod(runtime.ledger.clock/runtime.ledger.day_seconds,1) >= .5 else "DAY"),
 				"pack_count":_pack_count(state,point),"health":state.health,"health_ratio":float(state.health)/float(definition.health)}
 			if not runtime.player.targeter.has_line_of_sight(point):
 				context.player_in_range = false

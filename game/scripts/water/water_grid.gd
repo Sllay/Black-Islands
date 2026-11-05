@@ -84,14 +84,24 @@ func remove_water(point: Vector3, cubic_metres: float) -> Error:
 	dirty = true
 	tile.wake()
 	return OK
-func add_precipitation(area: AABB, metres: float) -> void:
-	if not is_finite(metres) or metres <= 0:
-		return
-	for tile: WaterTile in tiles.values():
-		for i: int in tile.depth.size():
-			var cell := tile.coord*side()+Vector2i(i%side(),floori(i/float(side())))
-			if Rect2(Vector2(area.position.x,area.position.z),Vector2(area.size.x,area.size.z)).has_point(Vector2(point_at(cell).x,point_at(cell).z)):
-				add_water(point_at(cell),metres*tuning.cell_metres*tuning.cell_metres)
+func add_precipitation(area: AABB, metres: float, cell_budget: int = 2048) -> int:
+	if not is_finite(metres) or metres <= 0 or cell_budget <= 0: return 0
+	var first := cell_at(area.position)
+	var last := cell_at(area.end)
+	var visited := 0
+	var affected := 0
+	for z: int in range(first.y,last.y+1):
+		for x: int in range(first.x,last.x+1):
+			visited += 1
+			if visited > cell_budget: return affected
+			var cell := Vector2i(x,z)
+			var tile: WaterTile = tiles.get(address(cell))
+			if tile == null or tile.activity == WaterTile.Activity.INACTIVE: continue
+			var local := cell-tile.coord*tile.side
+			var index := local.y*tile.side+local.x
+			if tile.kind[index] not in [1,3]: continue
+			if add_water(point_at(cell),metres*tuning.cell_metres*tuning.cell_metres) == OK: affected += 1
+	return affected
 func invalidate(area: AABB) -> int:
 	var first := cell_at(area.position)
 	var last := cell_at(area.end)

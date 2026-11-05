@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b6fyk2rbdgwjf"]
+
+[ext_resource type="Script" path="res://tests/integration/rc0_r3_world_core_c.gd" id="1_p0m61"]
+
+[node name="WorldCoreC" type="Node3D" unique_id=1177454252]
+script = ExtResource("1_p0m61")

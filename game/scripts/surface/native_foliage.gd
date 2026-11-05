@@ -13,6 +13,8 @@ var mask_dirty := true
 var enabled := true
 var budget: Dictionary = {"density":.25,"near":22.0,"far":36.0,"interaction":2.0,"wind":.12}
 var _poll := 0.0
+func set_weather_wind(wind: Vector2) -> void:
+	if material != null: material.set_shader_parameter("weather_wind",wind)
 func _ready() -> void:
 	mask = Image.create(MASK_SIZE,MASK_SIZE,false,Image.FORMAT_R8)
 	mask_texture = ImageTexture.create_from_image(mask)
