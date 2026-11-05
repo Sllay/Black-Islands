@@ -47,7 +47,10 @@ func deliver(outputs: Dictionary, point: Vector3) -> void:
 
 func interact_object(id: String, role: String) -> void:
 	if role == "container":
-		container_opened.emit(id)
+		if containers.records.get(id,{}).get("kind") == "LooseItemDrop":
+			player.inventory.simulation.drops.pickup(id,player.inventory.state,containers.inventories[id].revision,player.inventory.state.revision,player.global_position)
+			objects.reconcile()
+		else: container_opened.emit(id)
 	elif role == "farm":
 		actions.farm_interact(id)
 	elif role == "structure":
@@ -107,6 +110,8 @@ func configure(world_session: WorldSession, restored: Dictionary = {}) -> void:
 	building.foundation_ground = foundation_contact
 	assert(building.restore(restored.get("structures",{})) == OK)
 	containers = ContainerService.new()
+	if not ledger.flags.has("container_events"): ledger.flags.container_events = {}
+	containers.completed_events = ledger.flags.container_events
 	assert(containers.restore(restored.get("containers",{})) == OK)
 	# Migrate C01 bag records once; do not retain a second inventory owner.
 	for id: String in ledger.bags:

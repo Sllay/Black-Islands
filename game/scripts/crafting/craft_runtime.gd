@@ -21,6 +21,11 @@ func bind_world(containers: ContainerService, identity: String) -> void:
 	world_id = identity
 	service.drops = component.simulation.drops
 	registry.changed.connect(func(_id: String) -> void: service.invalidate())
+	registry.open_state_changed.connect(func(id: String, open: bool) -> void:
+		if id == opened_id and not open:
+			opened_id = ""
+			service.invalidate()
+			if component.is_open: component.toggle())
 	service.invalidate()
 func _ready() -> void:
 	component.state.changed.connect(func(_revision: int) -> void: service.invalidate())
@@ -35,9 +40,14 @@ func _process(delta: float) -> void:
 			_position = actor.global_position
 			service.invalidate()
 	service.tick(step)
-func open_container(id: String) -> void:
+func open_container(id: String) -> Error:
+	if registry != null:
+		if id.is_empty(): registry.request_close(component.state.inventory_id)
+		elif actor == null or registry.request_open(id,component.state.inventory_id,actor.global_position) != OK: return ERR_UNAUTHORIZED
+	elif not id.is_empty(): return ERR_UNAVAILABLE
 	opened_id = id
 	service.invalidate()
+	return OK
 func station_context() -> Dictionary:
 	return {"station_id":opened_id,"world_id":world_id} if CraftStation.available(registry,opened_id) else {}
 func resolve(context: Dictionary) -> ResourceScope:

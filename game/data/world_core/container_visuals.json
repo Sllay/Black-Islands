@@ -1,0 +1,8 @@
+{
+ "schema_version":1,
+ "LooseItemDrop":{"shape":"package","size":[0.32,0.18,0.24],"color":"b99571","trim":"dec5a1","icon":true},
+ "WorldDropBag":{"shape":"sack","size":[0.55,0.60,0.45],"color":"9b8067","trim":"d7bc88"},
+ "DeathBagInventory":{"shape":"sack","size":[0.62,0.70,0.50],"color":"5d647b","trim":"d9aa75"},
+ "Chest":{"shape":"chest","size":[0.90,0.55,0.62],"color":"946447","trim":"d2a15d","lid_degrees":68,"transition_seconds":0.18},
+ "Workbench":{"shape":"chest","size":[1.0,0.7,0.65],"color":"a08257","trim":"c5b090","lid_degrees":0,"transition_seconds":0.18}
+}

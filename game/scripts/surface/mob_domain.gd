@@ -75,8 +75,9 @@ func decompose(id: String) -> Error:
 	var source: InventoryState = containers.inventories[state.corpse_inventory]
 	if definition.protected_loot:
 		var bag_id := "deathbag:"+id
-		var bag := containers.create(bag_id,_point(state),"DeathBagInventory")
-		var error := containers.transfer_all(source,bag)
+		var drops := WorldDropService.new()
+		drops.containers = containers
+		var error := drops.publish_all(source,_point(state),"corpse_conversion:"+id,"DeathBagInventory",bag_id,true)
 		if error != OK:
 			return error
 		state.converted_bag = bag_id
@@ -95,8 +96,9 @@ func decompose(id: String) -> Error:
 	return OK
 
 func pack_player_death(source: InventoryState, point: Vector3, id: String) -> Error:
-	var bag := containers.create("player_death:"+id,point,"DeathBagInventory")
-	return containers.transfer_all(source,bag)
+	var drops := WorldDropService.new()
+	drops.containers = containers
+	return drops.publish_all(source,point,"player_death:"+id,"DeathBagInventory","player_death:"+id)
 
 static func _point(state: Dictionary) -> Vector3:
 	return Vector3(state.position[0],state.position[1],state.position[2])

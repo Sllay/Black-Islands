@@ -46,7 +46,10 @@ func reconcile() -> void:
 		var row: Dictionary = runtime.containers.records[id]
 		if row.kind == "Corpse":
 			continue
-		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*.22,"size":Vector3(.75,.44,.5),"color":Color("b49560") if row.kind in ["Chest","Workbench"] else Color("bdb087"),"role":"container","blocking":row.kind in ["Chest","Workbench"]}
+		var profile := ContainerVisual.profile(row.kind)
+		var dimensions: Array = profile.size
+		var size := Vector3(dimensions[0],dimensions[1],dimensions[2])
+		rows[id] = {"position":Vector3(row.position[0],row.position[1],row.position[2])+Vector3.UP*size.y*.5,"size":size,"color":Color(profile.color),"role":"container","kind":row.kind,"blocking":row.kind in ["Chest","Workbench"]}
 	for id: String in views.keys():
 		if not rows.has(id) or views[id].get_meta("row") != rows[id] or views[id].position.distance_to(runtime.player.position) > 64:
 			views[id].queue_free()
@@ -63,10 +66,16 @@ func _create_view(id: String, row: Dictionary) -> void:
 	view.role = row.role
 	view.position = row.position
 	view.add_to_group("build_surfaces" if row.role == "structure" else "interactables")
-	var visual := MeshInstance3D.new()
-	visual.mesh = _mesh(row.size)
-	visual.material_override = _material(row.color)
-	view.add_child(visual)
+	if row.role == "container":
+		var container_view := ContainerVisual.new()
+		container_view.name = "ContainerVisual"
+		view.add_child(container_view)
+		container_view.configure(runtime.containers,id)
+	else:
+		var visual := MeshInstance3D.new()
+		visual.mesh = _mesh(row.size)
+		visual.material_override = _material(row.color)
+		view.add_child(visual)
 	var shape := BoxShape3D.new()
 	shape.size = row.size
 	if row.role == "structure" or row.get("blocking",false):

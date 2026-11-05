@@ -1,6 +1,11 @@
 class_name ContainerService
 extends RefCounted
 signal changed(id: String)
+signal open_state_changed(id: String, open: bool)
+var open_sessions: Dictionary = {}
+var access_policy := ContainerAccessPolicy.new()
+# Bound to WorldSave flags; survives looting/removal of the published bag.
+var completed_events: Dictionary = {}
 var inventories: Dictionary = {}
 var revision := 0
 var records: Dictionary = {}
@@ -37,6 +42,7 @@ func restore(data: Dictionary) -> Error:
 		inventory.owner_scope = "WORLD"
 		inventories[id] = inventory
 		records[id] = row.duplicate(true)
+		if not str(row.get("event_id","")).is_empty(): completed_events[row.event_id] = id
 		_index_record(id,Vector3(row.position[0],row.position[1],row.position[2]))
 		inventory.changed.connect(_inventory_changed.bind(id))
 	return OK
@@ -65,35 +71,52 @@ func in_area(area: AABB) -> Array[String]:
 	return result
 
 func break_chest(id: String) -> Error:
-	if not records.has(id) or records[id].kind not in ["Chest","Workbench"]:
-		return ERR_ALREADY_IN_USE
+	if not records.has(id) or records[id].kind not in ["Chest","Workbench"]: return ERR_ALREADY_IN_USE
 	var row: Dictionary = records[id]
-	var point := Vector3(row.position[0],row.position[1],row.position[2])
-	var bag := create("broken_chest:"+id,point,"WorldDropBag")
-	var error := transfer_all(inventories[id],bag)
-	if error != OK:
-		return error
-	records.erase(id)
-	inventories.erase(id)
-	changed.emit(id)
-	return OK
+	var drops := WorldDropService.new()
+	drops.containers = self
+	return drops.publish_all(inventories[id],Vector3(row.position[0],row.position[1],row.position[2]),"chest_break:"+id,"WorldDropBag","broken_chest:"+id,true)
 
 func _inventory_changed(_revision: int, id: String) -> void:
 	revision += 1
 	changed.emit(id)
 
-func transfer_all(source: InventoryState, destination: InventoryState) -> Error:
-	var plan := InventoryPlan.new()
+func request_open(id: String, actor_id: String, point: Vector3) -> Error:
+	if actor_id.is_empty() or not access_policy.allows(self,id,actor_id,point,4): return ERR_UNAUTHORIZED
+	if records[id].kind == "LooseItemDrop": return ERR_UNAVAILABLE
+	request_close(actor_id)
+	open_sessions[actor_id] = id
+	open_state_changed.emit(id,true)
+	return OK
+
+func request_close(actor_id: String) -> void:
+	var id := str(open_sessions.get(actor_id,""))
+	open_sessions.erase(actor_id)
+	if not id.is_empty(): open_state_changed.emit(id,is_open(id))
+
+func is_open(id: String) -> bool:
+	return id in open_sessions.values()
+
+func retire(id: String) -> void:
+	for actor_id: String in open_sessions.keys():
+		if open_sessions[actor_id] == id: request_close(actor_id)
+	records.erase(id)
+	inventories.erase(id)
+	revision += 1
+
+func stage_transfer_all(plan: InventoryPlan, source: InventoryState, destination: InventoryState) -> void:
 	var from := plan.include(source)
 	var to := plan.include(destination)
 	for stack: ItemStack in from._slots+from._pending:
-		if stack == null:
-			continue
+		if stack == null: continue
 		var data := StackPolicy.copied_data(stack,from.time_source.now)
 		var remaining := InventoryCommands.place(to,stack.item_id,stack.quantity,data,stack.stack_uid)
 		if remaining > 0:
 			to._pending.append(ItemStack.new(stack.item_id,remaining,StackPolicy.normalize(ItemCatalog.resolve(stack.item_id),data,to.time_source.now),stack.stack_uid))
-		if stack in from._slots:
-			from.consume_uid(stack.stack_uid,stack.quantity)
+		if stack in from._slots: from.consume_uid(stack.stack_uid,stack.quantity)
 	from._pending.clear()
+
+func transfer_all(source: InventoryState, destination: InventoryState) -> Error:
+	var plan := InventoryPlan.new()
+	stage_transfer_all(plan,source,destination)
 	return plan.commit()

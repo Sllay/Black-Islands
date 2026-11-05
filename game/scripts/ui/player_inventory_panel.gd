@@ -162,6 +162,7 @@ func _slot(parent: Node, store: InventoryState, index: int, kind: String = "inve
 func open_container(id: String) -> void:
 	if controller.registry == null or not controller.registry.inventories.has(id):
 		return
+	if component.crafting.open_container(id) != OK: return
 	opened_id = id
 	paired = controller.registry.inventories[id]
 	controller.paired = paired
@@ -169,7 +170,6 @@ func open_container(id: String) -> void:
 		paired = null
 		controller.paired = null
 		return
-	component.crafting.open_container(id)
 	_watch(paired)
 	_mode = "container"
 	if not component.is_open:

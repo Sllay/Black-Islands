@@ -9,7 +9,8 @@ func available_actions(actor: PlayerActor) -> Array[String]:
 	if role == "structure":
 		return ["demolish"] if actor.camera_rig.build_mode else []
 	if role == "container":
-		return ["open"]
+		if not runtime.containers.access_policy.allows(runtime.containers,object_id,actor.inventory.state.inventory_id,actor.global_position,4): return []
+		return ["pickup"] if runtime.containers.records[object_id].kind == "LooseItemDrop" else ["open"]
 	return ["inspect","interact"] if runtime.farms.plots.has(object_id) else []
 
 func interact(actor: PlayerActor) -> void:
