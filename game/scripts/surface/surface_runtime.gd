@@ -69,6 +69,7 @@ func qa_world_state(day_fraction: float, weather_id: String) -> void:
 	if not OS.is_debug_build() or core == null: return
 	core.clock.elapsed_game_seconds = floorf(core.clock.elapsed_game_seconds/core.clock.day_seconds)*core.clock.day_seconds+clampf(day_fraction,0,.999)*core.clock.day_seconds
 	core.clock.pending_seconds = 0
+	core.clock._last_event = core.clock.elapsed_game_seconds
 	ledger.clock = core.clock.elapsed_game_seconds
 	core.weather.set_state(weather_id,ledger.clock)
 	core.checkpoint()

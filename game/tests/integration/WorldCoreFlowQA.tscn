@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://buymu31xafykc"]
+
+[ext_resource type="Script" path="res://tests/integration/world_core_flow_qa.gd" id="1_7eoy2"]
+
+[node name="WorldCoreFlowQA" type="Node" unique_id=671429038]
+script = ExtResource("1_7eoy2")
